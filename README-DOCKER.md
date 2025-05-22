@@ -5,7 +5,6 @@ This README explains how to run the SvelteKit project using Docker, which isolat
 ## Prerequisites
 
 - Docker installed on your machine
-- Docker Compose installed on your machine
 
 ## Docker Files
 
@@ -58,6 +57,7 @@ When running in production mode:
 
 - The application runs on port 3000
 - The application is built during Docker image creation
+- The SvelteKit preview server is used to serve the built application
 - No hot-reloading is available
 
 Access the application at: http://localhost:3000
@@ -68,16 +68,16 @@ If you prefer to use Docker commands directly:
 
 ```bash
 # Development mode
-docker-compose up dev
+docker compose up dev
 
 # Production mode
-docker-compose up app
+docker compose up app
 
 # Build production image
-docker-compose build app
+docker compose build app
 
 # Stop all containers
-docker-compose down
+docker compose down
 ```
 
 ## Troubleshooting
@@ -87,4 +87,13 @@ If you encounter permission issues with the script:
 chmod +x docker-run.sh
 ```
 
-If ports are already in use, modify the port mappings in `docker-compose.yml`. 
+If you get "Module not found" errors:
+- Make sure the build process completed successfully 
+- Check if the SvelteKit adapter settings in `svelte.config.js` are correct
+- Verify that the Docker container has access to the build directory
+
+If ports are already in use, modify the port mappings in `docker-compose.yml`.
+
+## Note About SvelteKit Static Adapter
+
+If you're using the `@sveltejs/adapter-static`, make sure the output directory in `svelte.config.js` matches the path in the Docker CMD. The current configuration uses the `preview` command to serve the built application. 

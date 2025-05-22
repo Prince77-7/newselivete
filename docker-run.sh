@@ -23,19 +23,19 @@ fi
 case "$1" in
   dev)
     echo "Starting in development mode..."
-    docker-compose up dev
+    docker compose up dev
     ;;
   prod)
     echo "Starting in production mode..."
-    docker-compose up app
+    docker compose up app
     ;;
   build)
     echo "Building production image..."
-    docker-compose build app
+    docker compose build app
     ;;
   stop)
     echo "Stopping all containers..."
-    docker-compose down
+    docker compose down
     ;;
   *)
     show_usage
