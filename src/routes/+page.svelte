@@ -1,5 +1,5 @@
-<script>
-  import { onMount } from 'svelte';
+<script lang="ts">
+  import { onMount, afterUpdate, onDestroy } from 'svelte';
   import Navigation from '$lib/components/Navigation.svelte';
 
   let typicalButtonClicks = 0;
@@ -10,62 +10,109 @@
   let isLoading = true;
 
   // Property showcase data (would normally come from API/database)
-  const featuredProperties = [
-    {
-      id: 1,
-      title: "Glass Haven",
-      location: "Beverly Hills, CA",
-      price: "$12,500,000",
-      sqft: "8,200",
-      beds: 5,
-      baths: 7,
-      image: "/images/property1.jpg" 
-    },
-    {
-      id: 2,
-      title: "Skyline Penthouse",
-      location: "Manhattan, NY",
-      price: "$8,900,000",
-      sqft: "4,100",
-      beds: 3,
-      baths: 4,
-      image: "/images/property2.jpg"
-    },
-    {
-      id: 3,
-      title: "Coastal Retreat",
-      location: "Malibu, CA",
-      price: "$15,750,000",
-      sqft: "6,800",
-      beds: 6,
-      baths: 8,
-      image: "/images/property3.jpg"
-    }
-  ];
+  // const featuredProperties = [ ... ]; // REMOVED
+
+  let atypicalExperienceContainer: HTMLDivElement | null = null; // For binding to the scrollable wrapper
+  let slideElements: HTMLElement[] = []; // To hold references to slide elements for IntersectionObserver
+  let observer: IntersectionObserver | null = null;
+  let initialScrollDone = false; // Flag to ensure scroll-to-bottom runs once
 
   onMount(() => {
-    // Simulate loading animation completion
     setTimeout(() => {
       isLoading = false;
-    }, 2000); // Max 2 seconds for loading
+    }, 2000);
 
-    // Check localStorage for previous interaction
     if (localStorage.getItem('typicalButtonVanished') === 'true') {
       typicalButtonVanished = true;
     }
+
+    // Initialize IntersectionObserver
+    if (typeof IntersectionObserver !== 'undefined') {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+            } else {
+              // Optional: Remove if you want animations on scroll away and back
+              // entry.target.classList.remove('is-visible');
+            }
+          });
+        },
+        { threshold: 0.4 } // Trigger when 40% of the slide is visible
+      );
+    }
   });
 
-  // Reactive statement to control body scroll
-  $: if (typeof document !== 'undefined') {
-    if (isLoading || !showAtypicalExperience) {
-      document.body.classList.add('no-scroll');
-    } else {
-      document.body.classList.remove('no-scroll');
+  afterUpdate(() => {
+    // Handle body scroll and scroll-to-bottom for atypical experience
+    if (showAtypicalExperience && atypicalExperienceContainer) {
+      if (!initialScrollDone) {
+        // Scroll to the bottom to start the "scroll up" experience
+        setTimeout(() => { // Timeout to ensure DOM is fully updated
+          if (atypicalExperienceContainer) {
+              atypicalExperienceContainer.scrollTop = atypicalExperienceContainer.scrollHeight;
+              initialScrollDone = true; // Set flag after first scroll
+          }
+        }, 0);
+      }
+
+      if (typeof document !== 'undefined') {
+        document.body.classList.add('scroll-up-mode');
+        document.body.classList.remove('no-scroll');
+      }
+      
+      // Observe slides if not already observed
+      if (observer && slideElements.length > 0) {
+        slideElements.forEach(slide => {
+          if (slide && !slide.classList.contains('is-visible')) { // Check if already observed/visible might be complex here
+             observer?.observe(slide);
+          }
+        });
+      }
+
+    } else if (typeof document !== 'undefined') {
+      document.body.classList.remove('scroll-up-mode');
+      if (isLoading || !showAtypicalExperience) {
+        document.body.classList.add('no-scroll');
+      }
     }
+  });
+  
+  onDestroy(() => {
+    if (observer) {
+      observer.disconnect();
+    }
+    // Ensure no-scroll is removed if component is destroyed while active
+    if (typeof document !== 'undefined') {
+        document.body.classList.remove('no-scroll');
+        document.body.classList.remove('scroll-up-mode');
+    }
+  });
+
+  // Reactive statement to manage observing slides when showAtypicalExperience changes
+  // This might be more robust if slideElements are bound directly in an #each, 
+  // but with fixed slides, we'll manually populate and observe.
+  $: if (showAtypicalExperience && atypicalExperienceContainer) {
+    if (observer) { 
+      const currentSlides = atypicalExperienceContainer.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
+      slideElements = Array.from(currentSlides);
+      slideElements.forEach(slide => {
+        if (slide) observer?.observe(slide);
+      });
+    }
+  } else if (!showAtypicalExperience) {
+    if (observer) { 
+        slideElements.forEach(slide => {
+            if (slide) observer?.unobserve(slide);
+        });
+    }
+    slideElements = [];
+    initialScrollDone = false; // Reset flag when atypical experience is hidden
   }
 
   /** @param {MouseEvent & { currentTarget: HTMLButtonElement }} event */
-  function handleTypicalClick(event) {
+  function handleTypicalClick(event: MouseEvent & { currentTarget: HTMLButtonElement }) {
     if (typicalButtonVanished) return;
 
     typicalButtonClicks++;
@@ -118,7 +165,7 @@
 
   function handleAtypicalClick() {
     showAtypicalExperience = true;
-    console.log("Atypical Experience Activated!");
+    // console.log("Atypical Experience Activated!"); // Original console log
   }
 </script>
 
@@ -155,78 +202,52 @@
     </div>
   </div>
 {:else}
-  <Navigation />
-  
-  <div class="atypical-experience">
-    <header class="hero-section">
-      <h1 class="atypical-title">PREPARE FOR THE <span class="highlight-red">UNCONVENTIONAL.</span></h1>
-      <p class="atypical-subtitle">REAL ESTATE, <span class="highlight-red">REDEFINED.</span></p>
-      <div class="scroll-indicator">
-        <span>Scroll to explore</span>
-        <div class="arrow-down"></div>
-      </div>
-    </header>
-    
-    <section class="property-showcase">
-      <div class="section-header">
-        <h2>FEATURED <span class="highlight-red">PROPERTIES</span></h2>
-        <a href="/properties" class="view-all-link">VIEW ALL PROPERTIES</a>
-      </div>
+  <!-- ATYPICAL EXPERIENCE - SCROLL UP DESIGN -->
+  <div class="atypical-experience-wrapper" bind:this={atypicalExperienceContainer}>
+    <div class="scroll-content-inner">
       
-      <div class="property-grid">
-        {#each featuredProperties as property}
-          <div class="property-card">
-            <div class="property-image" style="background-image: url({property.image || '/images/placeholder.jpg'})">
-              <div class="property-price">{property.price}</div>
-            </div>
-            <div class="property-details">
-              <h3 class="property-title">{property.title}</h3>
-              <p class="property-location">{property.location}</p>
-              <div class="property-specs">
-                <span>{property.beds} BEDS</span>
-                <span>{property.baths} BATHS</span>
-                <span>{property.sqft} SQ FT</span>
-              </div>
-              <a href={`/properties/${property.id}`} class="property-link">VIEW DETAILS</a>
+      <!-- Slide 4 (Topmost, revealed LAST when scrolling up) -->
+      <section class="slide" id="slide-contact">
+        <div class="slide-content">
+          <h2 class="slide-title">ASCEND TO <span class="highlight-red">EXTRAORDINARY.</span></h2>
+          <p class="slide-text">Your distinctive real estate experience is waiting. Connect with us to explore how the unconventional can achieve the exceptional.</p>
+          <a href="/contact" class="cta-button-scroll-up">INITIATE THE CONVERSATION</a>
+        </div>
+      </section>
+
+      <!-- Slide 3 -->
+      <section class="slide" id="slide-process">
+        <div class="slide-content">
+          <h2 class="slide-title">THE <span class="highlight-red">ATYPICAL</span> PATH</h2>
+          <p class="slide-text">Forget opaque processes and industry jargon. We champion clarity, insight, and a bespoke strategy meticulously crafted for you. Every step upward is a step toward your vision.</p>
+          <p class="slide-highlight">TRANSPARENCY. PRECISION. PARTNERSHIP.</p>
+        </div>
+      </section>
+      
+      <!-- Slide 2 -->
+      <section class="slide" id="slide-philosophy">
+        <div class="slide-content">
+          <h2 class="slide-title">BEYOND BRICKS & MORTAR</h2>
+          <p class="slide-text">We see more than properties; we see potential. Your aspirations are the blueprint for our approach. This isn't just about transactions, it's about transformation.</p>
+          <p class="slide-highlight">YOUR JOURNEY, <span class="highlight-red">ELEVATED.</span></p>
+        </div>
+      </section>
+
+      <!-- Slide 1 (Initially visible at the bottom after auto-scroll) -->
+      <section class="slide hero-slide-scroll-up" id="slide-main-hero">
+        <div class="slide-content">
+          <div class="initial-prompt">
+            <p class="scroll-up-notice">WITH US, YOU WON'T BE SCROLLING DOWN. <span class="highlight-red">YOU'LL BE SCROLLING UP.</span></p>
+            <div class="arrow-up-animated">
+              <span>▲</span>
             </div>
           </div>
-        {/each}
-      </div>
-    </section>
-    
-    <section class="about-section">
-      <div class="about-content">
-        <h2>OUR <span class="highlight-red">APPROACH</span></h2>
-        <p>We reject conventional real estate practices that prioritize quick sales over client satisfaction. Our approach focuses on understanding your unique needs and finding properties that truly resonate with your lifestyle.</p>
-        <a href="/about" class="about-link">LEARN MORE</a>
-      </div>
-      <div class="about-image"></div>
-    </section>
-    
-    <section class="contact-teaser">
-      <h2>READY FOR A <span class="highlight-red">DIFFERENT</span> EXPERIENCE?</h2>
-      <p>Connect with our team of unconventional real estate professionals.</p>
-      <a href="/contact" class="contact-button">CONTACT US</a>
-    </section>
-    
-    <footer class="site-footer">
-      <div class="footer-content">
-        <div class="footer-logo">SELIVETE</div>
-        <div class="footer-links">
-          <a href="/properties">PROPERTIES</a>
-          <a href="/about">APPROACH</a>
-          <a href="/contact">CONTACT</a>
+          <h1 class="atypical-title-scroll-up">PREPARE FOR THE <span class="highlight-red">UNCONVENTIONAL.</span></h1>
+          <p class="atypical-subtitle-scroll-up">REAL ESTATE, <span class="highlight-red">REDEFINED.</span></p>
         </div>
-        <div class="footer-social">
-          <a href="#" aria-label="Instagram">IG</a>
-          <a href="#" aria-label="Twitter">TW</a>
-          <a href="#" aria-label="Facebook">FB</a>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>© 2023 SELIVETE. All rights reserved.</p>
-      </div>
-    </footer>
+      </section>
+
+    </div>
   </div>
 {/if}
 
@@ -234,6 +255,18 @@
   :root {
     --base-button-size: clamp(120px, 15vw, 180px); /* Dynamic button size */
     --button-padding: clamp(10px, 2vw, 20px);    /* Dynamic padding */
+  }
+
+  /* Apply to body when scroll-up mode is active */
+  :global(body.scroll-up-mode) {
+    overflow: hidden; /* Prevent body scroll, wrapper will scroll */
+  }
+  :global(body.scroll-up-mode), :global(html) {
+    height: 100%; /* Ensure html and body take full height */
+  }
+  /* Keep existing no-scroll for loading/decision */
+  :global(body.no-scroll) {
+    overflow: hidden;
   }
 
   .full-screen-view {
@@ -253,7 +286,6 @@
   }
 
   .loading-screen {
-    /* Ensure text is above the circle */
     z-index: 10; 
   }
 
@@ -261,13 +293,13 @@
     width: clamp(200px, 50vw, 400px);
     height: clamp(200px, 50vw, 400px);
     border-radius: 50%;
-    background-color: rgba(153, 0, 0, 0.3); /* Blood red with alpha */
+    background-color: rgba(153, 0, 0, 0.3); 
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     animation: breathe 4s ease-in-out infinite, fadeInCircle 1s ease-out forwards;
-    z-index: -1; /* Behind the loading text */
+    z-index: -1; 
     opacity: 0;
   }
 
@@ -294,19 +326,18 @@
 
   .loading-text {
     font-family: var(--font-headline);
-    font-weight: 700; /* Bold */
-    font-size: clamp(2rem, 5vw, 3.5rem); /* Slightly smaller to fit with circle */
+    font-weight: 700; 
+    font-size: clamp(2rem, 5vw, 3.5rem); 
     color: var(--color-pure-white);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    position: relative; /* Ensure it's above the circle effectively */
+    position: relative; 
     z-index: 1;
   }
   .loading-text span {
     opacity: 0;
     animation: fadeInLetter 0.2s forwards;
   }
-  /* Stagger animation for each letter */
   .loading-text span:nth-child(1) { animation-delay: 0.2s; }
   .loading-text span:nth-child(2) { animation-delay: 0.3s; }
   .loading-text span:nth-child(3) { animation-delay: 0.4s; }
@@ -319,7 +350,6 @@
   .loading-text span:nth-child(10) { animation-delay: 1.1s; }
   .loading-text span:nth-child(11) { animation-delay: 1.2s; }
 
-
   @keyframes fadeInLetter {
     to {
       opacity: 1;
@@ -327,13 +357,13 @@
   }
 
   .intro-text {
-    margin-bottom: clamp(1rem, 3vh, 2rem); /* Responsive margin */
+    margin-bottom: clamp(1rem, 3vh, 2rem); 
   }
 
   .welcome-headline {
     font-family: var(--font-headline);
-    font-weight: 700; /* Bold */
-    font-size: clamp(2rem, 6vw, 4.5rem); /* Adjusted for impact */
+    font-weight: 700; 
+    font-size: clamp(2rem, 6vw, 4.5rem); 
     text-transform: uppercase;
     color: var(--color-pure-white);
     margin: 0 0 0.5rem 0;
@@ -342,7 +372,7 @@
 
   .sub-headline {
     font-family: var(--font-body);
-    font-size: clamp(0.9rem, 2.5vw, 1.4rem); /* Adjusted */
+    font-size: clamp(0.9rem, 2.5vw, 1.4rem); 
     color: var(--color-pure-white);
     opacity: 0.8;
     margin: 0;
@@ -350,12 +380,12 @@
 
   .main-question {
     font-family: var(--font-headline);
-    font-weight: 500; /* Medium */
-    font-size: clamp(1.5rem, 4vw, 3rem); /* Adjusted */
+    font-weight: 500; 
+    font-size: clamp(1.5rem, 4vw, 3rem); 
     color: var(--color-pure-white);
-    margin-bottom: clamp(1.5rem, 5vh, 3rem); /* Responsive margin */
+    margin-bottom: clamp(1.5rem, 5vh, 3rem); 
     line-height: 1.3;
-    max-width: 90%; /* Prevent very long lines on wide screens */
+    max-width: 90%; 
   }
 
   .highlight-red {
@@ -366,12 +396,11 @@
     display: flex;
     flex-wrap: wrap; 
     justify-content: center;
-    gap: clamp(1rem, 3vw, 2rem); /* Responsive gap */
+    gap: clamp(1rem, 3vw, 2rem); 
     position: relative;
-    /* min-height ensures space for absolutely positioned button later */
-    min-height: calc(var(--base-button-size) + (2 * var(--button-padding)) + 10px); /* Added a bit more for safety */
+    min-height: calc(var(--base-button-size) + (2 * var(--button-padding)) + 10px); 
     align-items: center;
-    width: 100%; /* Ensure container takes width for centering */
+    width: 100%; 
   }
 
   .gateway-button {
@@ -379,8 +408,8 @@
     height: var(--base-button-size);
     border-radius: 50%; 
     font-family: var(--font-headline);
-    font-weight: 500; /* Medium */
-    font-size: clamp(0.8rem, 1.8vw, 1.2rem); /* Adjusted button font size */
+    font-weight: 500; 
+    font-size: clamp(0.8rem, 1.8vw, 1.2rem); 
     text-transform: uppercase;
     cursor: pointer;
     border: 3px solid;
@@ -425,8 +454,7 @@
   }
 
   .glitch {
-    /* This class is added by JS in the handleTypicalClick function (case 5) */
-    animation: glitch-animation 0.5s forwards; /* Run once then stop, JS hides it */
+    animation: glitch-animation 0.5s forwards; 
     background-color: var(--color-pure-white) !important; 
     color: var(--color-deep-matte-black) !important;
     border-color: var(--color-pure-white) !important;
@@ -434,7 +462,7 @@
 
   @keyframes glitch-animation {
     0% {
-      transform: translate(2px, 1px) rotate(0deg) scale(0.6); /* Base scale from previous step */
+      transform: translate(2px, 1px) rotate(0deg) scale(0.6); 
       opacity: 0.8;
     }
     20% {
@@ -452,411 +480,220 @@
       opacity: 0.3;
     }
     100% {
-      transform: translate(0px, 0px) rotate(0deg) scale(0.1); /* Vanish small */
+      transform: translate(0px, 0px) rotate(0deg) scale(0.1); 
       opacity: 0;
     }
   }
 
-  /* Atypical Experience Styling */
-  .atypical-experience {
+  /* NEW ATYPICAL SCROLL-UP EXPERIENCE STYLES */
+  .atypical-experience-wrapper {
+    height: 100vh; /* Occupy full viewport height */
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory; /* Snap scrolling on Y axis */
     background-color: var(--color-deep-matte-black);
     color: var(--color-pure-white);
-    min-height: 100vh;
+    position: relative; /* For z-indexing if Navigation needs to overlay */
+  }
+  
+  /* Optional: Style for Navigation if it's used within this view, though the HTML structure above does not include it here */
+  /* 
+  .atypical-experience-wrapper :global(.navigation-component) { 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+  } 
+  */
+
+  .scroll-content-inner {
+    /* This div is mostly for structure, direct children are slides */
   }
 
-  .hero-section {
-    height: 100vh;
+  .slide {
+    height: 100vh; /* Each slide is full viewport height */
+    width: 100%;
+    scroll-snap-align: start; /* Snap to the start of each slide */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 2rem clamp(1rem, 5vw, 4rem); /* Responsive padding */
+    box-sizing: border-box;
     text-align: center;
-    padding: 0 2rem;
-    position: relative;
+    /* opacity: 0; */ /* Temporarily removed for debugging */
+    /* transform: translateY(30px); */ /* Temporarily removed for debugging */
+    /* transition: opacity 0.8s ease-out, transform 0.8s ease-out; */ /* Temporarily removed for debugging */
+    /* Ensure slides are visible for now, will re-add transition later */
+    opacity: 1;
+    transform: translateY(0);
   }
 
-  .atypical-title {
+  /* Specific override for initial slide if needed, though general .slide change should cover it */
+  .hero-slide-scroll-up {
+     /* opacity: 1 !important; */ /* Ensure the first slide is definitely visible */
+     /* transform: translateY(0) !important; */
+  }
+  
+  .slide.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    /* Transition will be re-enabled after basic visibility is confirmed */
+  }
+
+  .slide-content {
+    max-width: 800px; /* Max width for content within a slide */
+    width: 100%;
+  }
+
+  .initial-prompt {
+    margin-bottom: 2rem;
+    animation: subtlePulse 2.5s infinite ease-in-out;
+  }
+
+  @keyframes subtlePulse {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+  }
+
+  .scroll-up-notice {
     font-family: var(--font-headline);
-    font-weight: 700; /* Bold */
-    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 300;
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .arrow-up-animated {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--color-blood-red);
+    animation: bounceUp 1.5s infinite;
+  }
+  
+  .arrow-up-animated span {
+     display: inline-block; /* Allows transform */
+  }
+
+  @keyframes bounceUp {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-15px);
+    }
+    60% {
+      transform: translateY(-7px);
+    }
+  }
+
+  .atypical-title-scroll-up {
+    font-family: var(--font-headline);
+    font-weight: 700;
+    font-size: clamp(2.2rem, 6vw, 5rem);
     text-transform: uppercase;
     color: var(--color-pure-white);
     margin: 0 0 0.5rem 0;
     line-height: 1.1;
   }
 
-  .atypical-subtitle {
+  .atypical-subtitle-scroll-up {
     font-family: var(--font-headline);
-    font-weight: 200; /* Ultralight for contrast */
-    font-size: clamp(1.2rem, 3vw, 2.2rem);
+    font-weight: 200;
+    font-size: clamp(1.1rem, 2.5vw, 2rem);
     color: var(--color-pure-white);
     opacity: 0.9;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
-
-  .scroll-indicator {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-    animation: bounce 2s infinite;
-  }
-
-  .scroll-indicator span {
-    font-family: var(--font-headline);
-    font-weight: 200;
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
-    margin-bottom: 0.5rem;
-  }
-
-  .arrow-down {
-    width: 20px;
-    height: 20px;
-    border-right: 2px solid var(--color-pure-white);
-    border-bottom: 2px solid var(--color-pure-white);
-    transform: rotate(45deg);
-  }
-
-  @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-      transform: translateY(0);
-    }
-    40% {
-      transform: translateY(-10px);
-    }
-    60% {
-      transform: translateY(-5px);
-    }
-  }
-
-  /* Property Showcase Section */
-  .property-showcase {
-    padding: 5rem 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 3rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .section-header h2 {
+  
+  .slide-title {
     font-family: var(--font-headline);
     font-weight: 700;
-    font-size: clamp(1.8rem, 4vw, 2.5rem);
-    margin: 0;
-  }
-
-  .view-all-link {
-    font-family: var(--font-headline);
-    font-weight: 500;
-    font-size: 0.9rem;
-    color: var(--color-blood-red);
-    text-decoration: none;
-    border-bottom: 1px solid var(--color-blood-red);
-    padding-bottom: 0.2rem;
-    transition: all 0.3s ease;
-  }
-
-  .view-all-link:hover {
-    color: var(--color-pure-white);
-    border-color: var(--color-pure-white);
-  }
-
-  .property-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-  }
-
-  .property-card {
-    background-color: rgba(20, 20, 20, 0.8);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .property-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-  }
-
-  .property-image {
-    height: 220px;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-  }
-
-  .property-price {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background-color: var(--color-blood-red);
-    color: var(--color-pure-white);
-    padding: 0.5rem 1rem;
-    font-family: var(--font-headline);
-    font-weight: 700;
-    font-size: 1.1rem;
-  }
-
-  .property-details {
-    padding: 1.5rem;
-  }
-
-  .property-title {
-    font-family: var(--font-headline);
-    font-weight: 500;
-    font-size: 1.4rem;
-    margin: 0 0 0.3rem 0;
-    color: var(--color-pure-white);
-  }
-
-  .property-location {
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin: 0 0 1rem 0;
-  }
-
-  .property-specs {
-    display: flex;
-    gap: 1rem;
+    font-size: clamp(2rem, 5vw, 4rem);
+    text-transform: uppercase;
     margin-bottom: 1.5rem;
-    flex-wrap: wrap;
+    line-height: 1.2;
   }
 
-  .property-specs span {
+  .slide-text {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 2.2vw, 1.3rem);
+    line-height: 1.8;
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+  }
+  
+  .slide-text:last-child {
+      margin-bottom: 0;
+  }
+  
+  .slide-highlight {
     font-family: var(--font-headline);
-    font-weight: 200;
-    font-size: 0.8rem;
-    color: var(--color-pure-white);
+    font-weight: 500;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-pure-white); /* Default white, use .highlight-red for red parts */
+    margin-top: 2rem;
+    margin-bottom: 2rem; /* Ensure spacing if it's followed by a button */
   }
 
-  .property-link {
+  .cta-button-scroll-up {
     display: inline-block;
     font-family: var(--font-headline);
     font-weight: 500;
-    font-size: 0.9rem;
-    color: var(--color-blood-red);
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-
-  .property-link:hover {
+    font-size: clamp(0.9rem, 1.8vw, 1.1rem);
     color: var(--color-pure-white);
-  }
-
-  /* About Section */
-  .about-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    min-height: 70vh;
-  }
-
-  .about-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 4rem;
-    background-color: rgba(30, 30, 30, 0.7);
-  }
-
-  .about-content h2 {
-    font-family: var(--font-headline);
-    font-weight: 700;
-    font-size: clamp(2rem, 5vw, 3rem);
-    margin: 0 0 2rem 0;
-  }
-
-  .about-content p {
-    font-family: var(--font-body);
-    font-size: clamp(1rem, 2vw, 1.2rem);
-    line-height: 1.7;
-    margin: 0 0 2rem 0;
-    max-width: 600px;
-  }
-
-  .about-link {
-    align-self: flex-start;
-    font-family: var(--font-headline);
-    font-weight: 500;
-    font-size: 0.9rem;
-    color: var(--color-blood-red);
-    text-decoration: none;
+    background-color: transparent;
     border: 2px solid var(--color-blood-red);
-    padding: 0.8rem 1.5rem;
+    padding: clamp(0.8rem, 1.5vw, 1rem) clamp(1.5rem, 3vw, 2.5rem);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     transition: all 0.3s ease;
+    margin-top: 1rem; /* Spacing from text above */
   }
 
-  .about-link:hover {
+  .cta-button-scroll-up:hover {
     background-color: var(--color-blood-red);
     color: var(--color-pure-white);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(153, 0, 0, 0.3);
   }
 
-  .about-image {
-    background-image: url('/images/about-image.jpg');
-    background-size: cover;
-    background-position: center;
-  }
-
-  /* Contact Teaser */
-  .contact-teaser {
-    padding: 7rem 2rem;
-    text-align: center;
-    background-color: var(--color-blood-red);
-  }
-
-  .contact-teaser h2 {
-    font-family: var(--font-headline);
-    font-weight: 700;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    margin: 0 0 1rem 0;
-    color: var(--color-pure-white);
-  }
-
-  .contact-teaser p {
-    font-family: var(--font-body);
-    font-size: clamp(1rem, 2vw, 1.2rem);
-    margin: 0 0 2.5rem 0;
-    color: var(--color-pure-white);
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .contact-button {
-    display: inline-block;
-    font-family: var(--font-headline);
-    font-weight: 500;
-    font-size: 1rem;
-    color: var(--color-pure-white);
-    text-decoration: none;
-    border: 2px solid var(--color-pure-white);
-    padding: 1rem 2rem;
-    transition: all 0.3s ease;
-  }
-
-  .contact-button:hover {
-    background-color: var(--color-pure-white);
-    color: var(--color-blood-red);
-  }
-
-  /* Footer */
-  .site-footer {
-    background-color: #111;
-    padding: 4rem 2rem 2rem;
-  }
-
-  .footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1400px;
-    margin: 0 auto 3rem;
-    flex-wrap: wrap;
-    gap: 2rem;
-  }
-
-  .footer-logo {
-    font-family: var(--font-headline);
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: var(--color-blood-red);
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 2rem;
-  }
-
-  .footer-links a {
-    font-family: var(--font-headline);
-    font-weight: 500;
-    font-size: 0.9rem;
-    color: var(--color-pure-white);
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-
-  .footer-links a:hover {
-    color: var(--color-blood-red);
-  }
-
-  .footer-social {
-    display: flex;
-    gap: 1.5rem;
-  }
-
-  .footer-social a {
-    font-family: var(--font-headline);
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: var(--color-pure-white);
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-
-  .footer-social a:hover {
-    color: var(--color-blood-red);
-  }
-
-  .footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 2rem;
-    text-align: center;
-  }
-
-  .footer-bottom p {
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.5);
-    margin: 0;
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 992px) {
-    .about-section {
-      grid-template-columns: 1fr;
-    }
-    
-    .about-image {
-      height: 50vh;
-      order: -1;
-    }
-    
-    .about-content {
-      padding: 3rem 2rem;
-    }
-  }
-  
+  /* Responsive adjustments for new scroll-up design */
   @media (max-width: 768px) {
-    .footer-content {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 1.5rem;
+    .atypical-title-scroll-up {
+      font-size: clamp(2rem, 8vw, 3.5rem);
     }
-    
-    .property-grid {
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    .atypical-subtitle-scroll-up {
+      font-size: clamp(1rem, 4vw, 1.5rem);
     }
+    .slide-title {
+      font-size: clamp(1.8rem, 7vw, 3rem);
+    }
+    .slide-text {
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
+    }
+    .slide-highlight {
+      font-size: clamp(1rem, 3.5vw, 1.3rem);
+    }
+    .initial-prompt {
+        margin-bottom: 1rem;
+    }
+    .scroll-up-notice {
+        font-size: clamp(0.8rem, 2.5vw, 1rem);
+    }
+    .arrow-up-animated {
+        font-size: clamp(1.8rem, 6vw, 3rem);
+    }
+
   }
   
-  @media (max-width: 480px) {
+  /* Keep existing responsive adjustments for parts of the page that were not changed */
+   @media (max-width: 480px) {
     .welcome-headline {
       font-size: clamp(1.8rem, 8vw, 3rem);
     }
@@ -865,9 +702,13 @@
       font-size: clamp(1.3rem, 6vw, 2.2rem);
     }
     
+    /* .section-header was removed, so this rule is no longer needed */
+    /* 
     .section-header {
       flex-direction: column;
       align-items: flex-start;
-    }
+    } 
+    */
   }
+
 </style> 
