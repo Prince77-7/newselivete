@@ -5,6 +5,7 @@
   let typicalButtonVanished = false;
   let showAtypicalExperience = false;
   let contentVisible = false; // New flag to control visibility
+  let isLightMode = false; // New light mode state
 
   // Placeholder for WebGL loading animation
   let isLoading = true;
@@ -22,6 +23,12 @@
 
     if (localStorage.getItem('typicalButtonVanished') === 'true') {
       typicalButtonVanished = true;
+    }
+    
+    // Load theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      isLightMode = true;
     }
   });
 
@@ -121,6 +128,11 @@
   function handleAtypicalClick() {
     showAtypicalExperience = true;
   }
+
+  function toggleTheme() {
+    isLightMode = !isLightMode;
+    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+  }
 </script>
 
 <svelte:head>
@@ -128,16 +140,26 @@
 </svelte:head>
 
 {#if isLoading}
-  <div class="loading-screen full-screen-view">
+  <div class="loading-screen full-screen-view" class:light-mode={isLightMode}>
     <div class="breathing-circle"></div>
     <!-- <p class="loading-text"><span>R</span><span>E</span><span>V</span><span>O</span><span>L</span><span>U</span><span>T</span><span>I</span><span>O</span><span>N</span>IZING...</p> --> <!-- REMOVED TEXT -->
     <!-- Placeholder for WebGL Particle Animation -->
   </div>
 {:else if !showAtypicalExperience}
-  <div class="decision-gateway full-screen-view">
+  <!-- Theme Toggle Button -->
+  <button class="theme-toggle" on:click={toggleTheme} aria-label="Toggle theme">
+    {#if isLightMode}
+      <span class="theme-icon">🌙</span>
+    {:else}
+      <span class="theme-icon">☀️</span>
+    {/if}
+  </button>
+  
+  <div class="decision-gateway full-screen-view" class:light-mode={isLightMode}>
     <div class="intro-text">
       <h2 class="welcome-headline">
-        Welcome to <img src="/images/wasaw_red.svg" alt="WASAW Logo" class="headline-logo-svg" />
+        <span class="welcome-text">Welcome to</span>
+        <img src="/images/wasaw_red.svg" alt="WASAW Logo" class="headline-logo-svg" />
       </h2>
       <p class="sub-headline">To elevate your real estate journey, we must ask:</p>
     </div>
@@ -163,7 +185,7 @@
   </div>
 {:else}
   <!-- ATYPICAL EXPERIENCE - SCROLL UP DESIGN -->
-  <div class="atypical-experience-wrapper" bind:this={atypicalExperienceContainer}>
+  <div class="atypical-experience-wrapper" class:light-mode={isLightMode} bind:this={atypicalExperienceContainer}>
     <!-- Initial placeholder to ensure proper height for scrolling -->
     <div class="scroll-content-inner" class:content-hidden={!contentVisible}>
       
@@ -243,18 +265,75 @@
     --grid-line: 0.5px; /* Thickness of grid lines */
     --grid-color-light: rgba(255, 255, 255, 0.07); /* Light color for grid lines - slightly more visible */
     --grid-color-dark: rgba(0, 0, 0, 0.15); /* Dark color for grid lines (for lighter backgrounds) - more visible */
+    
+    /* Light mode color variables */
+    --light-bg-primary: #fafafa; /* Soft white background */
+    --light-bg-secondary: #f5f5f5; /* Slightly darker for contrast */
+    --light-text-primary: #1a1a1a; /* Dark text for readability */
+    --light-text-secondary: #4a4a4a; /* Slightly lighter for secondary text */
+    --light-accent-red: #B8002D; /* Slightly darker red for better contrast on light */
+    --light-grid-color: rgba(0, 0, 0, 0.08); /* Subtle grid for light mode */
+    --light-shadow: rgba(0, 0, 0, 0.1); /* Subtle shadows */
+    --light-sage-green: #E6F7E6; /* Beautiful light sage green */
+    --light-powder-blue: #E8F4F8; /* Beautiful light powder blue */
   }
 
   /* Apply to body when scroll-up mode is active */
   :global(body.scroll-up-mode) {
     overflow: hidden; /* Prevent body scroll, wrapper will scroll */
+    overflow-x: hidden; /* Explicitly prevent horizontal scroll */
   }
   :global(body.scroll-up-mode), :global(html) {
     height: 100%; /* Ensure html and body take full height */
+    overflow-x: hidden; /* Prevent horizontal scroll on html and body */
   }
   /* Keep existing no-scroll for loading/decision */
   :global(body.no-scroll) {
     overflow: hidden;
+  }
+
+  /* Theme Toggle Button */
+  .theme-toggle {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+  }
+
+  .theme-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+  }
+
+  .theme-toggle:hover .theme-icon {
+    transform: rotate(15deg);
+  }
+
+  /* Light mode toggle adjustments */
+  .light-mode .theme-toggle {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .light-mode .theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.2);
   }
 
   /* Hide content until ready */
@@ -276,6 +355,13 @@
     color: var(--color-pure-white);
     text-align: center;
     position: relative; /* For stacking context if needed */
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  /* Light mode styles for full-screen sections */
+  .full-screen-view.light-mode {
+    background-color: var(--light-bg-primary);
+    color: var(--light-text-primary);
   }
 
   .loading-screen {
@@ -293,6 +379,11 @@
     animation: combinedCircleAnimation 1.8s ease-in-out forwards; /* Changed animation */
     z-index: 1; /* Ensure it's above anything else in loading screen if needed */
     opacity: 0; /* Start with 0 opacity, animation will fade it in */
+  }
+
+  /* Light mode breathing circle */
+  .light-mode .breathing-circle {
+    background-color: rgba(184, 0, 45, 0.4); /* Adjusted for light mode visibility */
   }
 
   @keyframes combinedCircleAnimation {
@@ -325,6 +416,41 @@
     }
   }
 
+  /* Light mode animation with adjusted shadows */
+  .light-mode .breathing-circle {
+    animation-name: combinedCircleAnimationLight;
+  }
+
+  @keyframes combinedCircleAnimationLight {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+      box-shadow: 0 0 20px 5px rgba(184, 0, 45, 0.15);
+    }
+    25% { /* Fade in and initial small breathe */
+      opacity: 0.8;
+      transform: translate(-50%, -50%) scale(0.8);
+      box-shadow: 0 0 30px 10px rgba(184, 0, 45, 0.25), 
+                  0 0 50px 20px rgba(184, 0, 45, 0.15);
+    }
+    50% { /* Mid breathe */
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      box-shadow: 0 0 50px 20px rgba(184, 0, 45, 0.5), 
+                  0 0 80px 40px rgba(184, 0, 45, 0.25);
+    }
+    75% { /* Start of zoom and fade */
+      opacity: 0.7;
+      transform: translate(-50%, -50%) scale(0.9);
+      box-shadow: 0 0 40px 15px rgba(184, 0, 45, 0.35);
+    }
+    100% { /* Zoom in fully and fade out */
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(5); /* Significantly larger scale for zoom */
+      box-shadow: 0 0 60px 30px rgba(184, 0, 45, 0.15);
+    }
+  }
+
   .intro-text {
     margin-bottom: clamp(1rem, 3vh, 2rem); 
   }
@@ -337,17 +463,21 @@
     color: var(--color-pure-white);
     margin: 0 0 0.5rem 0;
     line-height: 1.1;
-    display: flex; /* For aligning text and logo */
-    align-items: center; /* Vertically align items */
-    justify-content: center; /* Center items horizontally */
-    flex-wrap: wrap; /* Allow wrapping on small screens */
+    display: flex;
+    flex-direction: column; /* Stack text and logo vertically */
+    align-items: center; /* Center both text and logo */
+    justify-content: center;
+    gap: 0.3rem; /* Small gap between text and logo */
+  }
+
+  .welcome-text {
+    display: block; /* Ensure text is on its own line */
   }
 
   .headline-logo-svg {
-    height: clamp(3rem, 8vw, 5.5rem); /* Adjusted size slightly */
+    height: clamp(2.5rem, 6vw, 4.5rem); /* Slightly smaller since it's on its own line */
     width: auto;
-    margin-left: 0.5rem; /* Space after "Welcome to" */
-    vertical-align: middle; /* Better alignment with text */
+    /* Remove margin-left since it's now stacked vertically */
     /* filter property removed as we are using pre-colored SVGs */
   }
 
@@ -358,6 +488,22 @@
     opacity: 0.8;
     margin: 0;
   }
+
+  /* Light mode text adjustments - ALL text elements */
+  .light-mode .welcome-headline {
+    color: var(--light-text-primary);
+  }
+
+  .light-mode .sub-headline {
+    color: var(--light-text-secondary);
+    /* Remove opacity: 1 - it interferes with animation starting at opacity: 0 */
+  }
+
+  .light-mode .main-question {
+    color: var(--light-text-primary);
+  }
+
+  /* Light mode colors - no !important to avoid animation interference */
 
   .main-question {
     font-family: var(--font-headline);
@@ -371,6 +517,11 @@
 
   .highlight-red {
     color: var(--color-blood-red);
+  }
+
+  /* Light mode highlight */
+  .light-mode .highlight-red {
+    color: var(--light-accent-red);
   }
 
   .button-container {
@@ -422,14 +573,36 @@
     transform: scale(1.1);
   }
 
+  /* Light mode button styles */
+  .light-mode .atypical-button-styled {
+    background-color: var(--light-accent-red);
+    color: var(--light-bg-primary);
+    border-color: var(--light-accent-red);
+  }
+
+  .light-mode .atypical-button-styled:hover {
+    background-color: var(--light-bg-primary);
+    color: var(--light-accent-red);
+    border-color: var(--light-accent-red);
+    box-shadow: 0 4px 15px var(--light-shadow);
+  }
+
   /* NEW ATYPICAL SCROLL-UP EXPERIENCE STYLES */
   .atypical-experience-wrapper {
     height: 100vh; /* Occupy full viewport height */
+    width: 100vw; /* Ensure full viewport width */
     overflow-y: scroll;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
     scroll-snap-type: y mandatory; /* Snap scrolling on Y axis */
     background-color: var(--color-deep-matte-black);
     color: var(--color-pure-white);
     position: relative; /* For z-indexing if Navigation needs to overlay */
+  }
+
+  /* Light mode for atypical experience wrapper */
+  .atypical-experience-wrapper.light-mode {
+    background-color: var(--light-bg-primary);
+    color: var(--light-text-primary);
   }
   
   /* Optional: Style for Navigation if it's used within this view, though the HTML structure above does not include it here */
@@ -452,6 +625,7 @@
   .slide {
     height: 100vh; 
     width: 100%;
+    max-width: 100vw; /* Prevent slides from exceeding viewport width */
     scroll-snap-align: start;
     display: flex;
     flex-direction: column;
@@ -465,6 +639,7 @@
     transition: opacity 0.6s ease-out, transform 0.6s ease-out, background-color 0.5s ease-out; /* Faster transitions */
     background-color: var(--color-deep-matte-black); /* Default background */
     position: relative; /* For background positioning */
+    overflow-x: hidden; /* Prevent any content from overflowing horizontally */
   }
 
   /* Basic grid for all slides - will be customized per slide */
@@ -504,6 +679,14 @@
     opacity: 0.8; /* Ensure it's visible */
   }
 
+  /* Light mode grid for philosophy slide */
+  .light-mode #slide-philosophy::before {
+    background-image: 
+      linear-gradient(to right, rgba(0, 100, 0, 0.1) var(--grid-line), transparent var(--grid-line)),
+      linear-gradient(to bottom, rgba(0, 100, 0, 0.1) var(--grid-line), transparent var(--grid-line));
+    opacity: 0.6;
+  }
+
   /* Diagonal grid for process slide */
   #slide-process::before {
     background-image: 
@@ -511,6 +694,14 @@
       linear-gradient(135deg, var(--grid-color-dark) var(--grid-line), transparent var(--grid-line));
     background-size: calc(var(--grid-size) * 1.5) calc(var(--grid-size) * 1.5);
     opacity: 0.8; /* Ensure it's visible */
+  }
+
+  /* Light mode grid for process slide */
+  .light-mode #slide-process::before {
+    background-image: 
+      linear-gradient(45deg, rgba(0, 100, 200, 0.1) var(--grid-line), transparent var(--grid-line)),
+      linear-gradient(135deg, rgba(0, 100, 200, 0.1) var(--grid-line), transparent var(--grid-line));
+    opacity: 0.6;
   }
 
   /* Larger grid for contact slide, also sellers slide */
@@ -546,15 +737,64 @@
     background-color: var(--color-slide-bg-alt);
   }
 
+  /* Light mode slide backgrounds - convert black backgrounds to light */
+  .light-mode #slide-main-hero {
+    background-color: var(--light-bg-primary);
+    color: var(--light-text-primary);
+  }
+  .light-mode #slide-buyers-edge {
+    background-color: var(--light-bg-primary);
+    color: var(--light-text-primary);
+  }
+  .light-mode #slide-sellers-success {
+    background-color: var(--light-bg-secondary);
+    color: var(--light-text-primary);
+  }
+  .light-mode #slide-contact {
+    background-color: var(--light-bg-secondary);
+    color: var(--light-text-primary);
+  }
+  .light-mode #slide-philosophy {
+    background-color: var(--light-sage-green);
+    color: var(--light-text-primary);
+  }
+  .light-mode #slide-process {
+    background-color: var(--light-powder-blue);
+    color: var(--light-text-primary);
+  }
+
+  /* Light mode text styling for all slide elements */
+  .light-mode .slide-title {
+    color: var(--light-text-primary);
+  }
+  .light-mode .slide-text {
+    color: var(--light-text-primary);
+  }
+  .light-mode .slide-highlight {
+    color: var(--light-text-primary);
+  }
+  .light-mode .atypical-title-scroll-up {
+    color: var(--light-text-primary);
+  }
+  .light-mode .atypical-subtitle-scroll-up {
+    color: var(--light-text-primary);
+  }
+  .light-mode .scroll-up-notice {
+    color: var(--light-text-primary);
+  }
+
   /* Ensure slide content is fully visible by default */
   .slide-content {
     max-width: 800px; /* Max width for content within a slide */
     width: 100%;
+    box-sizing: border-box; /* Include padding in width calculation */
     /* Remove transforms and opacity changes - all content visible by default */
     transform: translateY(0) !important; /* Force no transform */
     opacity: 1 !important; /* Force full opacity */
     position: relative;
     z-index: 2; /* Above the grid */
+    overflow-wrap: break-word; /* Prevent long words from overflowing */
+    word-wrap: break-word; /* Legacy support */
   }
 
   /* Remove animate-in class as it's no longer needed */
@@ -622,10 +862,10 @@
 
   .atypical-subtitle-scroll-up {
     font-family: var(--font-headline);
-    font-weight: 200;
+    font-weight: 500; /* Increased from 200 to 500 for better visibility */
     font-size: clamp(1.1rem, 2.5vw, 2rem);
     color: var(--color-pure-white);
-    opacity: 0.9;
+    opacity: 1; /* Increased from 0.9 to 1 for full visibility */
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -684,6 +924,18 @@
     color: var(--color-pure-white);
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(153, 0, 0, 0.3);
+  }
+
+  /* Light mode CTA button */
+  .light-mode .cta-button-scroll-up {
+    color: var(--light-text-primary);
+    border-color: var(--light-accent-red);
+  }
+
+  .light-mode .cta-button-scroll-up:hover {
+    background-color: var(--light-accent-red);
+    color: var(--light-bg-primary);
+    box-shadow: 0 10px 20px var(--light-shadow);
   }
 
   /* Responsive adjustments for new scroll-up design */
@@ -772,6 +1024,35 @@
     animation: textFadeInUp 0.6s ease-out 1.1s forwards; /* 0.8s + 0.3s delay */
     /* min-height set below to prevent layout shift is still relevant */
   }
+
+  /* Remove separate light mode animations - use same timing for both themes */
   /* End Decision Gateway Text Animations */
+
+  /* Additional Light Mode Responsive Adjustments */
+  @media (max-width: 768px) {
+    .theme-toggle {
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 45px;
+      height: 45px;
+    }
+    
+    .theme-icon {
+      font-size: 1.3rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .theme-toggle {
+      top: 1rem;
+      right: 1rem;
+      width: 40px;
+      height: 40px;
+    }
+    
+    .theme-icon {
+      font-size: 1.1rem;
+    }
+  }
 
 </style> 
