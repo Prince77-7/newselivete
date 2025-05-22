@@ -306,6 +306,8 @@
   .blog-post {
     padding-top: 3rem; /* Adjust as needed, considering nav bar height */
     padding-bottom: 4rem;
+    background-color: var(--background); /* Ensure this uses the themed background */
+    color: var(--foreground); /* Ensure this uses the themed foreground */
     transition: background-color 0.4s ease, color 0.4s ease;
   }
 
@@ -321,6 +323,39 @@
     --primary: var(--light-accent-red);
     --primary-foreground: #ffffff; /* Text on primary buttons */
     --ring: var(--light-accent-red);
+
+    /* More specific overrides for elements on this page */
+    --post-header-bg: var(--light-bg-secondary);
+    --post-category-tag-bg: var(--light-accent-red);
+    --post-category-tag-text: #ffffff;
+    --post-date-time-text: var(--light-text-secondary);
+    --post-title-text: var(--light-text-primary);
+    --post-author-name-text: var(--light-text-primary);
+    
+    --post-content-text: var(--light-text-primary);
+    --post-content-h2-text: var(--light-text-primary);
+    --post-content-h3-text: var(--light-text-primary);
+
+    --post-tag-bg: var(--light-bg-secondary);
+    --post-tag-text: var(--light-text-secondary);
+    --post-footer-border: var(--light-border);
+
+    --related-posts-bg: var(--light-bg-secondary);
+    --related-posts-h2-text: var(--light-text-primary);
+    --related-card-bg: #ffffff;
+    --related-card-shadow: 0 10px 25px var(--light-shadow);
+    --related-card-h3-text: var(--light-text-primary);
+    --related-card-p-text: var(--light-text-secondary);
+    --related-card-read-more-text: var(--light-accent-red);
+    --related-card-read-more-hover-text: #A30027; /* Darker red for hover */
+
+    --cta-card-bg: #ffffff;
+    --cta-card-shadow: 0 10px 25px var(--light-shadow);
+    --cta-h2-text: var(--light-text-primary);
+    --cta-p-text: var(--light-text-secondary);
+    --cta-button-bg: var(--light-accent-red);
+    --cta-button-text: #ffffff;
+    --cta-button-hover-bg: #A30027; /* Darker red for hover */
   }
 
   .container {
@@ -355,7 +390,7 @@
 
   .post-header {
     padding: 4rem 0;
-    background-color: var(--muted);
+    background-color: var(--post-header-bg, var(--muted));
     margin-bottom: 2rem;
   }
   
@@ -367,8 +402,8 @@
   }
   
   .category-tag {
-    background-color: var(--primary);
-    color: var(--primary-foreground);
+    background-color: var(--post-category-tag-bg, var(--primary));
+    color: var(--post-category-tag-text, var(--primary-foreground));
     font-size: 0.8rem;
     font-weight: 500;
     padding: 0.25rem 0.75rem;
@@ -379,20 +414,20 @@
   
   .date-time {
     font-size: 0.9rem;
-    color: var(--muted-foreground);
+    color: var(--post-date-time-text, var(--muted-foreground));
   }
   
   .dot {
     margin: 0 0.3rem;
   }
   
-  h1 {
+  h1.post-title {
     font-family: var(--font-headline);
     font-weight: 700;
     font-size: clamp(2rem, 5vw, 3.2rem);
     line-height: 1.2;
     margin: 0 0 1.5rem 0;
-    color: var(--foreground);
+    color: var(--post-title-text, var(--foreground));
   }
   
   .post-excerpt {
@@ -419,6 +454,7 @@
   .author-name {
     font-weight: 600;
     font-size: 1rem;
+    color: var(--post-author-name-text, var(--foreground));
   }
   
   .post-content {
@@ -426,7 +462,7 @@
     font-family: var(--font-body);
     font-size: 1.1rem;
     line-height: 1.8;
-    color: var(--foreground);
+    color: var(--post-content-text, var(--foreground));
   }
   
   .post-content :global(h2) {
@@ -434,7 +470,7 @@
     font-weight: 700;
     font-size: 1.8rem;
     margin: 2.5rem 0 1rem;
-    color: var(--foreground);
+    color: var(--post-content-h2-text, var(--foreground));
   }
   
   .post-content :global(h3) {
@@ -442,7 +478,7 @@
     font-weight: 600;
     font-size: 1.4rem;
     margin: 2rem 0 0.8rem;
-    color: var(--foreground);
+    color: var(--post-content-h3-text, var(--foreground));
   }
   
   .post-content :global(p) {
@@ -471,8 +507,8 @@
   
   .tag {
     font-size: 0.8rem;
-    color: var(--muted-foreground);
-    background-color: var(--muted);
+    color: var(--post-tag-text, var(--muted-foreground));
+    background-color: var(--post-tag-bg, var(--muted));
     padding: 0.3rem 0.8rem;
     border-radius: 0.25rem;
   }
@@ -482,11 +518,11 @@
     justify-content: space-between;
     align-items: center;
     padding-top: 2rem;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--post-footer-border, var(--border));
   }
   
   .related-posts {
-    background-color: var(--muted);
+    background-color: var(--related-posts-bg, var(--muted));
     padding: 4rem 0;
   }
   
@@ -496,6 +532,7 @@
     font-size: 2rem;
     margin-bottom: 2rem;
     text-align: center;
+    color: var(--related-posts-h2-text, var(--foreground));
   }
   
   .related-grid {
@@ -505,7 +542,7 @@
   }
   
   .related-card {
-    background-color: var(--card);
+    background-color: var(--related-card-bg, var(--card));
     border-radius: 1rem;
     overflow: hidden;
     text-decoration: none;
@@ -517,7 +554,7 @@
   
   .related-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--related-card-shadow, 0 10px 25px rgba(0, 0, 0, 0.1));
   }
   
   .related-card-image {
@@ -548,13 +585,13 @@
     font-weight: 600;
     font-size: 1.2rem;
     margin: 0 0 0.8rem 0;
-    color: var(--card-foreground);
+    color: var(--related-card-h3-text, var(--card-foreground));
     line-height: 1.4;
   }
   
   .related-card-content p {
     font-size: 0.9rem;
-    color: var(--muted-foreground);
+    color: var(--related-card-p-text, var(--muted-foreground));
     line-height: 1.6;
     flex: 1;
     display: -webkit-box;
@@ -565,13 +602,13 @@
   
   .read-more {
     font-weight: 600;
-    color: var(--primary);
+    color: var(--related-card-read-more-text, var(--primary));
     text-decoration: none;
     transition: color 0.2s ease;
   }
   
   .read-more:hover {
-    color: #800000; /* Darker red */
+    color: var(--related-card-read-more-hover-text, #800000); /* Darker red */
   }
   
   .cta-section {
@@ -579,11 +616,11 @@
   }
   
   .cta-card {
-    background-color: var(--card);
+    background-color: var(--cta-card-bg, var(--card));
     border-radius: 1rem;
     padding: 3rem;
     text-align: center;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--cta-card-shadow, 0 10px 25px rgba(0, 0, 0, 0.05));
   }
   
   .cta-card h2 {
@@ -591,11 +628,12 @@
     font-weight: 700;
     font-size: 2rem;
     margin: 0 0 1rem 0;
+    color: var(--cta-h2-text, var(--foreground));
   }
   
   .cta-card p {
     font-size: 1.1rem;
-    color: var(--muted-foreground);
+    color: var(--cta-p-text, var(--muted-foreground));
     margin: 0 0 2rem 0;
     max-width: 600px;
     margin-left: auto;
@@ -604,8 +642,8 @@
   
   .cta-button {
     display: inline-block;
-    background-color: var(--primary);
-    color: var(--primary-foreground);
+    background-color: var(--cta-button-bg, var(--primary));
+    color: var(--cta-button-text, var(--primary-foreground));
     font-family: var(--font-headline);
     font-weight: 500;
     font-size: 1rem;
@@ -616,7 +654,7 @@
   }
   
   .cta-button:hover {
-    background-color: #800000; /* Darker red */
+    background-color: var(--cta-button-hover-bg, #800000); /* Darker red */
     transform: translateY(-2px);
   }
   

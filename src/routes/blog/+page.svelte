@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { themeStore } from '$lib/stores/themeStore';
+  import { onMount } from 'svelte';
   
   // Subscribe to themeStore for isLightMode for local UI elements like the toggle icon
   let isLightModeFromStore: boolean;
@@ -11,6 +12,62 @@
   function togglePageTheme() {
     themeStore.toggle();
   }
+  
+  // --- START PODCAST PLAYER LOGIC ---
+  let audioPlayer: HTMLAudioElement;
+  let isPlaying = false;
+  let currentTime = 0;
+  let duration = 0;
+  let progress = 0;
+
+  const podcastSrc = "https://link.storjshare.io/raw/jvqbfu2d5wsx52rlrow3zxcrwv6a/grey/memphis.mp3";
+
+  function togglePlayPause() {
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+      isPlaying = true;
+    } else {
+      audioPlayer.pause();
+      isPlaying = false;
+    }
+  }
+
+  function handleTimeUpdate() {
+    currentTime = audioPlayer.currentTime;
+    progress = (currentTime / duration) * 100;
+  }
+
+  function handleLoadedMetadata() {
+    duration = audioPlayer.duration;
+  }
+
+  function formatTime(time: number) {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  }
+  
+  function handleProgressClick(event: MouseEvent) {
+    if (!duration) return;
+    const progressWrapper = event.currentTarget as HTMLElement;
+    const clickPosition = event.offsetX;
+    const newTime = (clickPosition / progressWrapper.offsetWidth) * duration;
+    audioPlayer.currentTime = newTime;
+  }
+
+  function skipTime(seconds: number) {
+    if (!audioPlayer) return;
+    const newTime = audioPlayer.currentTime + seconds;
+    if (newTime < 0) {
+      audioPlayer.currentTime = 0;
+    } else if (newTime > duration) {
+      audioPlayer.currentTime = duration;
+    } else {
+      audioPlayer.currentTime = newTime;
+    }
+  }
+
+  // --- END PODCAST PLAYER LOGIC ---
   
   // Sample blog data
   const blogPosts = [
@@ -137,6 +194,53 @@
       <p class="lead">Expert perspectives, market analysis, and insider knowledge from our team of seasoned professionals.</p>
     </div>
   </header>
+  
+  <!-- START PODCAST SECTION -->
+  <section class="podcast-section">
+    <div class="container">
+      <h2 class="podcast-title">LATEST INTELLIGENCE PODCAST</h2>
+      <div class="audio-player-custom">
+        <audio 
+          bind:this={audioPlayer} 
+          src={podcastSrc} 
+          on:timeupdate={handleTimeUpdate}
+          on:loadedmetadata={handleLoadedMetadata}
+          on:ended={() => isPlaying = false}
+          preload="metadata"
+        ></audio>
+        
+        <button class="skip-button backward" on:click={() => skipTime(-15)} aria-label="Skip backward 15 seconds">
+          <svg width="20px" height="20px" viewBox="0 0 24 24" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"></path></svg>
+          <span class="skip-amount">15s</span>
+        </button>
+
+        <button class="play-pause-button" on:click={togglePlayPause} aria-label={isPlaying ? 'Pause' : 'Play'}>
+          {#if isPlaying}
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          {:else}
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          {/if}
+        </button>
+        
+        <button class="skip-button forward" on:click={() => skipTime(15)} aria-label="Skip forward 15 seconds">
+          <svg width="20px" height="20px" viewBox="0 0 24 24" fill="currentColor"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"></path></svg>
+          <span class="skip-amount">15s</span>
+        </button>
+        
+        <div class="audio-controls">
+          <div class="time-display current-time">{formatTime(currentTime)}</div>
+          <div class="progress-bar-wrapper" on:click={handleProgressClick}>
+            <div class="progress-bar-filled" style="width: {progress}%"></div>
+          </div>
+          <div class="time-display duration">{formatTime(duration)}</div>
+        </div>
+      </div>
+      <p class="podcast-disclaimer">
+        All information presented is accurate. However, the voice is artificially generated, which may occasionally result in minor faults or imperfections in delivery.
+      </p>
+    </div>
+  </section>
+  <!-- END PODCAST SECTION -->
   
   <div class="blog-container">
     <div class="search-filters">
@@ -312,8 +416,8 @@
 
   /* General Blog Page Styles */
   .blog-page {
-    /* background: var(--background); Already handled by body.light-mode and :root overrides */
-    /* color: var(--foreground); Already handled by body.light-mode and :root overrides */
+    background-color: var(--background); /* Ensure this uses the themed background */
+    color: var(--foreground); /* Ensure this uses the themed foreground */
     transition: background-color 0.4s ease, color 0.4s ease;
     padding-bottom: 4rem; /* Ensure space for footer if any */
   }
@@ -336,14 +440,85 @@
     --accent-foreground: #78350f; /* Dark text on accent */
     --destructive: #ef4444; /* Standard destructive red */
     --destructive-foreground: #f8fafc; /* Light text on destructive */
-    --border: #e5e7eb; /* Light border */
-    --input: #e5e7eb; /* Light input background */
+    --border: var(--light-border); /* Use theme-defined light border */
+    --input: #ffffff; /* Brighter input background for light mode */
     --ring: var(--light-accent-red); /* Ring color for focus, using theme's accent */
+
+    /* Ensure specific elements inside cards also update */
+    /* For .search-box input, .filter-options select, .reset-button */
+    --search-input-bg: #ffffff;
+    --search-input-text: var(--light-text-primary);
+    --search-input-border: var(--light-border);
+    --search-icon-color: var(--light-text-secondary);
+
+    --select-bg: #ffffff;
+    --select-text: var(--light-text-primary);
+    --select-border: var(--light-border);
+
+    --reset-button-bg: #ffffff;
+    --reset-button-text: var(--light-text-primary);
+    --reset-button-border: var(--light-border);
+    --reset-button-hover-bg: var(--light-bg-secondary);
+
+    /* For .blog-card elements */
+    --blog-card-bg: #ffffff; /* Explicitly set card background */
+    --blog-card-border: var(--light-border);
+    --blog-card-shadow: 0 10px 25px var(--light-shadow);
+    --blog-card-category-bg: var(--light-accent-red);
+    --blog-card-category-text: var(--light-bg-primary);
+    --blog-card-meta-text: var(--light-text-secondary);
+    --blog-card-title-link-text: var(--light-text-primary);
+    --blog-card-title-link-hover-text: var(--light-accent-red);
+    --blog-card-excerpt-text: var(--light-text-secondary);
+    --blog-card-author-name-text: var(--light-text-primary);
+    --blog-card-tag-bg: var(--light-bg-secondary); /* Lighter background for tags */
+    --blog-card-tag-text: var(--light-text-secondary);
+
+    /* For .no-results */
+    --no-results-bg: #ffffff;
+    --no-results-border: var(--light-border);
+    --no-results-icon-color: var(--light-text-secondary);
+    --no-results-h2-text: var(--light-text-primary);
+    --no-results-p-text: var(--light-text-secondary);
+
+    /* For .pagination */
+    --pagination-button-bg: #ffffff;
+    --pagination-button-text: var(--light-text-primary);
+    --pagination-button-border: var(--light-border);
+    --pagination-button-hover-bg: var(--light-bg-secondary);
+    --pagination-active-bg: var(--light-accent-red);
+    --pagination-active-text: var(--light-bg-primary);
+    --pagination-active-border: var(--light-accent-red);
+
+    /* For .newsletter-section and .newsletter-card */
+    --newsletter-section-bg: var(--light-bg-secondary); /* Lighter section background */
+    --newsletter-card-bg: #ffffff; /* White card background */
+    --newsletter-card-shadow: 0 10px 25px var(--light-shadow);
+    --newsletter-h2-text: var(--light-text-primary);
+    --newsletter-p-text: var(--light-text-secondary);
+    --newsletter-input-bg: #ffffff;
+    --newsletter-input-text: var(--light-text-primary);
+    --newsletter-input-border: var(--light-border);
+    --newsletter-privacy-text: var(--light-text-secondary);
+
+    /* Podcast Player Light Mode Variables */
+    --podcast-section-bg: var(--light-bg-primary);
+    --podcast-title-text: var(--light-text-primary);
+    --podcast-player-bg: var(--light-bg-secondary);
+    --podcast-player-border: var(--light-border);
+    --podcast-play-pause-icon-color: var(--light-text-primary);
+    --podcast-play-pause-hover-bg: rgba(0, 0, 0, 0.1);
+    --podcast-time-text: var(--light-text-secondary);
+    --podcast-progress-bar-bg: #e0e0e0;
+    --podcast-progress-bar-filled-bg: var(--light-accent-red);
+    --podcast-skip-button-icon-color: var(--light-text-primary);
+    --podcast-skip-button-hover-bg: rgba(0,0,0,0.08);
+    --podcast-disclaimer-text: var(--light-text-secondary);
   }
 
   .blog-header {
-    background-color: var(--primary); /* Use CSS variable */
-    color: var(--primary-foreground);
+    background-color: var(--muted); /* Changed from var(--primary) */
+    color: var(--foreground); /* Changed from var(--primary-foreground) */
     text-align: center;
     padding: 5rem 2rem;
     margin-bottom: 3rem;
@@ -354,10 +529,11 @@
     font-weight: 700;
     font-size: clamp(2.5rem, 6vw, 4rem);
     margin: 0 0 1rem 0;
+    color: var(--foreground); /* Ensure h1 text color is consistent with header color */
   }
   
-  .highlight-red {
-    color: var(--primary);
+  .highlight-red { /* Default highlight, used for "Insights" */
+    color: var(--primary); /* This will make "Insights" red */
   }
   
   .lead {
@@ -395,16 +571,16 @@
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--muted-foreground);
+    color: var(--search-icon-color, var(--muted-foreground));
   }
   
   .search-box input {
     width: 100%;
     padding: 0.75rem 1rem 0.75rem 2.5rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--border);
-    background-color: var(--card);
-    color: var(--card-foreground);
+    border: 1px solid var(--search-input-border, var(--border));
+    background-color: var(--search-input-bg, var(--card));
+    color: var(--search-input-text, var(--card-foreground));
     font-family: var(--font-body);
     font-size: 0.95rem;
   }
@@ -424,9 +600,9 @@
   .filter-options select {
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--border);
-    background-color: var(--card);
-    color: var(--card-foreground);
+    border: 1px solid var(--select-border, var(--border));
+    background-color: var(--select-bg, var(--card));
+    color: var(--select-text, var(--card-foreground));
     font-family: var(--font-body);
     font-size: 0.95rem;
     cursor: pointer;
@@ -438,9 +614,9 @@
     gap: 0.5rem;
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--border);
-    background-color: var(--card);
-    color: var(--card-foreground);
+    border: 1px solid var(--reset-button-border, var(--border));
+    background-color: var(--reset-button-bg, var(--card));
+    color: var(--reset-button-text, var(--card-foreground));
     font-family: var(--font-body);
     font-size: 0.95rem;
     cursor: pointer;
@@ -448,7 +624,7 @@
   }
   
   .reset-button:hover {
-    background-color: var(--muted);
+    background-color: var(--reset-button-hover-bg, var(--muted));
   }
   
   /* Blog Grid */
@@ -462,8 +638,8 @@
   .blog-card {
     border-radius: 0.75rem;
     overflow: hidden;
-    background-color: var(--card);
-    border: 1px solid var(--border);
+    background-color: var(--blog-card-bg, var(--card));
+    border: 1px solid var(--blog-card-border, var(--border));
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -471,7 +647,7 @@
   
   .blog-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--blog-card-shadow, 0 10px 25px rgba(0, 0, 0, 0.1));
   }
   
   .card-image {
@@ -495,8 +671,8 @@
     position: absolute;
     top: 1rem;
     left: 1rem;
-    background-color: var(--primary);
-    color: var(--primary-foreground);
+    background-color: var(--blog-card-category-bg, var(--primary));
+    color: var(--blog-card-category-text, var(--primary-foreground));
     font-size: 0.8rem;
     font-weight: 500;
     padding: 0.25rem 0.75rem;
@@ -516,7 +692,7 @@
     display: flex;
     align-items: center;
     font-size: 0.85rem;
-    color: var(--muted-foreground);
+    color: var(--blog-card-meta-text, var(--muted-foreground));
     margin-bottom: 0.75rem;
   }
   
@@ -533,19 +709,19 @@
   }
   
   .card-title a {
-    color: var(--card-foreground);
+    color: var(--blog-card-title-link-text, var(--card-foreground));
     text-decoration: none;
     transition: color 0.2s ease;
   }
   
   .card-title a:hover {
-    color: var(--primary);
+    color: var(--blog-card-title-link-hover-text, var(--primary));
   }
   
   .card-excerpt {
     font-size: 0.95rem;
     line-height: 1.6;
-    color: var(--muted-foreground);
+    color: var(--blog-card-excerpt-text, var(--muted-foreground));
     margin: 0 0 1.5rem 0;
     flex: 1;
   }
@@ -573,6 +749,7 @@
   .author-name {
     font-size: 0.9rem;
     font-weight: 500;
+    color: var(--blog-card-author-name-text, var(--card-foreground));
   }
   
   .tags {
@@ -584,8 +761,8 @@
   
   .tag {
     font-size: 0.75rem;
-    color: var(--muted-foreground);
-    background-color: var(--muted);
+    color: var(--blog-card-tag-text, var(--muted-foreground));
+    background-color: var(--blog-card-tag-bg, var(--muted));
     padding: 0.2rem 0.5rem;
     border-radius: 0.25rem;
   }
@@ -594,13 +771,13 @@
   .no-results {
     text-align: center;
     padding: 4rem 2rem;
-    background-color: var(--card);
+    background-color: var(--no-results-bg, var(--card));
     border-radius: 0.75rem;
-    border: 1px solid var(--border);
+    border: 1px solid var(--no-results-border, var(--border));
   }
   
   .no-results svg {
-    color: var(--muted-foreground);
+    color: var(--no-results-icon-color, var(--muted-foreground));
     margin-bottom: 1.5rem;
   }
   
@@ -609,11 +786,12 @@
     font-weight: 700;
     font-size: 1.5rem;
     margin: 0 0 0.75rem 0;
+    color: var(--no-results-h2-text, var(--card-foreground));
   }
   
   .no-results p {
     font-size: 1rem;
-    color: var(--muted-foreground);
+    color: var(--no-results-p-text, var(--muted-foreground));
     margin: 0 0 1.5rem 0;
   }
   
@@ -631,16 +809,16 @@
     gap: 0.5rem;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--border);
-    background-color: var(--card);
-    color: var(--card-foreground);
+    border: 1px solid var(--pagination-button-border, var(--border));
+    background-color: var(--pagination-button-bg, var(--card));
+    color: var(--pagination-button-text, var(--card-foreground));
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s ease;
   }
   
   .pagination-button:hover:not(:disabled) {
-    background-color: var(--muted);
+    background-color: var(--pagination-button-hover-bg, var(--muted));
   }
   
   .pagination-button:disabled {
@@ -661,36 +839,36 @@
     align-items: center;
     justify-content: center;
     border-radius: 0.5rem;
-    border: 1px solid var(--border);
-    background-color: var(--card);
-    color: var(--card-foreground);
+    border: 1px solid var(--pagination-button-border, var(--border));
+    background-color: var(--pagination-button-bg, var(--card));
+    color: var(--pagination-button-text, var(--card-foreground));
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s ease;
   }
   
   .page-number:hover:not(.active) {
-    background-color: var(--muted);
+    background-color: var(--pagination-button-hover-bg, var(--muted));
   }
   
   .page-number.active {
-    background-color: var(--primary);
-    color: var(--primary-foreground);
-    border-color: var(--primary);
+    background-color: var(--pagination-active-bg, var(--primary));
+    color: var(--pagination-active-text, var(--primary-foreground));
+    border-color: var(--pagination-active-border, var(--primary));
   }
   
   /* Newsletter Section */
   .newsletter-section {
-    background-color: var(--muted);
+    background-color: var(--newsletter-section-bg, var(--muted));
     padding: 4rem 2rem;
   }
   
   .newsletter-card {
     max-width: 800px;
     margin: 0 auto;
-    background-color: var(--card);
+    background-color: var(--newsletter-card-bg, var(--card));
     border-radius: 1rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--newsletter-card-shadow, 0 10px 25px rgba(0, 0, 0, 0.1));
     overflow: hidden;
   }
   
@@ -704,12 +882,12 @@
     font-weight: 700;
     font-size: 2rem;
     margin: 0 0 1rem 0;
-    color: var(--card-foreground);
+    color: var(--newsletter-h2-text, var(--card-foreground));
   }
   
   .newsletter-content p {
     font-size: 1.1rem;
-    color: var(--muted-foreground);
+    color: var(--newsletter-p-text, var(--muted-foreground));
     margin: 0 0 1.5rem 0;
     max-width: 600px;
     margin-left: auto;
@@ -727,9 +905,9 @@
     flex: 1;
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--border);
-    background-color: var(--background);
-    color: var(--foreground);
+    border: 1px solid var(--newsletter-input-border, var(--border));
+    background-color: var(--newsletter-input-bg, var(--background));
+    color: var(--newsletter-input-text, var(--foreground));
     font-family: var(--font-body);
     font-size: 0.95rem;
   }
@@ -760,7 +938,7 @@
   
   .privacy-note {
     font-size: 0.8rem;
-    color: var(--muted-foreground);
+    color: var(--newsletter-privacy-text, var(--muted-foreground));
     margin: 0;
   }
   
@@ -807,6 +985,48 @@
     .theme-icon-page {
       font-size: 1.3rem;
     }
+
+    /* Podcast Player Mobile Styles */
+    .audio-player-custom {
+      padding: 0.5rem 0.75rem; /* Reduced padding for mobile single row */
+      gap: 0.5rem; /* Reduced gap between main items */
+    }
+    .audio-player-custom .audio-controls {
+      gap: 0.5rem; /* Reduced gap within audio-controls (times, progress bar) */
+    }
+    .play-pause-button {
+      margin: 0; /* Reset margin */
+      padding: 0.4rem; /* Slightly smaller padding for the button itself */
+    }
+    .play-pause-button svg {
+      width: 24px; /* Slightly smaller play/pause icon */
+      height: 24px;
+    }
+
+    .skip-button {
+      margin: 0; /* Reset margin */
+      padding: 0.4rem; /* Slightly smaller padding */
+    }
+    .skip-button svg {
+      width: 18px; /* Smaller skip icons */
+      height: 18px;
+    }
+    .skip-button .skip-amount {
+      display: none; /* Hide '15s' text on mobile to save space */
+    }
+    
+    .time-display {
+      font-size: 0.8rem; /* Smaller time font */
+      min-width: 35px; /* Slightly smaller min-width */
+    }
+
+    /* Ensure skip buttons are not too close to screen edges if player is full width */
+    .audio-player-custom > .skip-button.backward {
+       margin-left: 0; 
+    }
+    .audio-player-custom > .skip-button.forward {
+       margin-right: 0;
+    }
   }
   
   @media (max-width: 480px) {
@@ -839,4 +1059,142 @@
       font-size: 1.1rem;
     }
   }
+
+  /* START PODCAST SECTION STYLES */
+  .podcast-section {
+    padding: 3rem 0;
+    background-color: var(--podcast-section-bg, var(--background)); /* Default to page bg */
+    border-bottom: 1px solid var(--podcast-player-border, var(--border)); /* Use specific or fallback */
+  }
+
+  .podcast-title {
+    font-family: var(--font-headline);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--podcast-title-text, var(--foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .audio-player-custom {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Reduced gap for potentially tighter mobile */
+    background-color: var(--podcast-player-bg, var(--card));
+    padding: 0.75rem 1rem; /* Reduced padding */
+    border-radius: 0.75rem;
+    border: 1px solid var(--podcast-player-border, var(--border));
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    max-width: 700px; /* Limit width of player */
+    margin: 0 auto; /* Center the player */
+  }
+
+  .play-pause-button {
+    background: none;
+    border: none;
+    color: var(--podcast-play-pause-icon-color, var(--foreground));
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .play-pause-button:hover {
+    background-color: var(--podcast-play-pause-hover-bg, rgba(255, 255, 255, 0.1));
+  }
+
+  .play-pause-button svg {
+    width: 28px; /* Slightly larger icon */
+    height: 28px;
+  }
+
+  .audio-controls {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    gap: 0.75rem;
+  }
+
+  .time-display {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.9rem;
+    color: var(--podcast-time-text, var(--muted-foreground));
+    min-width: 40px; /* Ensure space for MM:SS */
+  }
+  .current-time {
+    text-align: right;
+  }
+  .duration {
+    text-align: left;
+  }
+
+  .progress-bar-wrapper {
+    flex-grow: 1;
+    height: 8px;
+    background-color: var(--podcast-progress-bar-bg, var(--muted));
+    border-radius: 4px;
+    cursor: pointer;
+    overflow: hidden; /* Ensure filled bar stays within bounds */
+  }
+
+  .progress-bar-filled {
+    height: 100%;
+    background-color: var(--podcast-progress-bar-filled-bg, var(--primary));
+    border-radius: 4px;
+    transition: width 0.1s linear; /* Smooth progress update */
+  }
+
+  .skip-button {
+    background: none;
+    border: none;
+    color: var(--podcast-skip-button-icon-color, var(--foreground));
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    display: flex;
+    flex-direction: column; /* Stack icon and number */
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem; /* Small text for 15 */
+    line-height: 1;
+  }
+  .skip-button svg {
+    width: 20px; /* Smaller icon for skip */
+    height: 20px;
+    /* margin-bottom: 2px; Removed as text might be too small or we rely on aria-label */
+  }
+  .skip-button .skip-amount {
+    display: block;
+    margin-top: 2px; /* Add a little space if icon is above */
+    font-size: 0.65rem; /* Even smaller for '15s' */
+  }
+
+  .skip-button:hover {
+    background-color: var(--podcast-skip-button-hover-bg, rgba(255, 255, 255, 0.08));
+    line-height: 1.5;
+  }
+
+  /* Icon specific adjustments if needed, e.g., for replay/forward icons */
+  .skip-button.backward svg {
+    /* transform: scaleX(-1); /* If using a forward icon that needs flipping */
+  }
+
+  .podcast-disclaimer {
+    font-size: 0.8rem;
+    color: var(--podcast-disclaimer-text, var(--muted-foreground));
+    text-align: center;
+    margin-top: 1.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
+  /* END PODCAST SECTION STYLES */
 </style> 
