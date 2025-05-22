@@ -1,0 +1,28 @@
+/* Import custom font definitions */
+@import './fonts.css';
+
+/* Global variables for the application */
+:root {
+  --color-deep-matte-black: #000000;
+  --color-pure-white: #ffffff;
+  --color-blood-red: #990000;
+  
+  /* Font family definitions */
+  --font-headline: 'PP Hatton', Arial, sans-serif;
+  --font-body: Georgia, serif; /* We could replace this with another custom font if desired */
+}
+
+/* Global styles */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: var(--color-deep-matte-black);
+  color: var(--color-pure-white);
+  font-family: var(--font-body);
+}
+
+/* No-scroll utility class */
+body.no-scroll {
+  overflow: hidden;
+} 
