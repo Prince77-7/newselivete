@@ -5,6 +5,7 @@
   let typicalButtonClicks = 0;
   let typicalButtonVanished = false;
   let showAtypicalExperience = false;
+  let contentVisible = false; // New flag to control visibility
 
   // Placeholder for WebGL loading animation
   let isLoading = true;
@@ -13,8 +14,6 @@
   // const featuredProperties = [ ... ]; // REMOVED
 
   let atypicalExperienceContainer: HTMLDivElement | null = null; // For binding to the scrollable wrapper
-  let slideElements: HTMLElement[] = []; // To hold references to slide elements for IntersectionObserver
-  let observer: IntersectionObserver | null = null;
   let initialScrollDone = false; // Flag to ensure scroll-to-bottom runs once
 
   onMount(() => {
@@ -25,52 +24,31 @@
     if (localStorage.getItem('typicalButtonVanished') === 'true') {
       typicalButtonVanished = true;
     }
-
-    // Initialize IntersectionObserver
-    if (typeof IntersectionObserver !== 'undefined') {
-      observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-            } else {
-              // Optional: Remove if you want animations on scroll away and back
-              // entry.target.classList.remove('is-visible');
-            }
-          });
-        },
-        { threshold: 0.4 } // Trigger when 40% of the slide is visible
-      );
-    }
   });
 
   afterUpdate(() => {
     // Handle body scroll and scroll-to-bottom for atypical experience
     if (showAtypicalExperience && atypicalExperienceContainer) {
       if (!initialScrollDone) {
+        contentVisible = false; // Hide content while scrolling
         // Scroll to the bottom to start the "scroll up" experience
         setTimeout(() => { // Timeout to ensure DOM is fully updated
           if (atypicalExperienceContainer) {
               atypicalExperienceContainer.scrollTop = atypicalExperienceContainer.scrollHeight;
-              initialScrollDone = true; // Set flag after first scroll
+              
+              // Only show content after scroll is complete
+              setTimeout(() => {
+                initialScrollDone = true; // Set flag after first scroll
+                contentVisible = true; // Show content after scroll is complete
+              }, 300); // Wait a bit after scrolling before showing content
           }
-        }, 0);
+        }, 200); // Longer timeout to ensure DOM is fully ready
       }
 
       if (typeof document !== 'undefined') {
         document.body.classList.add('scroll-up-mode');
         document.body.classList.remove('no-scroll');
       }
-      
-      // Observe slides if not already observed
-      if (observer && slideElements.length > 0) {
-        slideElements.forEach(slide => {
-          if (slide && !slide.classList.contains('is-visible')) { // Check if already observed/visible might be complex here
-             observer?.observe(slide);
-          }
-        });
-      }
-
     } else if (typeof document !== 'undefined') {
       document.body.classList.remove('scroll-up-mode');
       if (isLoading || !showAtypicalExperience) {
@@ -80,36 +58,14 @@
   });
   
   onDestroy(() => {
-    if (observer) {
-      observer.disconnect();
-    }
+    // No observer to clean up
+    
     // Ensure no-scroll is removed if component is destroyed while active
     if (typeof document !== 'undefined') {
         document.body.classList.remove('no-scroll');
         document.body.classList.remove('scroll-up-mode');
     }
   });
-
-  // Reactive statement to manage observing slides when showAtypicalExperience changes
-  // This might be more robust if slideElements are bound directly in an #each, 
-  // but with fixed slides, we'll manually populate and observe.
-  $: if (showAtypicalExperience && atypicalExperienceContainer) {
-    if (observer) { 
-      const currentSlides = atypicalExperienceContainer.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
-      slideElements = Array.from(currentSlides);
-      slideElements.forEach(slide => {
-        if (slide) observer?.observe(slide);
-      });
-    }
-  } else if (!showAtypicalExperience) {
-    if (observer) { 
-        slideElements.forEach(slide => {
-            if (slide) observer?.unobserve(slide);
-        });
-    }
-    slideElements = [];
-    initialScrollDone = false; // Reset flag when atypical experience is hidden
-  }
 
   /** @param {MouseEvent & { currentTarget: HTMLButtonElement }} event */
   function handleTypicalClick(event: MouseEvent & { currentTarget: HTMLButtonElement }) {
@@ -165,7 +121,6 @@
 
   function handleAtypicalClick() {
     showAtypicalExperience = true;
-    // console.log("Atypical Experience Activated!"); // Original console log
   }
 </script>
 
@@ -181,7 +136,7 @@
       <h2 class="welcome-headline">Hey there, <span class="highlight-red">welcome!</span></h2>
       <p class="sub-headline">To elevate your real estate journey, we must ask:</p>
     </div>
-    <h1 class="main-question">What kind of <span class="highlight-red">real estate experience</span> are you searching for?</h1>
+    <h1 class="main-question">What kind of <span class="highlight-red">real estate agent</span> are you searching for?</h1>
     <div class="button-container">
       {#if !typicalButtonVanished}
         <button 
@@ -195,54 +150,73 @@
       <button 
         class="gateway-button atypical-button-styled" 
         on:click={handleAtypicalClick}
-        aria-label="Choose Atypical Approach"
+        aria-label="Choose Atypical Realtors"
       >
-        <span>Atypical Approach</span>
+        <span>Atypical Realtors</span>
       </button>
     </div>
   </div>
 {:else}
   <!-- ATYPICAL EXPERIENCE - SCROLL UP DESIGN -->
   <div class="atypical-experience-wrapper" bind:this={atypicalExperienceContainer}>
-    <div class="scroll-content-inner">
+    <!-- Initial placeholder to ensure proper height for scrolling -->
+    <div class="scroll-content-inner" class:content-hidden={!contentVisible}>
       
-      <!-- Slide 4 (Topmost, revealed LAST when scrolling up) -->
-      <section class="slide" id="slide-contact">
+      <!-- Slide 6 (Topmost, revealed LAST when scrolling up) -->
+      <section class="slide slide-visible" id="slide-contact">
         <div class="slide-content">
           <h2 class="slide-title">ASCEND TO <span class="highlight-red">EXTRAORDINARY.</span></h2>
-          <p class="slide-text">Your distinctive real estate experience is waiting. Connect with us to explore how the unconventional can achieve the exceptional.</p>
+          <p class="slide-text">Your distinctive real estate experience is waiting. Connect with us to explore how the unconventional can achieve the exceptional, for buyers and sellers alike.</p>
           <a href="/contact" class="cta-button-scroll-up">INITIATE THE CONVERSATION</a>
         </div>
       </section>
 
-      <!-- Slide 3 -->
-      <section class="slide" id="slide-process">
+      <!-- Slide 5 -->
+      <section class="slide slide-visible" id="slide-process">
         <div class="slide-content">
-          <h2 class="slide-title">THE <span class="highlight-red">ATYPICAL</span> PATH</h2>
-          <p class="slide-text">Forget opaque processes and industry jargon. We champion clarity, insight, and a bespoke strategy meticulously crafted for you. Every step upward is a step toward your vision.</p>
-          <p class="slide-highlight">TRANSPARENCY. PRECISION. PARTNERSHIP.</p>
+          <h2 class="slide-title">THE <span class="highlight-red">UNCONVENTIONAL</span> BLUEPRINT</h2>
+          <p class="slide-text">Experience a paradigm of clarity and strategic finesse. No jargon, no ambiguity—only a meticulously architected process, designed for decisive action and superior outcomes, whether you're buying or selling.</p>
+          <p class="slide-highlight">PRECISION. EMPOWERMENT. <span class="highlight-red">MASTERY.</span></p>
         </div>
       </section>
       
-      <!-- Slide 2 -->
-      <section class="slide" id="slide-philosophy">
+      <!-- Slide 4 -->
+      <section class="slide slide-visible" id="slide-philosophy">
         <div class="slide-content">
-          <h2 class="slide-title">BEYOND BRICKS & MORTAR</h2>
-          <p class="slide-text">We see more than properties; we see potential. Your aspirations are the blueprint for our approach. This isn't just about transactions, it's about transformation.</p>
-          <p class="slide-highlight">YOUR JOURNEY, <span class="highlight-red">ELEVATED.</span></p>
+          <h2 class="slide-title">BEYOND TRANSACTIONS: A <span class="highlight-red">PARTNERSHIP IN AMBITION.</span></h2>
+          <p class="slide-text">Whether buying your sanctuary or selling your legacy, we transcend mere transactions. We forge partnerships built on a profound understanding of your unique ambitions, crafting bespoke pathways to your success. This is real estate intelligence, elevated.</p>
+          <p class="slide-highlight">YOUR VISION, <span class="highlight-red">OUR VANGUARD.</span></p>
+        </div>
+      </section>
+
+      <!-- Slide 3 (NEW) -->
+      <section class="slide slide-visible" id="slide-sellers-success">
+        <div class="slide-content">
+          <h2 class="slide-title">MAXIMIZE YOUR MOMENTUM: THE <span class="highlight-red">SELLER'S PINNACLE.</span></h2>
+          <p class="slide-text">Command premium value with our strategic market orchestration. We blend innovative exposure with astute pricing, ensuring your property captivates and converts. Expect a seamless journey to an exceptional sale.</p>
+          <p class="slide-highlight">STRATEGY. EXPOSURE. <span class="highlight-red">RESULTS.</span></p>
+        </div>
+      </section>
+
+      <!-- Slide 2 (NEW) -->
+      <section class="slide slide-visible" id="slide-buyers-edge">
+        <div class="slide-content">
+          <h2 class="slide-title">SECURE YOUR SUMMIT: THE <span class="highlight-red">BUYER'S ASCENDANCY.</span></h2>
+          <p class="slide-text">Navigate the market with unparalleled acuity. We arm you with preemptive insights and masterful negotiation, transforming aspiration into acquisition. Your dream property isn't just found; it's conquered.</p>
+          <p class="slide-highlight">INSIGHT. ACCESS. <span class="highlight-red">VICTORY.</span></p>
         </div>
       </section>
 
       <!-- Slide 1 (Initially visible at the bottom after auto-scroll) -->
-      <section class="slide hero-slide-scroll-up" id="slide-main-hero">
+      <section class="slide slide-visible" id="slide-main-hero">
         <div class="slide-content">
           <div class="initial-prompt">
-            <p class="scroll-up-notice">WITH US, YOU WON'T BE SCROLLING DOWN. <span class="highlight-red">YOU'LL BE SCROLLING UP.</span></p>
+            <p class="scroll-up-notice">PREPARE FOR THE <span class="highlight-red">UNCONVENTIONAL.</span></p>
             <div class="arrow-up-animated">
               <span>▲</span>
             </div>
           </div>
-          <h1 class="atypical-title-scroll-up">PREPARE FOR THE <span class="highlight-red">UNCONVENTIONAL.</span></h1>
+          <h1 class="atypical-title-scroll-up">WITH US, YOU WON'T BE SCROLLING DOWN. <span class="highlight-red">YOU'LL BE MOVING UP.</span></h1>
           <p class="atypical-subtitle-scroll-up">REAL ESTATE, <span class="highlight-red">REDEFINED.</span></p>
         </div>
       </section>
@@ -258,6 +232,10 @@
     --color-slide-bg-alt: #1a1a1a; /* Slightly lighter black/grey for alternate slides */
     --color-olive-green: #001D00; /* Updated to user-specified hex code */
     --color-dark-blue: #000C39; /* Updated to user-specified hex code */
+    --grid-size: 40px; /* Size of grid cells */
+    --grid-line: 0.5px; /* Thickness of grid lines */
+    --grid-color-light: rgba(255, 255, 255, 0.07); /* Light color for grid lines - slightly more visible */
+    --grid-color-dark: rgba(0, 0, 0, 0.15); /* Dark color for grid lines (for lighter backgrounds) - more visible */
   }
 
   /* Apply to body when scroll-up mode is active */
@@ -270,6 +248,11 @@
   /* Keep existing no-scroll for loading/decision */
   :global(body.no-scroll) {
     overflow: hidden;
+  }
+
+  /* Hide content until ready */
+  .content-hidden {
+    opacity: 0;
   }
 
   .full-screen-view {
@@ -300,32 +283,10 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    /* transform: translate(-50%, -50%); */ /* Initial transform handled by keyframes */
     animation: combinedCircleAnimation 1.8s ease-in-out forwards; /* Changed animation */
     z-index: 1; /* Ensure it's above anything else in loading screen if needed */
     opacity: 0; /* Start with 0 opacity, animation will fade it in */
   }
-
-  /* @keyframes fadeInCircle { -- No longer needed separately
-    to {
-      opacity: 1;
-    }
-  } */
-
-  /* @keyframes breathe { -- Combined into new animation
-    0%, 100% {
-      transform: translate(-50%, -50%) scale(0.8);
-      opacity: 0.5;
-      box-shadow: 0 0 30px 10px rgba(153, 0, 0, 0.2), 
-                  0 0 50px 20px rgba(153, 0, 0, 0.1);
-    }
-    50% {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 0.7;
-      box-shadow: 0 0 50px 20px rgba(153, 0, 0, 0.4), 
-                  0 0 80px 40px rgba(153, 0, 0, 0.2);
-    }
-  } */
 
   @keyframes combinedCircleAnimation {
     0% {
@@ -509,8 +470,10 @@
 
   .scroll-content-inner {
     /* This div is mostly for structure, direct children are slides */
+    transition: opacity 0.5s ease-out; /* Smooth transition when showing content */
   }
 
+  /* Grid background pattern */
   .slide {
     height: 100vh; 
     width: 100%;
@@ -522,15 +485,79 @@
     padding: 2rem clamp(1rem, 5vw, 4rem);
     box-sizing: border-box;
     text-align: center;
-    /* opacity: 0; */ /* Temporarily commented out for debugging */
-    /* transform: translateY(30px); */ /* Temporarily commented out for debugging */
-    /* transition: opacity 0.8s ease-out, transform 0.8s ease-out, background-color 0.5s ease-out; */ /* Temporarily commented out for debugging */
+    opacity: 0; /* Start with slides invisible */
+    transform: translateY(30px); /* Start with slides slightly offset */
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out, background-color 0.5s ease-out; /* Faster transitions */
     background-color: var(--color-deep-matte-black); /* Default background */
-    opacity: 1; /* DEBUG: Make slides visible by default */
-    transform: translateY(0); /* DEBUG: Reset transform */
+    position: relative; /* For background positioning */
+  }
+
+  /* Basic grid for all slides - will be customized per slide */
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(to right, var(--grid-color-light) var(--grid-line), transparent var(--grid-line)),
+      linear-gradient(to bottom, var(--grid-color-light) var(--grid-line), transparent var(--grid-line));
+    background-size: var(--grid-size) var(--grid-size);
+    pointer-events: none; /* Don't block interactions */
+    z-index: 1; /* Above background, below content */
+    opacity: 0.8; /* More visible effect */
+  }
+
+  /* Make hero slide grid more visible */
+  #slide-main-hero::before,
+  #slide-buyers-edge::before { /* Buyers slide uses default light grid */
+    background-image: 
+      linear-gradient(to right, var(--grid-color-light) var(--grid-line), transparent var(--grid-line)),
+      linear-gradient(to bottom, var(--grid-color-light) var(--grid-line), transparent var(--grid-line));
+    background-size: var(--grid-size) var(--grid-size);
+    opacity: 0.8; /* Ensure it's visible */
+  }
+
+  /* Grid with perspective for philosophy slide */
+  #slide-philosophy::before {
+    background-image: 
+      linear-gradient(to right, var(--grid-color-dark) var(--grid-line), transparent var(--grid-line)),
+      linear-gradient(to bottom, var(--grid-color-dark) var(--grid-line), transparent var(--grid-line));
+    transform: perspective(1000px) rotateX(5deg);
+    background-size: calc(var(--grid-size) * 1.2) calc(var(--grid-size) * 1.2);
+    opacity: 0.8; /* Ensure it's visible */
+  }
+
+  /* Diagonal grid for process slide */
+  #slide-process::before {
+    background-image: 
+      linear-gradient(45deg, var(--grid-color-dark) var(--grid-line), transparent var(--grid-line)),
+      linear-gradient(135deg, var(--grid-color-dark) var(--grid-line), transparent var(--grid-line));
+    background-size: calc(var(--grid-size) * 1.5) calc(var(--grid-size) * 1.5);
+    opacity: 0.8; /* Ensure it's visible */
+  }
+
+  /* Larger grid for contact slide, also sellers slide */
+  #slide-contact::before,
+  #slide-sellers-success::before { /* Sellers slide uses larger light grid */
+    background-size: calc(var(--grid-size) * 2) calc(var(--grid-size) * 2);
+    background-image: 
+      linear-gradient(to right, var(--grid-color-light) var(--grid-line), transparent var(--grid-line)),
+      linear-gradient(to bottom, var(--grid-color-light) var(--grid-line), transparent var(--grid-line));
+    opacity: 0.8; /* Ensure it's visible */
+  }
+
+  /* Make slides visible by default with this class */
+  .slide-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   /* Apply alternate background colors */
+  #slide-sellers-success {
+    background-color: var(--color-slide-bg-alt);
+  }
   #slide-philosophy {
     background-color: var(--color-olive-green); /* Changed to Olive Green */
   }
@@ -541,21 +568,26 @@
     background-color: var(--color-slide-bg-alt);
   }
 
-  /* Specific override for initial slide if needed, though general .slide change should cover it */
-  .hero-slide-scroll-up {
-     /* opacity: 1 !important; */ /* Ensure the first slide is definitely visible - REMOVE THIS DEBUG CODE */
-     /* transform: translateY(0) !important; */ /* REMOVE THIS DEBUG CODE */
-  }
-  
-  .slide.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-    /* Transition will be re-enabled after basic visibility is confirmed - This comment is now obsolete */
-  }
-
+  /* Ensure slide content is fully visible by default */
   .slide-content {
     max-width: 800px; /* Max width for content within a slide */
     width: 100%;
+    /* Remove transforms and opacity changes - all content visible by default */
+    transform: translateY(0) !important; /* Force no transform */
+    opacity: 1 !important; /* Force full opacity */
+    position: relative;
+    z-index: 2; /* Above the grid */
+  }
+
+  /* Remove animate-in class as it's no longer needed */
+  
+  /* Remove different animation states for different slides */
+  #slide-philosophy .slide-content,
+  #slide-process .slide-content,
+  #slide-contact .slide-content {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    /* No scale changes */
   }
 
   .initial-prompt {
