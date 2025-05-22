@@ -1,6 +1,5 @@
 <script lang="ts">
   import { BROWSER } from 'esm-env';
-  import ThemeToggle from './ThemeToggle.svelte';
   
   // Define navigation links
   const navLinks = [
@@ -58,9 +57,6 @@
             </a>
           </li>
         {/each}
-        <li class="theme-toggle-wrapper">
-          <ThemeToggle />
-        </li>
       </ul>
     </div>
   </div>
@@ -152,11 +148,7 @@
     width: 100%;
   }
   
-  .theme-toggle-wrapper {
-    display: flex;
-    align-items: center;
-    margin-left: 0.5rem;
-  }
+
   
   /* Mobile Menu Styles */
   .mobile-menu-toggle {
@@ -235,10 +227,6 @@
     .mobile-menu-toggle {
       display: flex; /* Show hamburger */
       align-items: center;
-    }
-    
-    .theme-toggle-wrapper {
-      margin: 1rem 0;
     }
   }
 </style> 

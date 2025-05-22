@@ -1,5 +1,22 @@
 <script>
   import { page } from '$app/stores';
+  import { onMount } from 'svelte';
+  
+  // Light mode state
+  let isLightMode = false;
+
+  onMount(() => {
+    // Load theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      isLightMode = true;
+    }
+  });
+
+  function toggleTheme() {
+    isLightMode = !isLightMode;
+    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+  }
   
   // Sample blog data
   const blogPosts = [
@@ -106,7 +123,16 @@
   <title>Blog | WASAW</title>
 </svelte:head>
 
-<div class="blog-page">
+<!-- Theme Toggle Button -->
+<button class="theme-toggle" on:click={toggleTheme} aria-label="Toggle theme">
+  {#if isLightMode}
+    <span class="theme-icon">🌙</span>
+  {:else}
+    <span class="theme-icon">☀️</span>
+  {/if}
+</button>
+
+<div class="blog-page" class:light-mode={isLightMode}>
   <header class="blog-header">
     <div class="container">
       <h1>Real Estate <span class="highlight-red">Insights</span></h1>
@@ -218,11 +244,99 @@
 </div>
 
 <style>
+  /* CSS custom properties for theme system */
+  :root {
+    /* Light mode variables */
+    --light-bg-primary: #fafafa;
+    --light-bg-secondary: #f5f5f5;
+    --light-text-primary: #1a1a1a;
+    --light-text-secondary: #4a4a4a;
+    --light-accent-red: #B8002D;
+    --light-shadow: rgba(0, 0, 0, 0.1);
+    --light-border: rgba(0, 0, 0, 0.1);
+    
+    /* Default dark mode theme properties */
+    --background: var(--color-deep-matte-black, #0a0a0a);
+    --foreground: var(--color-pure-white, #ffffff);
+    --muted: rgba(20, 20, 20, 0.8);
+    --muted-foreground: rgba(255, 255, 255, 0.7);
+    --card: rgba(30, 30, 30, 0.7);
+    --card-foreground: var(--color-pure-white, #ffffff);
+    --border: rgba(255, 255, 255, 0.1);
+    --primary: var(--color-blood-red, #990000);
+    --primary-foreground: var(--color-pure-white, #ffffff);
+  }
+
+  /* Theme Toggle Button */
+  .theme-toggle {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+  }
+
+  .theme-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+  }
+
+  .theme-toggle:hover .theme-icon {
+    transform: rotate(15deg);
+  }
+
+  /* Light mode toggle adjustments */
+  .light-mode .theme-toggle {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .light-mode .theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
   .blog-page {
     background-color: var(--background);
     color: var(--foreground);
     min-height: 100vh;
     padding-top: 80px; /* Space for fixed navigation */
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  /* Light mode main styling - override CSS custom properties */
+  .blog-page.light-mode {
+    background-color: var(--light-bg-primary);
+    color: var(--light-text-primary);
+  }
+
+  /* Light mode CSS custom property overrides */
+  .blog-page.light-mode,
+  .blog-page.light-mode * {
+    --background: var(--light-bg-primary) !important;
+    --foreground: var(--light-text-primary) !important;
+    --muted: var(--light-bg-secondary) !important;
+    --muted-foreground: var(--light-text-secondary) !important;
+    --card: #ffffff !important;
+    --card-foreground: var(--light-text-primary) !important;
+    --border: var(--light-border) !important;
+    --primary: var(--light-accent-red) !important;
+    --primary-foreground: #ffffff !important;
   }
   
   .blog-header {
@@ -699,6 +813,17 @@
     
     .pagination-pages {
       margin: 0 0.5rem;
+    }
+    
+    .theme-toggle {
+      top: 1rem;
+      right: 1rem;
+      width: 40px;
+      height: 40px;
+    }
+    
+    .theme-icon {
+      font-size: 1.1rem;
     }
   }
 </style> 

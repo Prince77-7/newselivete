@@ -274,8 +274,6 @@
     --light-accent-red: #B8002D; /* Slightly darker red for better contrast on light */
     --light-grid-color: rgba(0, 0, 0, 0.08); /* Subtle grid for light mode */
     --light-shadow: rgba(0, 0, 0, 0.1); /* Subtle shadows */
-    --light-sage-green: #E6F7E6; /* Beautiful light sage green */
-    --light-powder-blue: #E8F4F8; /* Beautiful light powder blue */
   }
 
   /* Apply to body when scroll-up mode is active */
@@ -669,39 +667,22 @@
     opacity: 0.8; /* Ensure it's visible */
   }
 
-  /* Grid with perspective for philosophy slide */
+  /* Grid for philosophy slide - clean professional styling */
   #slide-philosophy::before {
     background-image: 
-      linear-gradient(to right, var(--grid-color-dark) var(--grid-line), transparent var(--grid-line)),
-      linear-gradient(to bottom, var(--grid-color-dark) var(--grid-line), transparent var(--grid-line));
-    transform: perspective(1000px) rotateX(5deg);
-    background-size: calc(var(--grid-size) * 1.2) calc(var(--grid-size) * 1.2);
-    opacity: 0.8; /* Ensure it's visible */
+      linear-gradient(to right, var(--grid-color-light) var(--grid-line), transparent var(--grid-line)),
+      linear-gradient(to bottom, var(--grid-color-light) var(--grid-line), transparent var(--grid-line));
+    background-size: var(--grid-size) var(--grid-size);
+    opacity: 0.8;
   }
 
-  /* Light mode grid for philosophy slide */
-  .light-mode #slide-philosophy::before {
-    background-image: 
-      linear-gradient(to right, rgba(0, 100, 0, 0.1) var(--grid-line), transparent var(--grid-line)),
-      linear-gradient(to bottom, rgba(0, 100, 0, 0.1) var(--grid-line), transparent var(--grid-line));
-    opacity: 0.6;
-  }
-
-  /* Diagonal grid for process slide */
+  /* Grid for process slide - clean professional styling */
   #slide-process::before {
     background-image: 
-      linear-gradient(45deg, var(--grid-color-dark) var(--grid-line), transparent var(--grid-line)),
-      linear-gradient(135deg, var(--grid-color-dark) var(--grid-line), transparent var(--grid-line));
-    background-size: calc(var(--grid-size) * 1.5) calc(var(--grid-size) * 1.5);
-    opacity: 0.8; /* Ensure it's visible */
-  }
-
-  /* Light mode grid for process slide */
-  .light-mode #slide-process::before {
-    background-image: 
-      linear-gradient(45deg, rgba(0, 100, 200, 0.1) var(--grid-line), transparent var(--grid-line)),
-      linear-gradient(135deg, rgba(0, 100, 200, 0.1) var(--grid-line), transparent var(--grid-line));
-    opacity: 0.6;
+      linear-gradient(to right, var(--grid-color-light) var(--grid-line), transparent var(--grid-line)),
+      linear-gradient(to bottom, var(--grid-color-light) var(--grid-line), transparent var(--grid-line));
+    background-size: var(--grid-size) var(--grid-size);
+    opacity: 0.8;
   }
 
   /* Larger grid for contact slide, also sellers slide */
@@ -728,10 +709,10 @@
     background-color: var(--color-slide-bg-alt);
   }
   #slide-philosophy {
-    background-color: var(--color-olive-green); /* Changed to Olive Green */
+    background-color: var(--color-slide-bg-alt); /* Professional dark gray */
   }
   #slide-process { 
-    background-color: var(--color-dark-blue);
+    background-color: var(--color-deep-matte-black); /* Clean dark background */
   }
   #slide-contact {
     background-color: var(--color-slide-bg-alt);
@@ -755,11 +736,11 @@
     color: var(--light-text-primary);
   }
   .light-mode #slide-philosophy {
-    background-color: var(--light-sage-green);
+    background-color: var(--light-bg-secondary);
     color: var(--light-text-primary);
   }
   .light-mode #slide-process {
-    background-color: var(--light-powder-blue);
+    background-color: var(--light-bg-primary);
     color: var(--light-text-primary);
   }
 
