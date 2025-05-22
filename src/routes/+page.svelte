@@ -1,11 +1,18 @@
 <script lang="ts">
   import { onMount, afterUpdate, onDestroy } from 'svelte';
+  import { themeStore } from '$lib/stores/themeStore'; // Import the theme store
 
   let typicalButtonClicks = 0;
   let typicalButtonVanished = false;
   let showAtypicalExperience = false;
   let contentVisible = false; // New flag to control visibility
-  let isLightMode = false; // New light mode state
+  // let isLightMode = false; // REMOVED - Now using themeStore
+
+  // Subscribe to themeStore for isLightMode for local UI elements like the toggle icon
+  let isLightModeFromStore: boolean;
+  themeStore.subscribe(value => {
+    isLightModeFromStore = value;
+  });
 
   // Placeholder for WebGL loading animation
   let isLoading = true;
@@ -25,11 +32,11 @@
       typicalButtonVanished = true;
     }
     
-    // Load theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-      isLightMode = true;
-    }
+    // REMOVED: Load theme preference - Handled by themeStore
+    // const savedTheme = localStorage.getItem('theme');
+    // if (savedTheme === 'light') {
+    //   isLightMode = true;
+    // }
   });
 
   afterUpdate(() => {
@@ -129,9 +136,8 @@
     showAtypicalExperience = true;
   }
 
-  function toggleTheme() {
-    isLightMode = !isLightMode;
-    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+  function togglePageTheme() { // Renamed to avoid conflict if any other toggleTheme might exist
+    themeStore.toggle(); // Use the store's toggle function
   }
 </script>
 
@@ -140,22 +146,22 @@
 </svelte:head>
 
 {#if isLoading}
-  <div class="loading-screen full-screen-view" class:light-mode={isLightMode}>
+  <div class="loading-screen full-screen-view"> <!-- REMOVED class:light-mode -->
     <div class="breathing-circle"></div>
     <!-- <p class="loading-text"><span>R</span><span>E</span><span>V</span><span>O</span><span>L</span><span>U</span><span>T</span><span>I</span><span>O</span><span>N</span>IZING...</p> --> <!-- REMOVED TEXT -->
     <!-- Placeholder for WebGL Particle Animation -->
   </div>
 {:else if !showAtypicalExperience}
-  <!-- Theme Toggle Button -->
-  <button class="theme-toggle" on:click={toggleTheme} aria-label="Toggle theme">
-    {#if isLightMode}
-      <span class="theme-icon">🌙</span>
+  <!-- Theme Toggle Button for this page, uses store -->
+  <button class="theme-toggle-page" on:click={togglePageTheme} aria-label="Toggle theme">
+    {#if isLightModeFromStore}
+      <span class="theme-icon-page">🌙</span>
     {:else}
-      <span class="theme-icon">☀️</span>
+      <span class="theme-icon-page">☀️</span>
     {/if}
   </button>
   
-  <div class="decision-gateway full-screen-view" class:light-mode={isLightMode}>
+  <div class="decision-gateway full-screen-view"> <!-- REMOVED class:light-mode -->
     <div class="intro-text">
       <h2 class="welcome-headline">
         <span class="welcome-text">Welcome to</span>
@@ -185,7 +191,7 @@
   </div>
 {:else}
   <!-- ATYPICAL EXPERIENCE - SCROLL UP DESIGN -->
-  <div class="atypical-experience-wrapper" class:light-mode={isLightMode} bind:this={atypicalExperienceContainer}>
+  <div class="atypical-experience-wrapper" bind:this={atypicalExperienceContainer}> <!-- REMOVED class:light-mode -->
     <!-- Initial placeholder to ensure proper height for scrolling -->
     <div class="scroll-content-inner" class:content-hidden={!contentVisible}>
       
@@ -290,8 +296,8 @@
     overflow: hidden;
   }
 
-  /* Theme Toggle Button */
-  .theme-toggle {
+  /* Theme Toggle Button for this page - specific styling if needed, or use global if identical */
+  .theme-toggle-page {
     position: fixed;
     top: 2rem;
     right: 2rem;
@@ -303,34 +309,35 @@
     backdrop-filter: blur(10px);
     cursor: pointer;
     transition: all 0.3s ease;
-    z-index: 1000;
+    z-index: 1000; /* Ensure it's above other content on this page if nav isn't shown */
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid rgba(255, 255, 255, 0.2);
   }
 
-  .theme-toggle:hover {
+  .theme-toggle-page:hover {
     background-color: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
   }
 
-  .theme-icon {
+  .theme-icon-page {
     font-size: 1.5rem;
     transition: transform 0.3s ease;
   }
 
-  .theme-toggle:hover .theme-icon {
+  .theme-toggle-page:hover .theme-icon-page {
     transform: rotate(15deg);
   }
 
-  /* Light mode toggle adjustments */
-  .light-mode .theme-toggle {
+  /* Light mode toggle adjustments for THIS PAGE's toggle */
+  /* These are applied via the global body.light-mode class */
+  :global(body.light-mode) .theme-toggle-page {
     background-color: rgba(0, 0, 0, 0.1);
     border-color: rgba(0, 0, 0, 0.2);
   }
 
-  .light-mode .theme-toggle:hover {
+  :global(body.light-mode) .theme-toggle-page:hover {
     background-color: rgba(0, 0, 0, 0.2);
   }
 
@@ -357,7 +364,8 @@
   }
 
   /* Light mode styles for full-screen sections */
-  .full-screen-view.light-mode {
+  /* This will now be controlled by body.light-mode */
+  :global(body.light-mode) .full-screen-view {
     background-color: var(--light-bg-primary);
     color: var(--light-text-primary);
   }
@@ -380,7 +388,8 @@
   }
 
   /* Light mode breathing circle */
-  .light-mode .breathing-circle {
+  /* This will now be controlled by body.light-mode */
+  :global(body.light-mode) .breathing-circle {
     background-color: rgba(184, 0, 45, 0.4); /* Adjusted for light mode visibility */
   }
 
@@ -415,7 +424,8 @@
   }
 
   /* Light mode animation with adjusted shadows */
-  .light-mode .breathing-circle {
+  /* This will now be controlled by body.light-mode */
+  :global(body.light-mode) .breathing-circle {
     animation-name: combinedCircleAnimationLight;
   }
 
@@ -488,16 +498,17 @@
   }
 
   /* Light mode text adjustments - ALL text elements */
-  .light-mode .welcome-headline {
+  /* This will now be controlled by body.light-mode */
+  :global(body.light-mode) .welcome-headline {
     color: var(--light-text-primary);
   }
 
-  .light-mode .sub-headline {
+  :global(body.light-mode) .sub-headline {
     color: var(--light-text-secondary);
     /* Remove opacity: 1 - it interferes with animation starting at opacity: 0 */
   }
 
-  .light-mode .main-question {
+  :global(body.light-mode) .main-question {
     color: var(--light-text-primary);
   }
 
@@ -518,7 +529,8 @@
   }
 
   /* Light mode highlight */
-  .light-mode .highlight-red {
+  /* This will now be controlled by body.light-mode */
+  :global(body.light-mode) .highlight-red {
     color: var(--light-accent-red);
   }
 
@@ -572,13 +584,14 @@
   }
 
   /* Light mode button styles */
-  .light-mode .atypical-button-styled {
+  /* This will now be controlled by body.light-mode */
+  :global(body.light-mode) .atypical-button-styled {
     background-color: var(--light-accent-red);
     color: var(--light-bg-primary);
     border-color: var(--light-accent-red);
   }
 
-  .light-mode .atypical-button-styled:hover {
+  :global(body.light-mode) .atypical-button-styled:hover {
     background-color: var(--light-bg-primary);
     color: var(--light-accent-red);
     border-color: var(--light-accent-red);
@@ -598,7 +611,8 @@
   }
 
   /* Light mode for atypical experience wrapper */
-  .atypical-experience-wrapper.light-mode {
+  /* This will now be controlled by body.light-mode */
+  :global(body.light-mode) .atypical-experience-wrapper {
     background-color: var(--light-bg-primary);
     color: var(--light-text-primary);
   }
@@ -719,48 +733,50 @@
   }
 
   /* Light mode slide backgrounds - convert black backgrounds to light */
-  .light-mode #slide-main-hero {
+  /* This will now be controlled by body.light-mode */
+  :global(body.light-mode) #slide-main-hero {
     background-color: var(--light-bg-primary);
     color: var(--light-text-primary);
   }
-  .light-mode #slide-buyers-edge {
+  :global(body.light-mode) #slide-buyers-edge {
     background-color: var(--light-bg-primary);
     color: var(--light-text-primary);
   }
-  .light-mode #slide-sellers-success {
+  :global(body.light-mode) #slide-sellers-success {
     background-color: var(--light-bg-secondary);
     color: var(--light-text-primary);
   }
-  .light-mode #slide-contact {
+  :global(body.light-mode) #slide-contact {
     background-color: var(--light-bg-secondary);
     color: var(--light-text-primary);
   }
-  .light-mode #slide-philosophy {
+  :global(body.light-mode) #slide-philosophy {
     background-color: var(--light-bg-secondary);
     color: var(--light-text-primary);
   }
-  .light-mode #slide-process {
+  :global(body.light-mode) #slide-process {
     background-color: var(--light-bg-primary);
     color: var(--light-text-primary);
   }
 
   /* Light mode text styling for all slide elements */
-  .light-mode .slide-title {
+  /* This will now be controlled by body.light-mode */
+  :global(body.light-mode) .slide-title {
     color: var(--light-text-primary);
   }
-  .light-mode .slide-text {
+  :global(body.light-mode) .slide-text {
     color: var(--light-text-primary);
   }
-  .light-mode .slide-highlight {
+  :global(body.light-mode) .slide-highlight {
     color: var(--light-text-primary);
   }
-  .light-mode .atypical-title-scroll-up {
+  :global(body.light-mode) .atypical-title-scroll-up {
     color: var(--light-text-primary);
   }
-  .light-mode .atypical-subtitle-scroll-up {
+  :global(body.light-mode) .atypical-subtitle-scroll-up {
     color: var(--light-text-primary);
   }
-  .light-mode .scroll-up-notice {
+  :global(body.light-mode) .scroll-up-notice {
     color: var(--light-text-primary);
   }
 
@@ -908,12 +924,13 @@
   }
 
   /* Light mode CTA button */
-  .light-mode .cta-button-scroll-up {
+  /* This will now be controlled by body.light-mode */
+  :global(body.light-mode) .cta-button-scroll-up {
     color: var(--light-text-primary);
     border-color: var(--light-accent-red);
   }
 
-  .light-mode .cta-button-scroll-up:hover {
+  :global(body.light-mode) .cta-button-scroll-up:hover {
     background-color: var(--light-accent-red);
     color: var(--light-bg-primary);
     box-shadow: 0 10px 20px var(--light-shadow);
@@ -1011,27 +1028,50 @@
 
   /* Additional Light Mode Responsive Adjustments */
   @media (max-width: 768px) {
-    .theme-toggle {
+    /* Removed .theme-toggle as it might not be needed or styled differently */
+    /* .theme-toggle {
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 45px;
+      height: 45px;
+    } */
+    
+    /* Removed .theme-icon as it might not be needed or styled differently */
+    /* .theme-icon {
+      font-size: 1.3rem;
+    } */
+
+    .theme-toggle-page { /* If keeping the page-specific toggle, adjust its responsive styles */
       top: 1.5rem;
       right: 1.5rem;
       width: 45px;
       height: 45px;
     }
-    
-    .theme-icon {
+    .theme-icon-page {
       font-size: 1.3rem;
     }
   }
 
   @media (max-width: 480px) {
-    .theme-toggle {
+    /* Removed .theme-toggle as it might not be needed or styled differently */
+    /* .theme-toggle {
+      top: 1rem;
+      right: 1rem;
+      width: 40px;
+      height: 40px;
+    } */
+    
+    /* Removed .theme-icon as it might not be needed or styled differently */
+    /* .theme-icon {
+      font-size: 1.1rem;
+    } */
+    .theme-toggle-page { /* If keeping the page-specific toggle, adjust its responsive styles */
       top: 1rem;
       right: 1rem;
       width: 40px;
       height: 40px;
     }
-    
-    .theme-icon {
+    .theme-icon-page {
       font-size: 1.1rem;
     }
   }

@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
-  import { onMount } from 'svelte';
+  import { themeStore } from '$lib/stores/themeStore';
   
   // Contact form state
   let name = '';
@@ -11,20 +11,14 @@
   let formSubmitted = false;
   let formError = false;
   
-  // Light mode state
-  let isLightMode = false;
-
-  onMount(() => {
-    // Load theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-      isLightMode = true;
-    }
+  // Subscribe to themeStore for isLightMode for local UI elements like the toggle icon
+  let isLightModeFromStore: boolean;
+  themeStore.subscribe(value => {
+    isLightModeFromStore = value;
   });
 
-  function toggleTheme() {
-    isLightMode = !isLightMode;
-    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+  function togglePageTheme() {
+    themeStore.toggle();
   }
 
   // Our agents
@@ -88,16 +82,16 @@
   <title>Contact | WASAW</title>
 </svelte:head>
 
-<!-- Theme Toggle Button -->
-<button class="theme-toggle" on:click={toggleTheme} aria-label="Toggle theme">
-  {#if isLightMode}
-    <span class="theme-icon">🌙</span>
+<!-- Theme Toggle Button for this page, uses store -->
+<button class="theme-toggle-page" on:click={togglePageTheme} aria-label="Toggle theme">
+  {#if isLightModeFromStore}
+    <span class="theme-icon-page">🌙</span>
   {:else}
-    <span class="theme-icon">☀️</span>
+    <span class="theme-icon-page">☀️</span>
   {/if}
 </button>
 
-<div class="contact-page" class:light-mode={isLightMode}>
+<div class="contact-page">
   <header class="page-header">
     <h1><span class="highlight-red">CONNECT</span> WITH US</h1>
     <p class="page-subtitle">Reach out to our team of exceptional real estate professionals at WASAW</p>
@@ -228,22 +222,20 @@
 </div>
 
 <style>
-  /* Light mode variables */
+  /* Light mode variables - These should ideally be in app.css or :global scope */
   :root {
-    --light-bg-primary: #fafafa;
-    --light-bg-secondary: #f5f5f5;
-    --light-text-primary: #1a1a1a;
-    --light-text-secondary: #4a4a4a;
-    --light-accent-red: #B8002D;
-    --light-shadow: rgba(0, 0, 0, 0.1);
-    --light-sage-green: #E6F7E6;
-    --light-powder-blue: #E8F4F8;
+    /* --light-bg-primary: #fafafa; */
+    /* --light-bg-secondary: #f5f5f5; */
+    /* --light-text-primary: #1a1a1a; */
+    /* --light-text-secondary: #4a4a4a; */
+    /* --light-accent-red: #B8002D; */
+    /* --light-shadow: rgba(0, 0, 0, 0.1); */
   }
 
-  /* Theme Toggle Button */
-  .theme-toggle {
+  /* Theme Toggle Button for this page - specific styling if needed */
+  .theme-toggle-page {
     position: fixed;
-    top: 2rem;
+    top: calc(var(--nav-height, 60px) + 1rem); /* Position below nav if nav is present */
     right: 2rem;
     width: 50px;
     height: 50px;
@@ -253,37 +245,39 @@
     backdrop-filter: blur(10px);
     cursor: pointer;
     transition: all 0.3s ease;
-    z-index: 1000;
+    z-index: 999; /* Ensure it's below nav (1000) but above page content */
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid rgba(255, 255, 255, 0.2);
   }
 
-  .theme-toggle:hover {
+  .theme-toggle-page:hover {
     background-color: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
   }
 
-  .theme-icon {
+  .theme-icon-page {
     font-size: 1.5rem;
     transition: transform 0.3s ease;
   }
 
-  .theme-toggle:hover .theme-icon {
+  .theme-toggle-page:hover .theme-icon-page {
     transform: rotate(15deg);
   }
 
-  /* Light mode toggle adjustments */
-  .light-mode .theme-toggle {
+  /* Light mode toggle adjustments for THIS PAGE's toggle */
+  /* Applied via global body.light-mode */
+  :global(body.light-mode) .theme-toggle-page {
     background-color: rgba(0, 0, 0, 0.1);
     border-color: rgba(0, 0, 0, 0.2);
   }
 
-  .light-mode .theme-toggle:hover {
+  :global(body.light-mode) .theme-toggle-page:hover {
     background-color: rgba(0, 0, 0, 0.2);
   }
 
+  /* Base Page Styles */
   .contact-page {
     background-color: var(--color-deep-matte-black);
     color: var(--color-pure-white);
@@ -291,21 +285,11 @@
     padding-top: 80px; /* Space for fixed navigation */
     transition: background-color 0.4s ease, color 0.4s ease;
   }
-
-  /* Light mode main styling */
-  .contact-page.light-mode {
-    background-color: var(--light-bg-primary);
-    color: var(--light-text-primary);
-  }
   
   .page-header {
     text-align: center;
     padding: 5rem 2rem;
     background-color: rgba(20, 20, 20, 0.8);
-  }
-
-  .light-mode .page-header {
-    background-color: var(--light-bg-secondary);
   }
   
   .page-header h1 {
@@ -318,52 +302,6 @@
   .highlight-red {
     color: var(--color-blood-red);
   }
-
-  .light-mode .highlight-red {
-    color: var(--light-accent-red);
-  }
-
-  /* Fix all text colors in light mode */
-  .light-mode .info-block h2 {
-    color: var(--light-text-primary);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  }
-
-  .light-mode .info-block p {
-    color: var(--light-text-primary);
-  }
-
-  .light-mode .contact-form-wrapper h2 {
-    color: var(--light-text-primary);
-  }
-
-  .light-mode .form-group label {
-    color: var(--light-text-primary);
-  }
-
-  .light-mode .agent-section h2 {
-    color: var(--light-text-primary);
-  }
-
-  .light-mode .agent-details h3 {
-    color: var(--light-text-primary);
-  }
-
-  .light-mode .agent-title {
-    color: var(--light-accent-red);
-  }
-
-  .light-mode .agent-bio {
-    color: var(--light-text-primary);
-  }
-
-  .light-mode .agent-contact-info {
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-  }
-
-  .light-mode .agent-contact-info p {
-    color: var(--light-text-secondary);
-  }
   
   .page-subtitle {
     font-family: var(--font-headline);
@@ -372,11 +310,6 @@
     opacity: 0.9;
     max-width: 700px;
     margin: 0 auto;
-  }
-
-  .light-mode .page-subtitle {
-    color: var(--light-text-secondary);
-    opacity: 1;
   }
   
   .contact-container {
@@ -399,11 +332,6 @@
     background-color: rgba(30, 30, 30, 0.7);
     border-radius: 8px;
     padding: 1.5rem;
-  }
-
-  .light-mode .info-block {
-    background-color: var(--light-bg-secondary);
-    box-shadow: 0 2px 10px var(--light-shadow);
   }
   
   .info-block h2 {
@@ -440,23 +368,12 @@
     font-weight: 500;
     border: 1px dashed rgba(255, 255, 255, 0.2);
   }
-
-  .light-mode .map-placeholder {
-    background-color: var(--light-bg-secondary);
-    color: var(--light-text-secondary);
-    border: 1px dashed rgba(0, 0, 0, 0.2);
-  }
   
   /* Contact Form */
   .contact-form-wrapper {
     background-color: rgba(30, 30, 30, 0.7);
     border-radius: 8px;
     padding: 2rem;
-  }
-
-  .light-mode .contact-form-wrapper {
-    background-color: var(--light-bg-secondary);
-    box-shadow: 0 2px 10px var(--light-shadow);
   }
   
   .contact-form-wrapper h2 {
@@ -491,23 +408,10 @@
     font-family: var(--font-body);
     font-size: 1rem;
   }
-
-  .light-mode .form-group input,
-  .light-mode .form-group textarea,
-  .light-mode .form-group select {
-    background-color: var(--light-bg-primary);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    color: var(--light-text-primary);
-  }
   
-    .form-group input::placeholder,
+  .form-group input::placeholder,
   .form-group textarea::placeholder {
     color: rgba(255, 255, 255, 0.5);
-  }
-
-  .light-mode .form-group input::placeholder,
-  .light-mode .form-group textarea::placeholder {
-    color: rgba(0, 0, 0, 0.5);
   }
 
   .form-group input:focus,
@@ -516,14 +420,8 @@
     outline: none;
     border-color: var(--color-blood-red);
   }
-
-  .light-mode .form-group input:focus,
-  .light-mode .form-group textarea:focus,
-  .light-mode .form-group select:focus {
-    border-color: var(--light-accent-red);
-  }
   
-    .submit-button {
+  .submit-button {
     background-color: var(--color-blood-red);
     color: var(--color-pure-white);
     font-family: var(--font-headline);
@@ -539,15 +437,6 @@
 
   .submit-button:hover {
     background-color: #7a0000;
-  }
-
-  .light-mode .submit-button {
-    background-color: var(--light-accent-red);
-  }
-
-  .light-mode .submit-button:hover {
-    background-color: #950025;
-    box-shadow: 0 4px 15px var(--light-shadow);
   }
   
   .form-success {
@@ -601,7 +490,7 @@
     gap: 2rem;
   }
   
-    .agent-card {
+  .agent-card {
     background-color: rgba(30, 30, 30, 0.7);
     border-radius: 8px;
     overflow: hidden;
@@ -613,15 +502,6 @@
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
   }
 
-  .light-mode .agent-card {
-    background-color: var(--light-bg-secondary);
-    box-shadow: 0 2px 10px var(--light-shadow);
-  }
-
-  .light-mode .agent-card:hover {
-    box-shadow: 0 15px 30px var(--light-shadow);
-  }
-  
   .agent-photo {
     width: 100%;
     height: 300px;
@@ -698,15 +578,128 @@
       grid-template-columns: 1fr;
     }
     
-    .theme-toggle {
-      top: 1rem;
+    .theme-toggle-page {
+      top: calc(var(--nav-height, 45px) + 0.5rem);
       right: 1rem;
       width: 40px;
       height: 40px;
     }
     
-    .theme-icon {
+    .theme-icon-page {
       font-size: 1.1rem;
     }
+  }
+
+  /* Light Mode Styles for Contact Page */
+  /* Applied using global body.light-mode */
+
+  :global(body.light-mode) .contact-page {
+    background-color: var(--light-bg-primary);
+    color: var(--light-text-primary);
+  }
+
+  :global(body.light-mode) .page-header {
+    background-color: var(--light-bg-secondary);
+    border-bottom: 1px solid var(--light-shadow);
+  }
+
+  :global(body.light-mode) .page-header h1,
+  :global(body.light-mode) .page-header .page-subtitle {
+    color: var(--light-text-primary);
+  }
+
+  :global(body.light-mode) .highlight-red {
+    color: var(--light-accent-red);
+  }
+
+  :global(body.light-mode) .contact-info h2,
+  :global(body.light-mode) .contact-form-wrapper h2 {
+    color: var(--light-text-primary);
+  }
+
+  :global(body.light-mode) .contact-info p,
+  :global(body.light-mode) .contact-form label {
+    color: var(--light-text-secondary);
+  }
+
+  :global(body.light-mode) .contact-info .info-block {
+    background-color: var(--light-bg-secondary);
+    box-shadow: 0 2px 8px var(--light-shadow);
+    border-top: 3px solid var(--light-accent-red);
+  }
+
+  :global(body.light-mode) .map-placeholder {
+    background-color: var(--light-bg-secondary);
+    border: 1px solid var(--light-shadow);
+  }
+
+  :global(body.light-mode) .map-placeholder p {
+    color: var(--light-text-secondary);
+  }
+
+  :global(body.light-mode) .contact-form-wrapper {
+    background-color: var(--light-bg-secondary);
+    box-shadow: 0 4px 15px var(--light-shadow);
+  }
+
+  :global(body.light-mode) .contact-form input[type="text"],
+  :global(body.light-mode) .contact-form input[type="email"],
+  :global(body.light-mode) .contact-form input[type="tel"],
+  :global(body.light-mode) .contact-form select,
+  :global(body.light-mode) .contact-form textarea {
+    background-color: var(--light-bg-primary);
+    color: var(--light-text-primary);
+    border: 1px solid #ccc; /* A slightly more visible border for light inputs */
+  }
+
+  :global(body.light-mode) .contact-form input[type="text"]::placeholder,
+  :global(body.light-mode) .contact-form input[type="email"]::placeholder,
+  :global(body.light-mode) .contact-form input[type="tel"]::placeholder,
+  :global(body.light-mode) .contact-form textarea::placeholder {
+    color: #999; /* Lighter placeholder text for light inputs */
+  }
+
+  :global(body.light-mode) .contact-form button[type="submit"] {
+    background-color: var(--light-accent-red);
+    color: var(--light-bg-primary);
+  }
+
+  :global(body.light-mode) .contact-form button[type="submit"]:hover {
+    background-color: #A30027; /* Slightly darker red on hover */
+  }
+
+  :global(body.light-mode) .form-success {
+    background-color: #d4edda; /* Light green for success */
+    color: #155724; /* Dark green text */
+    border-left: 4px solid #28a745; /* Green border */
+  }
+
+  :global(body.light-mode) .form-error {
+    background-color: #f8d7da; /* Light red for error */
+    color: #721c24; /* Dark red text */
+    border-left: 4px solid #dc3545; /* Red border */
+  }
+
+  :global(body.light-mode) .agent-showcase {
+    background-color: var(--light-bg-primary);
+  }
+
+  :global(body.light-mode) .agent-card {
+    background-color: var(--light-bg-secondary);
+    box-shadow: 0 4px 15px var(--light-shadow);
+  }
+
+  :global(body.light-mode) .agent-card h3,
+  :global(body.light-mode) .agent-card .agent-title {
+    color: var(--light-text-primary);
+  }
+
+  :global(body.light-mode) .agent-card .agent-bio,
+  :global(body.light-mode) .agent-card .agent-contact a {
+    color: var(--light-text-secondary);
+  }
+
+  :global(body.light-mode) .agent-card .agent-contact a:hover {
+    color: var(--light-accent-red);
   }
 </style> 

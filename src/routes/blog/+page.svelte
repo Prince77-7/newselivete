@@ -1,21 +1,15 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
-  import { onMount } from 'svelte';
+  import { themeStore } from '$lib/stores/themeStore';
   
-  // Light mode state
-  let isLightMode = false;
-
-  onMount(() => {
-    // Load theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-      isLightMode = true;
-    }
+  // Subscribe to themeStore for isLightMode for local UI elements like the toggle icon
+  let isLightModeFromStore: boolean;
+  themeStore.subscribe(value => {
+    isLightModeFromStore = value;
   });
 
-  function toggleTheme() {
-    isLightMode = !isLightMode;
-    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+  function togglePageTheme() {
+    themeStore.toggle();
   }
   
   // Sample blog data
@@ -30,7 +24,7 @@
       tags: ["Trends", "Market Analysis", "Investment"],
       category: "Market Insights",
       readTime: "5 min read",
-      image: "/images/wasaw_white.svg"
+      image: "/images/placeholder-blog-1.jpg"
     },
     {
       id: "2",
@@ -42,7 +36,7 @@
       tags: ["Luxury", "Design", "Staging"],
       category: "Luxury Properties",
       readTime: "7 min read",
-      image: "/images/wasaw_white.svg"
+      image: "/images/placeholder-blog-2.jpg"
     },
     {
       id: "3",
@@ -54,7 +48,7 @@
       tags: ["Buying", "Negotiation", "Strategy"],
       category: "Buyer Tips",
       readTime: "6 min read",
-      image: "/images/wasaw_white.svg"
+      image: "/images/placeholder-blog-3.jpg"
     },
     {
       id: "4",
@@ -66,7 +60,7 @@
       tags: ["Sustainability", "Luxury", "Investment"],
       category: "Sustainable Living",
       readTime: "8 min read",
-      image: "/images/wasaw_white.svg"
+      image: "/images/placeholder-blog-4.jpg"
     },
     {
       id: "5",
@@ -78,7 +72,7 @@
       tags: ["Client Service", "WASAW Method", "Teamwork"],
       category: "WASAW Approach",
       readTime: "6 min read",
-      image: "/images/wasaw_white.svg"
+      image: "/images/placeholder-blog-5.jpg"
     },
     {
       id: "6",
@@ -90,7 +84,7 @@
       tags: ["Market Analysis", "Data", "Trends"],
       category: "Market Reports",
       readTime: "10 min read",
-      image: "/images/wasaw_white.svg"
+      image: "/images/placeholder-blog-6.jpg"
     }
   ];
   
@@ -102,7 +96,11 @@
   let searchQuery = "";
   
   // Computed filtered posts
-  $: filteredPosts = blogPosts.filter(post => {
+  $: filteredPosts = blogPosts.map(post => ({
+      ...post,
+      // Dynamically choose author image based on theme
+      authorImageResolved: isLightModeFromStore ? '/images/wasaw_red.svg' : post.authorImage
+    })).filter(post => {
     const matchesCategory = selectedCategory ? post.category === selectedCategory : true;
     const matchesSearch = searchQuery 
       ? post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -123,16 +121,16 @@
   <title>Blog | WASAW</title>
 </svelte:head>
 
-<!-- Theme Toggle Button -->
-<button class="theme-toggle" on:click={toggleTheme} aria-label="Toggle theme">
-  {#if isLightMode}
-    <span class="theme-icon">🌙</span>
+<!-- Theme Toggle Button for this page, uses store -->
+<button class="theme-toggle-page" on:click={togglePageTheme} aria-label="Toggle theme">
+  {#if isLightModeFromStore}
+    <span class="theme-icon-page">🌙</span>
   {:else}
-    <span class="theme-icon">☀️</span>
+    <span class="theme-icon-page">☀️</span>
   {/if}
 </button>
 
-<div class="blog-page" class:light-mode={isLightMode}>
+<div class="blog-page">
   <header class="blog-header">
     <div class="container">
       <h1>Real Estate <span class="highlight-red">Insights</span></h1>
@@ -194,7 +192,7 @@
               <p class="card-excerpt">{post.excerpt}</p>
               <div class="card-footer">
                 <div class="author">
-                  <img src={post.authorImage} alt={post.author} class="author-image" />
+                  <img src={post.authorImageResolved} alt={post.author} class="author-image" />
                   <span class="author-name">{post.author}</span>
                 </div>
                 <div class="tags">
@@ -267,10 +265,10 @@
     --primary-foreground: var(--color-pure-white, #ffffff);
   }
 
-  /* Theme Toggle Button */
-  .theme-toggle {
+  /* Theme Toggle Button for this page - specific styling if needed */
+  .theme-toggle-page {
     position: fixed;
-    top: 2rem;
+    top: calc(var(--nav-height, 60px) + 1rem); /* Position below nav if nav is present */
     right: 2rem;
     width: 50px;
     height: 50px;
@@ -280,69 +278,74 @@
     backdrop-filter: blur(10px);
     cursor: pointer;
     transition: all 0.3s ease;
-    z-index: 1000;
+    z-index: 999; /* Ensure it's below nav (1000) but above page content */
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid rgba(255, 255, 255, 0.2);
   }
 
-  .theme-toggle:hover {
+  .theme-toggle-page:hover {
     background-color: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
   }
 
-  .theme-icon {
+  .theme-icon-page {
     font-size: 1.5rem;
     transition: transform 0.3s ease;
   }
 
-  .theme-toggle:hover .theme-icon {
+  .theme-toggle-page:hover .theme-icon-page {
     transform: rotate(15deg);
   }
 
-  /* Light mode toggle adjustments */
-  .light-mode .theme-toggle {
+  /* Light mode toggle adjustments for THIS PAGE's toggle */
+  /* Applied via global body.light-mode */
+  :global(body.light-mode) .theme-toggle-page {
     background-color: rgba(0, 0, 0, 0.1);
     border-color: rgba(0, 0, 0, 0.2);
   }
 
-  .light-mode .theme-toggle:hover {
+  :global(body.light-mode) .theme-toggle-page:hover {
     background-color: rgba(0, 0, 0, 0.2);
   }
 
+  /* General Blog Page Styles */
   .blog-page {
-    background-color: var(--background);
-    color: var(--foreground);
-    min-height: 100vh;
-    padding-top: 80px; /* Space for fixed navigation */
+    /* background: var(--background); Already handled by body.light-mode and :root overrides */
+    /* color: var(--foreground); Already handled by body.light-mode and :root overrides */
     transition: background-color 0.4s ease, color 0.4s ease;
+    padding-bottom: 4rem; /* Ensure space for footer if any */
   }
 
-  /* Light mode main styling - override CSS custom properties */
-  .blog-page.light-mode {
-    background-color: var(--light-bg-primary);
-    color: var(--light-text-primary);
+  /* Light mode overrides for existing CSS variables */
+  :global(body.light-mode) .blog-page {
+    --background: var(--light-bg-primary);
+    --foreground: var(--light-text-primary);
+    --card: var(--light-bg-secondary);
+    --card-foreground: var(--light-text-primary);
+    --popover: var(--light-bg-primary);
+    --popover-foreground: var(--light-text-primary);
+    --primary: var(--light-accent-red); /* Using theme's accent red */
+    --primary-foreground: var(--light-bg-primary); /* Text on primary buttons */
+    --secondary: #e5e7eb; /* Light gray for secondary elements */
+    --secondary-foreground: #1f2937; /* Dark text on secondary */
+    --muted: #f3f4f6; /* Very light gray for muted backgrounds */
+    --muted-foreground: #6b7280; /* Gray text for muted elements */
+    --accent: #fde68a; /* A light yellow accent - can be adjusted */
+    --accent-foreground: #78350f; /* Dark text on accent */
+    --destructive: #ef4444; /* Standard destructive red */
+    --destructive-foreground: #f8fafc; /* Light text on destructive */
+    --border: #e5e7eb; /* Light border */
+    --input: #e5e7eb; /* Light input background */
+    --ring: var(--light-accent-red); /* Ring color for focus, using theme's accent */
   }
 
-  /* Light mode CSS custom property overrides */
-  .blog-page.light-mode,
-  .blog-page.light-mode * {
-    --background: var(--light-bg-primary) !important;
-    --foreground: var(--light-text-primary) !important;
-    --muted: var(--light-bg-secondary) !important;
-    --muted-foreground: var(--light-text-secondary) !important;
-    --card: #ffffff !important;
-    --card-foreground: var(--light-text-primary) !important;
-    --border: var(--light-border) !important;
-    --primary: var(--light-accent-red) !important;
-    --primary-foreground: #ffffff !important;
-  }
-  
   .blog-header {
+    background-color: var(--primary); /* Use CSS variable */
+    color: var(--primary-foreground);
     text-align: center;
     padding: 5rem 2rem;
-    background-color: var(--muted);
     margin-bottom: 3rem;
   }
   
@@ -351,7 +354,6 @@
     font-weight: 700;
     font-size: clamp(2.5rem, 6vw, 4rem);
     margin: 0 0 1rem 0;
-    color: var(--foreground);
   }
   
   .highlight-red {
@@ -794,6 +796,17 @@
     .newsletter-content {
       padding: 2rem 1.5rem;
     }
+    
+    .theme-toggle-page {
+      top: calc(var(--nav-height, 50px) + 0.8rem);
+      right: 1.5rem;
+      width: 45px;
+      height: 45px;
+    }
+    
+    .theme-icon-page {
+      font-size: 1.3rem;
+    }
   }
   
   @media (max-width: 480px) {
@@ -815,14 +828,14 @@
       margin: 0 0.5rem;
     }
     
-    .theme-toggle {
-      top: 1rem;
+    .theme-toggle-page {
+      top: calc(var(--nav-height, 45px) + 0.5rem);
       right: 1rem;
       width: 40px;
       height: 40px;
     }
     
-    .theme-icon {
+    .theme-icon-page {
       font-size: 1.1rem;
     }
   }

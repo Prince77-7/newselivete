@@ -22,6 +22,8 @@
   
   // Track the current path - this will be set from +layout.svelte
   export let currentPath = '';
+  // Prop to control light mode
+  export let isLightMode = false;
   
   // Close menu when route changes
   $: if (BROWSER && currentPath) {
@@ -29,10 +31,14 @@
   }
 </script>
 
-<nav class="main-navigation" class:nav-scrolled={true}>
+<nav class="main-navigation" class:nav-scrolled={true} class:light-mode={isLightMode}>
   <div class="nav-container">
     <a href="/" class="nav-logo">
-      <img src="/images/wasaw_white.svg" alt="WASAW Logo" class="logo-svg" />
+      {#if isLightMode}
+        <img src="/images/wasaw_red.svg" alt="WASAW Logo" class="logo-svg" />
+      {:else}
+        <img src="/images/wasaw_white.svg" alt="WASAW Logo" class="logo-svg" />
+      {/if}
     </a>
     
     <button class="mobile-menu-toggle" on:click={toggleMobileMenu} aria-label="Toggle menu" aria-expanded={mobileMenuOpen}>
@@ -77,6 +83,14 @@
     backdrop-filter: blur(8px); /* Adds the glossy effect */
     -webkit-backdrop-filter: blur(8px); /* For Safari */
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  }
+  
+  /* Light mode navigation */
+  .main-navigation.light-mode {
+    background-color: rgba(250, 250, 250, 0.85); /* Light, slightly transparent background */
+    color: var(--light-text-primary);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px var(--light-shadow);
   }
   
   .nav-container {
@@ -126,6 +140,11 @@
     transition: color 0.3s ease;
   }
   
+  /* Light mode nav links */
+  .main-navigation.light-mode .nav-link {
+    color: var(--light-text-secondary); /* Darker text for light mode */
+  }
+  
   .nav-link::after {
     content: '';
     position: absolute;
@@ -138,9 +157,18 @@
     transition: width 0.3s ease;
   }
   
+  .main-navigation.light-mode .nav-link::after {
+    background-color: var(--light-accent-red); /* Red accent for light mode */
+  }
+  
   .nav-link:hover,
   .nav-link.active {
     color: var(--color-pure-white);
+  }
+  
+  .main-navigation.light-mode .nav-link:hover,
+  .main-navigation.light-mode .nav-link.active {
+    color: var(--light-text-primary); /* Slightly darker hover/active for light mode */
   }
   
   .nav-link:hover::after,
@@ -160,6 +188,11 @@
     padding: 0.5rem;
   }
   
+  /* Light mode mobile toggle */
+  .main-navigation.light-mode .mobile-menu-toggle {
+    color: var(--light-text-primary);
+  }
+  
   .hamburger-icon {
     display: flex;
     flex-direction: column;
@@ -175,6 +208,11 @@
     background-color: var(--color-pure-white);
     border-radius: 3px;
     transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+
+  /* Light mode hamburger icon */
+  .main-navigation.light-mode .hamburger-icon span {
+    background-color: var(--light-text-primary);
   }
 
   /* Hamburger animation */
@@ -198,10 +236,16 @@
       width: 100%;
       background-color: rgba(0, 0, 0, 0.85); /* Match the nav bar transparency */
       backdrop-filter: blur(8px); /* Same glossy effect */
-      -webkit-backdrop-filter: blur(8px);
-      padding: 1rem 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      padding: 1rem 0; /* Add some padding */
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    
+    /* Light mode mobile menu dropdown */
+    .main-navigation.light-mode .nav-links {
+      background-color: rgba(250, 250, 250, 0.9); /* Lighter background for light mode */
+      box-shadow: 0 8px 16px var(--light-shadow);
     }
     
     .nav-links.open {

@@ -1,21 +1,15 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
-  import { onMount } from 'svelte';
+  import { themeStore } from '$lib/stores/themeStore';
   
-  // Light mode state
-  let isLightMode = false;
-
-  onMount(() => {
-    // Load theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-      isLightMode = true;
-    }
+  // Subscribe to themeStore for isLightMode for local UI elements like the toggle icon
+  let isLightModeFromStore: boolean;
+  themeStore.subscribe(value => {
+    isLightModeFromStore = value;
   });
 
-  function toggleTheme() {
-    isLightMode = !isLightMode;
-    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+  function togglePageTheme() {
+    themeStore.toggle();
   }
   
   // Data for approach sections
@@ -67,16 +61,16 @@
   <title>Our Unconventional Advantage | WASAW</title>
 </svelte:head>
 
-<!-- Theme Toggle Button -->
-<button class="theme-toggle" on:click={toggleTheme} aria-label="Toggle theme">
-  {#if isLightMode}
-    <span class="theme-icon">🌙</span>
+<!-- Theme Toggle Button for this page, uses store -->
+<button class="theme-toggle-page" on:click={togglePageTheme} aria-label="Toggle theme">
+  {#if isLightModeFromStore}
+    <span class="theme-icon-page">🌙</span>
   {:else}
-    <span class="theme-icon">☀️</span>
+    <span class="theme-icon-page">☀️</span>
   {/if}
 </button>
 
-<div class="about-page" class:light-mode={isLightMode}>
+<div class="about-page">
   <header class="page-header">
     <h1>OUR <span class="highlight-red">UNCONVENTIONAL<br class="mobile-break"> ADVANTAGE</span></h1>
     <p class="page-subtitle">Discover how our dedicated triumvirate of realtors and our unique KW/CL synergy deliver unparalleled results for buyers and sellers at WASAW.</p>
@@ -149,22 +143,24 @@
 </div>
 
 <style>
-  /* Light mode variables */
+  /* Light mode variables - These should ideally be in app.css or :global scope if not already */
+  /* For now, keeping them here but noting they are better placed globally */
   :root {
-    --light-bg-primary: #fafafa;
-    --light-bg-secondary: #f5f5f5;
-    --light-text-primary: #1a1a1a;
-    --light-text-secondary: #4a4a4a;
-    --light-accent-red: #B8002D;
-    --light-shadow: rgba(0, 0, 0, 0.1);
-    --light-sage-green: #E6F7E6;
-    --light-powder-blue: #E8F4F8;
+    /* --light-bg-primary: #fafafa; */ /* Defined in app.css or global style */
+    /* --light-bg-secondary: #f5f5f5; */ /* Defined in app.css or global style */
+    /* --light-text-primary: #1a1a1a; */ /* Defined in app.css or global style */
+    /* --light-text-secondary: #4a4a4a; */ /* Defined in app.css or global style */
+    /* --light-accent-red: #B8002D; */ /* Defined in app.css or global style */
+    /* --light-shadow: rgba(0, 0, 0, 0.1); */ /* Defined in app.css or global style */
+    /* These custom colors can remain if they are truly page-specific */
+    /* --light-sage-green: #E6F7E6; */ /* Removed as per previous user feedback */
+    /* --light-powder-blue: #E8F4F8; */ /* Removed as per previous user feedback */
   }
 
-  /* Theme Toggle Button */
-  .theme-toggle {
+  /* Theme Toggle Button for this page - specific styling if needed */
+  .theme-toggle-page {
     position: fixed;
-    top: 2rem;
+    top: calc(var(--nav-height, 60px) + 1rem); /* Position below nav if nav is present */
     right: 2rem;
     width: 50px;
     height: 50px;
@@ -174,34 +170,35 @@
     backdrop-filter: blur(10px);
     cursor: pointer;
     transition: all 0.3s ease;
-    z-index: 1000;
+    z-index: 999; /* Ensure it's below nav (1000) but above page content */
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid rgba(255, 255, 255, 0.2);
   }
 
-  .theme-toggle:hover {
+  .theme-toggle-page:hover {
     background-color: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
   }
 
-  .theme-icon {
+  .theme-icon-page {
     font-size: 1.5rem;
     transition: transform 0.3s ease;
   }
 
-  .theme-toggle:hover .theme-icon {
+  .theme-toggle-page:hover .theme-icon-page {
     transform: rotate(15deg);
   }
 
-  /* Light mode toggle adjustments */
-  .light-mode .theme-toggle {
+  /* Light mode toggle adjustments for THIS PAGE's toggle */
+  /* Applied via global body.light-mode */
+  :global(body.light-mode) .theme-toggle-page {
     background-color: rgba(0, 0, 0, 0.1);
     border-color: rgba(0, 0, 0, 0.2);
   }
 
-  .light-mode .theme-toggle:hover {
+  :global(body.light-mode) .theme-toggle-page:hover {
     background-color: rgba(0, 0, 0, 0.2);
   }
 
@@ -213,20 +210,106 @@
     transition: background-color 0.4s ease, color 0.4s ease;
   }
 
-  /* Light mode main styling */
-  .about-page.light-mode {
+  /* Light Mode Specific Styles for About Page */
+  /* These are now applied based on body.light-mode */
+  :global(body.light-mode) .about-page {
     background-color: var(--light-bg-primary);
     color: var(--light-text-primary);
   }
-  
+
+  :global(body.light-mode) .page-header {
+    background-color: var(--light-bg-secondary); /* Light gray for header */
+    border-bottom: 1px solid var(--light-shadow);
+  }
+
+  :global(body.light-mode) .page-header h1,
+  :global(body.light-mode) .page-header .page-subtitle {
+    color: var(--light-text-primary);
+  }
+
+  :global(body.light-mode) .highlight-red {
+    color: var(--light-accent-red);
+  }
+
+  :global(body.light-mode) .mission-section h2,
+  :global(body.light-mode) .approach-section h2,
+  :global(body.light-mode) .values-section h2,
+  :global(body.light-mode) .story-section h2,
+  :global(body.light-mode) .cta-section h2 {
+    color: var(--light-text-primary);
+  }
+
+  :global(body.light-mode) .mission-section p,
+  :global(body.light-mode) .approach-card p,
+  :global(body.light-mode) .value-item p,
+  :global(body.light-mode) .story-text p,
+  :global(body.light-mode) .cta-section p {
+    color: var(--light-text-secondary);
+  }
+
+  :global(body.light-mode) .approach-card,
+  :global(body.light-mode) .value-item {
+    background-color: var(--light-bg-secondary);
+    border: 1px solid transparent; /* Keep border for consistency, color changes below */
+    box-shadow: 0 4px 15px var(--light-shadow);
+  }
+
+  :global(body.light-mode) .approach-card {
+    border-color: rgba(0,0,0,0.05);
+  }
+
+  :global(body.light-mode) .value-item {
+    border-top-color: rgba(0,0,0,0.05);
+  }
+
+  :global(body.light-mode) .approach-card h3,
+  :global(body.light-mode) .value-item h3 {
+    color: var(--light-text-primary);
+  }
+
+  :global(body.light-mode) .approach-icon {
+    /* Icons are emojis, color change not directly applicable unless they are SVGs/fonts */
+    /* If using icon fonts, target them here */
+  }
+
+  /* Light mode for sections that had specific colored backgrounds before */
+  :global(body.light-mode) .mission-section {
+    background-color: var(--light-bg-primary); /* Default light primary */
+  }
+
+  :global(body.light-mode) .approach-section {
+    background-color: var(--light-bg-primary);
+  }
+
+  :global(body.light-mode) .values-section {
+    background-color: var(--light-bg-secondary); /* Light gray for contrast */
+  }
+
+  :global(body.light-mode) .story-section {
+    background-color: var(--light-bg-primary);
+  }
+
+  :global(body.light-mode) .cta-section {
+    background-color: var(--light-bg-secondary); /* Light gray for CTA */
+  }
+
+  :global(body.light-mode) .cta-button {
+    background-color: var(--light-accent-red);
+    color: var(--light-bg-primary);
+    border-color: var(--light-accent-red);
+  }
+
+  :global(body.light-mode) .cta-button:hover {
+    background-color: var(--light-bg-primary);
+    color: var(--light-accent-red);
+    border-color: var(--light-accent-red);
+    box-shadow: 0 2px 10px var(--light-shadow);
+  }
+
   .page-header {
     text-align: center;
     padding: 5rem 2rem;
     background-color: rgba(20, 20, 20, 0.8);
-  }
-
-  .light-mode .page-header {
-    background-color: var(--light-bg-secondary);
   }
   
   .page-header h1 {
@@ -243,36 +326,6 @@
     display: none;
   }
   
-  .highlight-red {
-    color: var(--color-blood-red);
-  }
-
-  .light-mode .highlight-red {
-    color: var(--light-accent-red);
-  }
-
-  /* Fix all text colors in light mode */
-  .light-mode .mission-content p,
-  .light-mode .story-text p {
-    color: var(--light-text-primary);
-  }
-
-  .light-mode .approach-card h3 {
-    color: var(--light-accent-red);
-  }
-
-  .light-mode .approach-card p {
-    color: var(--light-text-primary);
-  }
-
-  .light-mode .value-item h3 {
-    color: var(--light-text-primary);
-  }
-
-  .light-mode .value-item p {
-    color: var(--light-text-primary);
-  }
-  
   .page-subtitle {
     font-family: var(--font-headline);
     font-weight: 200;
@@ -280,11 +333,6 @@
     opacity: 0.9;
     max-width: 700px;
     margin: 0 auto;
-  }
-
-  .light-mode .page-subtitle {
-    color: var(--light-text-secondary);
-    opacity: 1;
   }
   
   /* Mission Section */
@@ -332,10 +380,6 @@
     padding: 5rem 2rem;
     text-align: center;
   }
-
-  .light-mode .approach-section {
-    background-color: var(--light-bg-secondary);
-  }
   
   .approach-grid {
     display: grid;
@@ -354,11 +398,6 @@
     opacity: 0;
     transform: translateY(20px);
   }
-
-  .light-mode .approach-card {
-    background-color: var(--light-bg-primary);
-    box-shadow: 0 2px 10px var(--light-shadow);
-  }
   
   @keyframes fadeInUp {
     to {
@@ -370,10 +409,6 @@
   .approach-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-  }
-
-  .light-mode .approach-card:hover {
-    box-shadow: 0 15px 30px var(--light-shadow);
   }
   
   .approach-icon {
@@ -416,12 +451,6 @@
     padding: 1.5rem;
     border-left: 3px solid var(--color-blood-red);
   }
-
-  .light-mode .value-item {
-    background-color: var(--light-bg-secondary);
-    border-left: 3px solid var(--light-accent-red);
-    box-shadow: 0 2px 10px var(--light-shadow);
-  }
   
   .value-item h3 {
     font-family: var(--font-headline);
@@ -444,10 +473,6 @@
     background-color: rgba(15, 15, 15, 0.7);
     padding: 5rem 2rem;
   }
-
-  .light-mode .story-section {
-    background-color: var(--light-bg-secondary);
-  }
   
   .story-content {
     max-width: 1000px;
@@ -467,10 +492,6 @@
     background-color: var(--color-blood-red);
     padding: 5rem 2rem;
     text-align: center;
-  }
-
-  .light-mode .cta-section {
-    background-color: var(--light-accent-red);
   }
   
   .cta-section h2 {
@@ -555,14 +576,14 @@
       font-size: clamp(1.8rem, 7vw, 2.5rem);
     }
     
-    .theme-toggle {
-      top: 1rem;
+    .theme-toggle-page {
+      top: calc(var(--nav-height, 45px) + 0.5rem);
       right: 1rem;
       width: 40px;
       height: 40px;
     }
     
-    .theme-icon {
+    .theme-icon-page {
       font-size: 1.1rem;
     }
   }

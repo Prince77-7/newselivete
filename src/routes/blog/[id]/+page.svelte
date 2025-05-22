@@ -1,28 +1,22 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
-  import { onMount } from 'svelte';
+  import { themeStore } from '$lib/stores/themeStore';
   
-  // Light mode state
-  let isLightMode = false;
-
-  onMount(() => {
-    // Load theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-      isLightMode = true;
-    }
+  // Subscribe to themeStore for isLightMode for local UI elements like the toggle icon
+  let isLightModeFromStore: boolean;
+  themeStore.subscribe(value => {
+    isLightModeFromStore = value;
   });
 
-  function toggleTheme() {
-    isLightMode = !isLightMode;
-    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+  function togglePageTheme() {
+    themeStore.toggle();
   }
   
   // Get post ID from URL
   const postId = $page.params.id;
   
   // Sample blog data (in a real app, this would come from an API or database)
-  const blogPosts = [
+  const blogPostsRaw = [
     {
       id: "1",
       title: "The Future of Real Estate: Emerging Trends for 2024",
@@ -33,7 +27,7 @@
       tags: ["Trends", "Market Analysis", "Investment"],
       category: "Market Insights",
       readTime: "5 min read",
-      image: "/images/wasaw_white.svg",
+      image: "/images/placeholder-blog-detail-1.jpg",
       content: `
         <p>The real estate market is constantly evolving, shaped by economic shifts, technological advancements, and changing consumer preferences. As we move through 2024, several key trends are emerging that savvy investors and homeowners should be watching closely.</p>
         
@@ -86,7 +80,7 @@
       tags: ["Luxury", "Design", "Staging"],
       category: "Luxury Properties",
       readTime: "7 min read",
-      image: "/images/wasaw_white.svg",
+      image: "/images/placeholder-blog-detail-2.jpg",
       content: `
         <p>In the ultra-competitive luxury real estate market, exceptional staging isn't just a nice-to-have—it's essential for commanding top dollar. High-end buyers aren't just purchasing square footage; they're investing in a lifestyle, an identity, and a narrative about who they are and how they live. Effective luxury staging is the art of crafting that narrative in a way that creates an emotional connection with potential buyers.</p>
         
@@ -170,142 +164,104 @@
       `
     }
   ];
+
+  // Reactive statement to process posts and select the current one
+  $: blogPosts = blogPostsRaw.map(p => ({
+    ...p,
+    authorImageResolved: isLightModeFromStore ? '/images/wasaw_red.svg' : p.authorImage
+  }));
   
-  // Find the current post
-  const post = blogPosts.find(p => p.id === postId) || blogPosts[0];
+  $: post = blogPosts.find(p => p.id === postId) || blogPosts[0];
   
   // Related posts (in a real app, this would be more sophisticated)
-  const relatedPosts = blogPosts.filter(p => p.id !== post.id).slice(0, 3);
+  $: relatedPosts = blogPosts.filter(p => p.id !== post.id).slice(0, 3);
 </script>
 
 <svelte:head>
-  <title>{post.title} | WASAW Blog</title>
-  <meta name="description" content={post.excerpt} />
+  <title>{post?.title || 'Blog Post'} | WASAW Blog</title>
+  <meta name="description" content={post?.excerpt || 'Read our latest blog post.'} />
 </svelte:head>
 
-<!-- Theme Toggle Button -->
-<button class="theme-toggle" on:click={toggleTheme} aria-label="Toggle theme">
-  {#if isLightMode}
-    <span class="theme-icon">🌙</span>
+<!-- Theme Toggle Button for this page, uses store -->
+<button class="theme-toggle-page" on:click={togglePageTheme} aria-label="Toggle theme">
+  {#if isLightModeFromStore}
+    <span class="theme-icon-page">🌙</span>
   {:else}
-    <span class="theme-icon">☀️</span>
+    <span class="theme-icon-page">☀️</span>
   {/if}
 </button>
 
-<article class="blog-post" class:light-mode={isLightMode}>
-  <div class="post-header">
-    <div class="container">
-      <div class="post-meta">
-        <div class="category-tag">{post.category}</div>
-        <div class="date-time">
-          <span>{post.date}</span>
-          <span class="dot">•</span>
-          <span>{post.readTime}</span>
+<article class="blog-post">
+  {#if post}
+    <div class="post-header">
+      <div class="container">
+        <div class="post-meta">
+          <div class="category-tag">{post.category}</div>
+          <div class="date-time">
+            <span>{post.date}</span>
+            <span class="dot">•</span>
+            <span>{post.readTime}</span>
+          </div>
+        </div>
+        <h1 class="post-title">{post.title}</h1>
+        <div class="author-info">
+          <img src={post.authorImageResolved} alt={post.author} class="author-avatar" />
+          <span class="author-name">By {post.author}</span>
         </div>
       </div>
-      <h1>{post.title}</h1>
-      <p class="post-excerpt">{post.excerpt}</p>
-      <div class="author-info">
-        <img src={post.authorImage} alt={post.author} class="author-image" />
-        <div class="author-details">
-          <span class="author-name">{post.author}</span>
-          <span class="author-title">Real Estate Expert</span>
-        </div>
-      </div>
     </div>
-  </div>
-  
-  <div class="post-image">
-    <img src={post.image} alt={post.title} />
-  </div>
-  
-  <div class="post-content container">
-    {@html post.content}
-    
-    <div class="post-tags">
-      {#each post.tags as tag}
-        <span class="tag">{tag}</span>
-      {/each}
+
+    <div class="featured-image">
+      <img src={post.image} alt={post.title} />
     </div>
-    
-    <div class="post-share">
-      <div class="share-label">Share this article:</div>
-      <div class="share-buttons">
-        <button class="share-button" aria-label="Share on Twitter">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
-        </button>
-        <button class="share-button" aria-label="Share on Facebook">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-        </button>
-        <button class="share-button" aria-label="Share on LinkedIn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-        </button>
-        <button class="share-button" aria-label="Copy link">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-        </button>
-      </div>
+
+    <div class="post-content container">
+      {@html post.content}
     </div>
-  </div>
-  
-  <div class="related-posts">
-    <div class="container">
-      <h2>Related Articles</h2>
-      <div class="related-grid">
-        {#each relatedPosts as relatedPost}
-          <a href={`/blog/${relatedPost.id}`} class="related-card">
-            <div class="related-image">
-              <img src={relatedPost.image} alt={relatedPost.title} />
-            </div>
-            <div class="related-content">
-              <div class="related-category">{relatedPost.category}</div>
-              <h3>{relatedPost.title}</h3>
-              <p>{relatedPost.excerpt}</p>
-            </div>
-          </a>
+
+    <div class="post-footer container">
+      <div class="tags">
+        <strong>Tags:</strong>
+        {#each post.tags as tag}
+          <span class="tag">{tag}</span>
         {/each}
       </div>
     </div>
-  </div>
-  
-  <div class="cta-section">
-    <div class="container">
-      <div class="cta-card">
-        <h2>Expert Real Estate Guidance</h2>
-        <p>Connect with our team for personalized advice on buying, selling, or investing in today's dynamic market.</p>
-        <a href="/contact" class="cta-button">Contact Our Team</a>
-      </div>
+
+    {#if relatedPosts.length > 0}
+      <aside class="related-posts container">
+        <h2>Related Articles</h2>
+        <div class="related-grid">
+          {#each relatedPosts as relatedPost}
+            <a href={`/blog/${relatedPost.id}`} class="related-card">
+              <img src={relatedPost.image} alt={relatedPost.title} class="related-card-image" />
+              <div class="related-card-content">
+                <h3>{relatedPost.title}</h3>
+                <p>{relatedPost.excerpt.substring(0, 100)}...</p>
+                <span class="read-more">Read More →</span>
+              </div>
+            </a>
+          {/each}
+        </div>
+      </aside>
+    {/if}
+  {:else}
+    <div class="container post-not-found">
+      <h2>Post Not Found</h2>
+      <p>Sorry, we couldn't find the blog post you were looking for.</p>
+      <a href="/blog" class="primary-button">Back to Blog</a>
     </div>
-  </div>
+  {/if}
 </article>
 
 <style>
-  /* CSS custom properties for theme system */
-  :root {
-    /* Light mode variables */
-    --light-bg-primary: #fafafa;
-    --light-bg-secondary: #f5f5f5;
-    --light-text-primary: #1a1a1a;
-    --light-text-secondary: #4a4a4a;
-    --light-accent-red: #B8002D;
-    --light-shadow: rgba(0, 0, 0, 0.1);
-    --light-border: rgba(0, 0, 0, 0.1);
-    
-    /* Default dark mode theme properties */
-    --background: var(--color-deep-matte-black, #0a0a0a);
-    --foreground: var(--color-pure-white, #ffffff);
-    --muted: rgba(20, 20, 20, 0.8);
-    --muted-foreground: rgba(255, 255, 255, 0.7);
-    --card: rgba(30, 30, 30, 0.7);
-    --card-foreground: var(--color-pure-white, #ffffff);
-    --border: rgba(255, 255, 255, 0.1);
-    --primary: var(--color-blood-red, #990000);
-    --primary-foreground: var(--color-pure-white, #ffffff);
-  }
+  /* Import or define your base variables if not globally available */
+  /* :root { ... } */
 
-  /* Theme Toggle Button */
-  .theme-toggle {
+  /* Theme Toggle Button for this page - specific styling if needed */
+  .theme-toggle-page {
     position: fixed;
-    top: 2rem;
+    top: calc(var(--nav-height, 60px) + 1rem); /* Position below nav if nav is present */
     right: 2rem;
     width: 50px;
     height: 50px;
@@ -315,73 +271,92 @@
     backdrop-filter: blur(10px);
     cursor: pointer;
     transition: all 0.3s ease;
-    z-index: 1000;
+    z-index: 999; /* Ensure it's below nav (1000) but above page content */
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid rgba(255, 255, 255, 0.2);
   }
 
-  .theme-toggle:hover {
+  .theme-toggle-page:hover {
     background-color: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
   }
 
-  .theme-icon {
+  .theme-icon-page {
     font-size: 1.5rem;
     transition: transform 0.3s ease;
   }
 
-  .theme-toggle:hover .theme-icon {
+  .theme-toggle-page:hover .theme-icon-page {
     transform: rotate(15deg);
   }
 
-  /* Light mode toggle adjustments */
-  .light-mode .theme-toggle {
+  /* Light mode toggle adjustments for THIS PAGE's toggle */
+  /* Applied via global body.light-mode */
+  :global(body.light-mode) .theme-toggle-page {
     background-color: rgba(0, 0, 0, 0.1);
     border-color: rgba(0, 0, 0, 0.2);
   }
 
-  .light-mode .theme-toggle:hover {
+  :global(body.light-mode) .theme-toggle-page:hover {
     background-color: rgba(0, 0, 0, 0.2);
   }
 
   .blog-post {
-    background-color: var(--background);
-    color: var(--foreground);
-    padding-top: 80px; /* Space for fixed navigation */
+    padding-top: 3rem; /* Adjust as needed, considering nav bar height */
+    padding-bottom: 4rem;
     transition: background-color 0.4s ease, color 0.4s ease;
   }
 
-  /* Light mode main styling - override CSS custom properties */
-  .blog-post.light-mode {
-    background-color: var(--light-bg-primary);
-    color: var(--light-text-primary);
-  }
-
-  /* Light mode CSS custom property overrides */
-  .light-mode {
+  /* Light mode CSS variable overrides for this page */
+  :global(body.light-mode) .blog-post {
     --background: var(--light-bg-primary);
     --foreground: var(--light-text-primary);
     --muted: var(--light-bg-secondary);
     --muted-foreground: var(--light-text-secondary);
-    --card: #ffffff;
+    --card: #ffffff; /* Cards in related posts, etc. */
     --card-foreground: var(--light-text-primary);
     --border: var(--light-border);
     --primary: var(--light-accent-red);
-    --primary-foreground: #ffffff;
+    --primary-foreground: #ffffff; /* Text on primary buttons */
+    --ring: var(--light-accent-red);
   }
-  
-  .post-header {
-    padding: 4rem 0;
-    background-color: var(--muted);
-    margin-bottom: 2rem;
-  }
-  
+
   .container {
     max-width: 800px;
     margin: 0 auto;
     padding: 0 2rem;
+  }
+  
+  /* Light mode styles for author avatar */
+  :global(body.light-mode) .author-avatar {
+    border: 2px solid var(--light-accent-red);
+    filter: none; /* Remove invert if it was applied for dark mode */
+  }
+  
+  .author-avatar.light-mode-logo {
+    filter: none; /* Ensure red logo is not inverted if that class is used */
+  }
+
+  .featured-image {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+    padding: 0 2rem;
+  }
+
+  .featured-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    object-fit: cover;
+  }
+
+  .post-header {
+    padding: 4rem 0;
+    background-color: var(--muted);
+    margin-bottom: 2rem;
   }
   
   .post-meta {
@@ -434,40 +409,16 @@
     gap: 1rem;
   }
   
-  .author-image {
+  .author-avatar {
     width: 48px;
     height: 48px;
     border-radius: 9999px;
     object-fit: cover;
   }
   
-  .author-details {
-    display: flex;
-    flex-direction: column;
-  }
-  
   .author-name {
     font-weight: 600;
     font-size: 1rem;
-  }
-  
-  .author-title {
-    font-size: 0.9rem;
-    color: var(--muted-foreground);
-  }
-  
-  .post-image {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto 3rem;
-    padding: 0 2rem;
-  }
-  
-  .post-image img {
-    width: 100%;
-    height: auto;
-    border-radius: 1rem;
-    object-fit: cover;
   }
   
   .post-content {
@@ -526,42 +477,12 @@
     border-radius: 0.25rem;
   }
   
-  .post-share {
+  .post-footer {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 1rem;
-    margin-top: 2rem;
     padding-top: 2rem;
     border-top: 1px solid var(--border);
-  }
-  
-  .share-label {
-    font-weight: 500;
-    font-size: 0.9rem;
-  }
-  
-  .share-buttons {
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .share-button {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 9999px;
-    color: var(--card-foreground);
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .share-button:hover {
-    background-color: var(--muted);
-    transform: translateY(-2px);
   }
   
   .related-posts {
@@ -599,37 +520,30 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   }
   
-  .related-image {
+  .related-card-image {
     height: 180px;
     overflow: hidden;
   }
   
-  .related-image img {
+  .related-card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
   }
   
-  .related-card:hover .related-image img {
+  .related-card:hover .related-card-image img {
     transform: scale(1.05);
   }
   
-  .related-content {
+  .related-card-content {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     flex: 1;
   }
   
-  .related-category {
-    font-size: 0.8rem;
-    color: var(--primary);
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-  }
-  
-  .related-content h3 {
+  .related-card-content h3 {
     font-family: var(--font-headline);
     font-weight: 600;
     font-size: 1.2rem;
@@ -638,7 +552,7 @@
     line-height: 1.4;
   }
   
-  .related-content p {
+  .related-card-content p {
     font-size: 0.9rem;
     color: var(--muted-foreground);
     line-height: 1.6;
@@ -647,6 +561,17 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+  
+  .read-more {
+    font-weight: 600;
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .read-more:hover {
+    color: #800000; /* Darker red */
   }
   
   .cta-section {
@@ -695,63 +620,29 @@
     transform: translateY(-2px);
   }
   
-  /* Responsive Adjustments */
+  /* Responsive adjustments for theme toggle on this page */
   @media (max-width: 768px) {
-    .post-header {
-      padding: 3rem 0;
+    .theme-toggle-page {
+      top: calc(var(--nav-height, 50px) + 0.8rem);
+      right: 1.5rem;
+      width: 45px;
+      height: 45px;
     }
     
-    .container {
-      padding: 0 1.5rem;
-    }
-    
-    .post-image {
-      padding: 0 1.5rem;
-      margin-bottom: 2rem;
-    }
-    
-    .post-content {
-      font-size: 1rem;
-    }
-    
-    .related-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .post-share {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-    
-    .cta-card {
-      padding: 2rem 1.5rem;
+    .theme-icon-page {
+      font-size: 1.3rem;
     }
   }
   
   @media (max-width: 480px) {
-    h1 {
-      font-size: 1.8rem;
-    }
-    
-    .post-excerpt {
-      font-size: 1rem;
-    }
-    
-    .post-meta {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
-    }
-    
-    .theme-toggle {
-      top: 1rem;
+    .theme-toggle-page {
+      top: calc(var(--nav-height, 45px) + 0.5rem);
       right: 1rem;
       width: 40px;
       height: 40px;
     }
     
-    .theme-icon {
+    .theme-icon-page {
       font-size: 1.1rem;
     }
   }
