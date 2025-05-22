@@ -256,8 +256,8 @@
     --base-button-size: clamp(120px, 15vw, 180px); /* Dynamic button size */
     --button-padding: clamp(10px, 2vw, 20px);    /* Dynamic padding */
     --color-slide-bg-alt: #1a1a1a; /* Slightly lighter black/grey for alternate slides */
-    --color-olive-green: #173736; /* Updated to user-specified hex code */
-    --color-dark-blue: #000066; /* Added Dark Blue */
+    --color-olive-green: #001D00; /* Updated to user-specified hex code */
+    --color-dark-blue: #000C39; /* Updated to user-specified hex code */
   }
 
   /* Apply to body when scroll-up mode is active */

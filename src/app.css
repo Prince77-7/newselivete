@@ -9,7 +9,7 @@
   
   /* Font family definitions */
   --font-headline: 'PP Hatton', Arial, sans-serif;
-  --font-body: Georgia, serif; /* We could replace this with another custom font if desired */
+  --font-body: 'PPAir', Georgia, serif; /* Updated to use PPAir */
 }
 
 /* Global styles */

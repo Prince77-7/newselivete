@@ -21,4 +21,29 @@
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+}
+
+/* PPAir Font Definitions */
+@font-face {
+  font-family: 'PPAir';
+  src: url('/fonts/PPAir-Medium-BF64a4d48178864.woff2') format('woff2');
+  font-weight: 500; /* Assuming Medium is 500 weight, adjust if needed */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PPAir';
+  src: url('/fonts/PPAir-SemiBold-BF64a4d48192c6e.woff2') format('woff2');
+  font-weight: 600; /* Assuming SemiBold is 600 weight, adjust if needed */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PPAir';
+  src: url('/fonts/PPAir-MediumItalic-BF64a4d48187f4f.woff2') format('woff2');
+  font-weight: 500; /* Assuming Medium Italic is 500 weight */
+  font-style: italic;
+  font-display: swap;
 } 
