@@ -15,10 +15,10 @@ COPY . .
 RUN npm run build
 
 # Expose the port
-EXPOSE 3000
+EXPOSE 4545
 
 # Add a host flag to make it accessible from outside the container
 ENV HOST=0.0.0.0
 
 # Set the command to run the app in production mode
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "3000"] 
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "4545"] 

@@ -55,12 +55,12 @@ Access the application at: http://localhost:5173
 
 When running in production mode:
 
-- The application runs on port 3000
+- The application runs on port 4545
 - The application is built during Docker image creation
 - The SvelteKit preview server is used to serve the built application
 - No hot-reloading is available
 
-Access the application at: http://localhost:3000
+Access the application at: http://localhost:4545
 
 ## Manual Docker Commands
 
