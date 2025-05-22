@@ -1,5 +1,5 @@
 <script>
-  import Navigation from '$lib/components/Navigation.svelte';
+  import { page } from '$app/stores';
   
   // Contact form state
   let name = '';
@@ -14,30 +14,30 @@
   const agents = [
     {
       id: "1",
-      name: "Alexandra Reynolds",
+      name: "Waiel Grey",
       title: "Luxury Property Specialist",
       phone: "(310) 555-8732",
-      email: "alexandra@selivete.com",
+      email: "waiel@wasaw.com",
       photo: "/images/agent1.jpg",
-      bio: "With over 15 years of experience in luxury real estate, Alexandra specializes in high-end properties in Beverly Hills and the surrounding areas."
+      bio: "With over 15 years of experience in luxury real estate, Waiel specializes in high-end properties in Beverly Hills and the surrounding areas, leveraging a unique blend of Keller Williams strategies and Crye-Leike market insight."
     },
     {
       id: "2",
-      name: "Jonathan Pierce",
-      title: "Urban Properties Expert",
+      name: "Albara Al-Shujaa",
+      title: "Urban Properties & Investment Expert",
       phone: "(212) 555-1919",
-      email: "jonathan@selivete.com",
+      email: "albara@wasaw.com",
       photo: "/images/agent2.jpg",
-      bio: "Jonathan has unparalleled knowledge of the Manhattan real estate market, focusing on penthouses and luxury apartments in the city's most coveted neighborhoods."
+      bio: "Albara has unparalleled knowledge of the urban real estate market and investment opportunities, focusing on premier properties and delivering results through a powerful fusion of KW systems and CL client-centric service."
     },
     {
       id: "3",
-      name: "Sophia Chen",
-      title: "Beachfront Properties Specialist",
+      name: "Mohamed Aly",
+      title: "Coastal & Lifestyle Properties Specialist",
       phone: "(310) 555-4276",
-      email: "sophia@selivete.com",
+      email: "mohamed@wasaw.com",
       photo: "/images/agent3.jpg",
-      bio: "Sophia has built a reputation for representing the finest beachfront properties in Malibu, with particular expertise in architectural masterpieces."
+      bio: "Mohamed has built a reputation for representing the finest coastal and lifestyle properties, with particular expertise in architectural masterpieces and unique estates, utilizing the best of Keller Williams and Crye-Leike methodologies."
     }
   ];
   
@@ -68,15 +68,13 @@
 </script>
 
 <svelte:head>
-  <title>Contact | SELIVETE</title>
+  <title>Contact | WASAW</title>
 </svelte:head>
-
-<Navigation />
 
 <div class="contact-page">
   <header class="page-header">
     <h1><span class="highlight-red">CONNECT</span> WITH US</h1>
-    <p class="page-subtitle">Reach out to our team of exceptional real estate professionals</p>
+    <p class="page-subtitle">Reach out to our team of exceptional real estate professionals at WASAW</p>
   </header>
   
   <div class="contact-container">
@@ -90,7 +88,7 @@
       <div class="info-block">
         <h2>CONTACT DETAILS</h2>
         <p>Phone: (310) 555-7890</p>
-        <p>Email: info@selivete.com</p>
+        <p>Email: info@wasaw.com</p>
       </div>
       
       <div class="info-block">
@@ -183,7 +181,7 @@
   </div>
   
   <section class="agent-section">
-    <h2>OUR <span class="highlight-red">TEAM</span></h2>
+    <h2>OUR <span class="highlight-red">TEAM</span> AT WASAW</h2>
     <div class="agent-grid">
       {#each agents as agent}
         <div class="agent-card">

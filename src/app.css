@@ -3,6 +3,7 @@
 
 /* Global variables for the application */
 :root {
+  /* Base colors */
   --color-deep-matte-black: #000000;
   --color-pure-white: #ffffff;
   --color-blood-red: #990000;
@@ -10,6 +11,51 @@
   /* Font family definitions */
   --font-headline: 'PP Hatton', Arial, sans-serif;
   --font-body: 'PPAir', Georgia, serif; /* Updated to use PPAir */
+  
+  /* Responsive sizing helpers */
+  --container-max-width: 1400px;
+  --container-padding: 2rem;
+  --section-spacing: 4rem;
+  
+  /* Light theme colors (default) */
+  --background: #ffffff;
+  --foreground: #111111;
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
+  --card: #ffffff;
+  --card-foreground: #111111;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --primary: var(--color-blood-red);
+  --primary-foreground: #ffffff;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #111111;
+  --accent: #f5f5f5;
+  --accent-foreground: #111111;
+  --destructive: #ff4d4f;
+  --destructive-foreground: #ffffff;
+  --ring: #e5e5e5;
+}
+
+/* Dark theme colors */
+.dark {
+  --background: #111111;
+  --foreground: #ffffff;
+  --muted: #1f1f1f;
+  --muted-foreground: #a3a3a3;
+  --card: #1f1f1f;
+  --card-foreground: #ffffff;
+  --border: #333333;
+  --input: #333333;
+  --primary: var(--color-blood-red);
+  --primary-foreground: #ffffff;
+  --secondary: #1f1f1f;
+  --secondary-foreground: #ffffff;
+  --accent: #1f1f1f;
+  --accent-foreground: #ffffff;
+  --destructive: #ff4d4f;
+  --destructive-foreground: #ffffff;
+  --ring: #333333;
 }
 
 /* Global styles */
@@ -20,9 +66,68 @@ body {
   background-color: var(--color-deep-matte-black);
   color: var(--color-pure-white);
   font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-headline);
+  color: var(--color-blood-red);
+}
+
+/* Links */
+a {
+  color: var(--color-blood-red);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Apply border-box to all elements */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Responsive images and media */
+img, video, svg {
+  max-width: 100%;
+  height: auto;
 }
 
 /* No-scroll utility class */
 body.no-scroll {
   overflow: hidden;
+}
+
+/* Simple responsive container */
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1200px) {
+  :root {
+    --container-padding: 1.5rem;
+    --section-spacing: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container-padding: 1rem;
+    --section-spacing: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --container-padding: 0.75rem;
+    --section-spacing: 2rem;
+  }
 } 

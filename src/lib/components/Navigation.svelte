@@ -1,209 +1,244 @@
-<script>
-  import { page } from '$app/stores';
+<script lang="ts">
+  import { BROWSER } from 'esm-env';
+  import ThemeToggle from './ThemeToggle.svelte';
+  
+  // Define navigation links
+  const navLinks = [
+    { href: '/', text: 'Home' },
+    { href: '/about', text: 'About Us' },
+    { href: '/blog', text: 'Blog' },
+    // Add other primary navigation links here, e.g.:
+    // { href: '/listings', text: 'Listings' }, 
+    // { href: '/services', text: 'Services' },
+    { href: '/contact', text: 'Contact' }
+  ];
   
   // Toggle mobile menu
   let mobileMenuOpen = false;
   
   // Function to toggle menu
-  function toggleMenu() {
+  function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
   }
   
+  // Track the current path - this will be set from +layout.svelte
+  export let currentPath = '';
+  
   // Close menu when route changes
-  $: if ($page.url.pathname) {
+  $: if (BROWSER && currentPath) {
     mobileMenuOpen = false;
   }
 </script>
 
-<nav class="main-nav">
+<nav class="main-navigation" class:nav-scrolled={true}>
   <div class="nav-container">
-    <a href="/" class="logo">SELIVETE</a>
+    <a href="/" class="nav-logo">
+      <img src="/images/wasaw_white.svg" alt="WASAW Logo" class="logo-svg" />
+    </a>
     
-    <button class="menu-toggle" on:click={toggleMenu} aria-label="Toggle menu">
-      <div class="menu-bar" class:open={mobileMenuOpen}></div>
+    <button class="mobile-menu-toggle" on:click={toggleMobileMenu} aria-label="Toggle menu" aria-expanded={mobileMenuOpen}>
+      <span class="hamburger-icon" class:open={mobileMenuOpen}>
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
     </button>
     
-    <div class="nav-links" class:open={mobileMenuOpen}>
-      <a href="/properties" class:active={$page.url.pathname === '/properties'}>
-        PROPERTIES
-      </a>
-      <a href="/about" class:active={$page.url.pathname === '/about'}>
-        APPROACH
-      </a>
-      <a href="/contact" class:active={$page.url.pathname === '/contact'}>
-        CONTACT
-      </a>
+    <div class="nav-right">
+      <ul class="nav-links" class:open={mobileMenuOpen}>
+        {#each navLinks as link}
+          <li>
+            <a 
+              href={link.href} 
+              class="nav-link" 
+              class:active={currentPath === link.href}
+              aria-current={currentPath === link.href ? 'page' : undefined}
+            >
+              {link.text}
+            </a>
+          </li>
+        {/each}
+        <li class="theme-toggle-wrapper">
+          <ThemeToggle />
+        </li>
+      </ul>
     </div>
   </div>
 </nav>
 
 <style>
-  .main-nav {
+  .main-navigation {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 100;
-    background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
+    z-index: 1000; /* High z-index to stay on top */
+    padding: 0.8rem 2rem; /* Reduced padding for a slimmer bar */
+    background-color: rgba(0, 0, 0, 0.75); /* Semi-transparent black */
+    color: var(--color-pure-white);
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle bottom border */
+    backdrop-filter: blur(8px); /* Adds the glossy effect */
+    -webkit-backdrop-filter: blur(8px); /* For Safari */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   }
   
   .nav-container {
+    max-width: 1600px; /* Allow wider content */
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
   }
   
-  .logo {
-    font-family: var(--font-headline);
-    font-weight: 700;
-    font-size: clamp(1.2rem, 2vw, 1.8rem);
-    color: var(--color-blood-red);
+  .nav-logo {
+    display: flex;
+    align-items: center;
     text-decoration: none;
-    letter-spacing: 0.05em;
+    color: var(--color-pure-white);
+  }
+
+  .logo-svg {
+    height: 40px; /* Slightly larger since it's the only element now */
+    width: auto;
+  }
+  
+  .nav-right {
+    display: flex;
+    align-items: center;
   }
   
   .nav-links {
+    list-style: none;
     display: flex;
-    gap: clamp(1.5rem, 4vw, 3rem);
+    gap: 1.8rem; /* Increased gap */
+    margin: 0;
+    padding: 0;
+    align-items: center;
   }
   
-  .nav-links a {
+  .nav-link {
     font-family: var(--font-headline);
-    font-weight: 500;
-    font-size: clamp(0.9rem, 1.2vw, 1.1rem);
-    color: var(--color-pure-white);
+    font-weight: 300; /* Lighter weight for nav links */
+    font-size: 0.95rem; /* Slightly smaller */
     text-decoration: none;
-    transition: color 0.3s ease;
+    color: rgba(255, 255, 255, 0.85); /* Slightly less bright white */
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.5rem 0.2rem; /* Add some vertical padding for better click area */
     position: relative;
+    transition: color 0.3s ease;
   }
   
-  .nav-links a:after {
+  .nav-link::after {
     content: '';
     position: absolute;
     width: 0;
     height: 2px;
-    bottom: -5px;
-    left: 0;
+    bottom: -2px; /* Position it slightly below the text */
+    left: 50%;
+    transform: translateX(-50%);
     background-color: var(--color-blood-red);
     transition: width 0.3s ease;
   }
   
-  .nav-links a:hover, .nav-links a.active {
-    color: var(--color-blood-red);
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--color-pure-white);
   }
   
-  .nav-links a:hover:after, .nav-links a.active:after {
+  .nav-link:hover::after,
+  .nav-link.active::after {
     width: 100%;
   }
   
-  .menu-toggle {
-    display: none;
+  .theme-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    margin-left: 0.5rem;
+  }
+  
+  /* Mobile Menu Styles */
+  .mobile-menu-toggle {
+    display: none; /* Hidden by default */
     background: none;
     border: none;
+    color: var(--color-pure-white);
     cursor: pointer;
-    width: 30px;
-    height: 30px;
-    position: relative;
+    padding: 0.5rem;
   }
   
-  .menu-bar {
-    width: 30px;
-    height: 2px;
+  .hamburger-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 28px;
+    height: 22px;
+  }
+  
+  .hamburger-icon span {
+    display: block;
+    width: 100%;
+    height: 3px;
     background-color: var(--color-pure-white);
-    position: relative;
-    transition: all 0.3s ease;
+    border-radius: 3px;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+
+  /* Hamburger animation */
+  .hamburger-icon.open span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+  }
+  .hamburger-icon.open span:nth-child(2) {
+    opacity: 0;
+  }
+  .hamburger-icon.open span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
   }
   
-  .menu-bar:before, .menu-bar:after {
-    content: '';
-    position: absolute;
-    width: 30px;
-    height: 2px;
-    background-color: var(--color-pure-white);
-    transition: all 0.3s ease;
-  }
-  
-  .menu-bar:before {
-    top: -8px;
-  }
-  
-  .menu-bar:after {
-    top: 8px;
-  }
-  
-  .menu-bar.open {
-    background-color: transparent;
-  }
-  
-  .menu-bar.open:before {
-    transform: rotate(45deg);
-    top: 0;
-    background-color: var(--color-blood-red);
-  }
-  
-  .menu-bar.open:after {
-    transform: rotate(-45deg);
-    top: 0;
-    background-color: var(--color-blood-red);
-  }
-  
-  /* Mobile adjustments */
   @media (max-width: 768px) {
-    .menu-toggle {
-      display: block;
-      z-index: 110;
-    }
-    
     .nav-links {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 100%;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0.95);
+      display: none; /* Hide desktop links */
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transform: translateX(100%);
-      transition: transform 0.3s ease-in-out;
-      z-index: 100;
+      position: absolute;
+      top: 100%; /* Position below the nav bar */
+      left: 0;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.85); /* Match the nav bar transparency */
+      backdrop-filter: blur(8px); /* Same glossy effect */
+      -webkit-backdrop-filter: blur(8px);
+      padding: 1rem 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
     }
     
     .nav-links.open {
-      transform: translateX(0);
+      display: flex; /* Show when mobile menu is open */
     }
     
-    .nav-links a {
-      font-size: 1.5rem;
-      opacity: 0;
-      animation: fadeIn 0.5s forwards;
+    .nav-links li {
+      width: 100%;
+      text-align: center;
     }
     
-    .nav-links.open a:nth-child(1) {
-      animation-delay: 0.1s;
+    .nav-link {
+      display: block;
+      padding: 1rem;
+      width: 100%;
+      font-size: 1.1rem;
+    }
+
+    .nav-link::after {
+      bottom: 0.5rem; /* Adjust for larger mobile link padding */
     }
     
-    .nav-links.open a:nth-child(2) {
-      animation-delay: 0.2s;
+    .mobile-menu-toggle {
+      display: flex; /* Show hamburger */
+      align-items: center;
     }
     
-    .nav-links.open a:nth-child(3) {
-      animation-delay: 0.3s;
-    }
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    .theme-toggle-wrapper {
+      margin: 1rem 0;
     }
   }
 </style> 

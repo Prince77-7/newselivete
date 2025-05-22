@@ -1,6 +1,4 @@
 <script>
-  import Navigation from '$lib/components/Navigation.svelte';
-  
   // Property data (would typically come from an API or database)
   const properties = [
     {
@@ -132,8 +130,6 @@
 <svelte:head>
   <title>Properties | SELIVETE</title>
 </svelte:head>
-
-<Navigation />
 
 <div class="properties-page">
   <header class="page-header">

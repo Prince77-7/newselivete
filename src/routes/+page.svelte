@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount, afterUpdate, onDestroy } from 'svelte';
-  import Navigation from '$lib/components/Navigation.svelte';
 
   let typicalButtonClicks = 0;
   let typicalButtonVanished = false;
@@ -124,6 +123,10 @@
   }
 </script>
 
+<svelte:head>
+    <title>WASAW | Unconventional Real Estate Excellence</title>
+</svelte:head>
+
 {#if isLoading}
   <div class="loading-screen full-screen-view">
     <div class="breathing-circle"></div>
@@ -133,7 +136,9 @@
 {:else if !showAtypicalExperience}
   <div class="decision-gateway full-screen-view">
     <div class="intro-text">
-      <h2 class="welcome-headline">Hey there, <span class="highlight-red">welcome!</span></h2>
+      <h2 class="welcome-headline">
+        Welcome to <img src="/images/wasaw_red.svg" alt="WASAW Logo" class="headline-logo-svg" />
+      </h2>
       <p class="sub-headline">To elevate your real estate journey, we must ask:</p>
     </div>
     <h1 class="main-question">What kind of <span class="highlight-red">real estate agent</span> are you searching for?</h1>
@@ -150,9 +155,9 @@
       <button 
         class="gateway-button atypical-button-styled" 
         on:click={handleAtypicalClick}
-        aria-label="Choose Atypical Realtors"
+        aria-label="Choose Atypical Realtors (WASAW)"
       >
-        <span>Atypical Realtors</span>
+        <span>Atypical Realtors (WASAW)</span>
       </button>
     </div>
   </div>
@@ -165,45 +170,45 @@
       <!-- Slide 6 (Topmost, revealed LAST when scrolling up) -->
       <section class="slide slide-visible" id="slide-contact">
         <div class="slide-content">
-          <h2 class="slide-title">ASCEND TO <span class="highlight-red">EXTRAORDINARY.</span></h2>
-          <p class="slide-text">Your distinctive real estate experience is waiting. Connect with us to explore how the unconventional can achieve the exceptional, for buyers and sellers alike.</p>
-          <a href="/contact" class="cta-button-scroll-up">INITIATE THE CONVERSATION</a>
+          <h2 class="slide-title">ASCEND WITH <span class="highlight-red">WASAW.</span></h2>
+          <p class="slide-text">Your distinctive real estate experience is waiting. Connect with our triumvirate of experts at WASAW to explore how our unconventional synergy achieves the exceptional, for buyers and sellers alike.</p>
+          <a href="/contact" class="cta-button-scroll-up">INITIATE YOUR ASCENSION</a>
         </div>
       </section>
 
       <!-- Slide 5 -->
       <section class="slide slide-visible" id="slide-process">
         <div class="slide-content">
-          <h2 class="slide-title">THE <span class="highlight-red">UNCONVENTIONAL</span> BLUEPRINT</h2>
-          <p class="slide-text">Experience a paradigm of clarity and strategic finesse. No jargon, no ambiguity—only a meticulously architected process, designed for decisive action and superior outcomes, whether you're buying or selling.</p>
-          <p class="slide-highlight">PRECISION. EMPOWERMENT. <span class="highlight-red">MASTERY.</span></p>
+          <h2 class="slide-title">THE ALCHEMY OF <span class="highlight-red">EXCELLENCE.</span></h2>
+          <p class="slide-text">Our unconventional blueprint is forged from proven mastery. We meticulously fuse the pioneering training, robust systems, and tech-forward ethos of <span class="highlight-red">Keller Williams</span> with the deep-rooted market dominance and impeccable client-centric service of <span class="highlight-red">Crye-Leike</span>. This powerful alchemy, amplified by our collective insight as three dedicated professionals at WASAW, creates a bespoke, hyper-efficient process. Expect unparalleled market intelligence and innovative strategies, delivering a seamless experience that consistently transcends the conventional.</p>
+          <p class="slide-highlight">INNOVATION & HERITAGE. <span class="highlight-red">YOUR UNFAIR ADVANTAGE WITH WASAW.</span></p>
         </div>
       </section>
       
       <!-- Slide 4 -->
       <section class="slide slide-visible" id="slide-philosophy">
         <div class="slide-content">
-          <h2 class="slide-title">BEYOND TRANSACTIONS: A <span class="highlight-red">PARTNERSHIP IN AMBITION.</span></h2>
-          <p class="slide-text">Whether buying your sanctuary or selling your legacy, we transcend mere transactions. We forge partnerships built on a profound understanding of your unique ambitions, crafting bespoke pathways to your success. This is real estate intelligence, elevated.</p>
-          <p class="slide-highlight">YOUR VISION, <span class="highlight-red">OUR VANGUARD.</span></p>
+          <h2 class="slide-title">THE <span class="highlight-red">WASAW TRIFECTA:</span> YOUR UNRIVALED ALLIANCE.</h2>
+          <p class="slide-text">Why settle for a singular perspective when you can command a <span class="highlight-red">triumvirate of dedicated experts at WASAW</span>? We are three seasoned realtors, united by a relentless pursuit of your triumph. Forget the limitations of a solo agent. We offer a collective force, a synergistic partnership singularly focused on elevating your real estate journey, whether you're acquiring your dream sanctuary or strategically divesting your legacy asset.</p>
+          <p class="slide-highlight">THREE MINDS. ONE MISSION. <span class="highlight-red">YOUR ULTIMATE SUCCESS WITH WASAW.</span></p>
         </div>
       </section>
 
-      <!-- Slide 3 (NEW) -->
+      <!-- Slide 3 (Sellers) -->
       <section class="slide slide-visible" id="slide-sellers-success">
         <div class="slide-content">
-          <h2 class="slide-title">MAXIMIZE YOUR MOMENTUM: THE <span class="highlight-red">SELLER'S PINNACLE.</span></h2>
-          <p class="slide-text">Command premium value with our strategic market orchestration. We blend innovative exposure with astute pricing, ensuring your property captivates and converts. Expect a seamless journey to an exceptional sale.</p>
-          <p class="slide-highlight">STRATEGY. EXPOSURE. <span class="highlight-red">RESULTS.</span></p>
+          <h2 class="slide-title">MAXIMIZE YOUR MOMENTUM: THE <span class="highlight-red">SELLER'S PINNACLE WITH WASAW.</span></h2>
+          <p class="slide-text">Command premium value with our strategic market orchestration. We blend innovative exposure with astute pricing, ensuring your property captivates and converts. Expect a seamless journey to an exceptional sale, powered by our collective WASAW expertise.</p>
+          <p class="slide-highlight">STRATEGY. EXPOSURE. <span class="highlight-red">RESULTS BY WASAW.</span></p>
         </div>
       </section>
 
-      <!-- Slide 2 (NEW) -->
+      <!-- Slide 2 (Buyers) -->
       <section class="slide slide-visible" id="slide-buyers-edge">
         <div class="slide-content">
-          <h2 class="slide-title">SECURE YOUR SUMMIT: THE <span class="highlight-red">BUYER'S ASCENDANCY.</span></h2>
-          <p class="slide-text">Navigate the market with unparalleled acuity. We arm you with preemptive insights and masterful negotiation, transforming aspiration into acquisition. Your dream property isn't just found; it's conquered.</p>
-          <p class="slide-highlight">INSIGHT. ACCESS. <span class="highlight-red">VICTORY.</span></p>
+          <h2 class="slide-title">SECURE YOUR SUMMIT: THE <span class="highlight-red">BUYER'S ASCENDANCY WITH WASAW.</span></h2>
+          <p class="slide-text">Navigate the market with unparalleled acuity. We arm you with preemptive insights and masterful negotiation, transforming aspiration into acquisition. Your dream property isn't just found; it's conquered with our unified WASAW strength.</p>
+          <p class="slide-highlight">INSIGHT. ACCESS. <span class="highlight-red">VICTORY WITH WASAW.</span></p>
         </div>
       </section>
 
@@ -211,13 +216,13 @@
       <section class="slide slide-visible" id="slide-main-hero">
         <div class="slide-content">
           <div class="initial-prompt">
-            <p class="scroll-up-notice">PREPARE FOR THE <span class="highlight-red">UNCONVENTIONAL.</span></p>
+            <p class="scroll-up-notice">PREPARE FOR THE <span class="highlight-red">UNCONVENTIONAL.</span> WELCOME TO <span class="highlight-red">WASAW.</span></p>
             <div class="arrow-up-animated">
               <span>▲</span>
             </div>
           </div>
-          <h1 class="atypical-title-scroll-up">WITH US, YOU WON'T BE SCROLLING DOWN. <span class="highlight-red">YOU'LL BE MOVING UP.</span></h1>
-          <p class="atypical-subtitle-scroll-up">REAL ESTATE, <span class="highlight-red">REDEFINED.</span></p>
+          <h1 class="atypical-title-scroll-up">WITH WASAW, YOU WON'T BE SCROLLING DOWN. <span class="highlight-red">YOU'LL BE MOVING UP.</span></h1>
+          <p class="atypical-subtitle-scroll-up">REAL ESTATE, <span class="highlight-red">REDEFINED BY THREE AT WASAW.</span></p>
         </div>
       </section>
 
@@ -232,6 +237,8 @@
     --color-slide-bg-alt: #1a1a1a; /* Slightly lighter black/grey for alternate slides */
     --color-olive-green: #001D00; /* Updated to user-specified hex code */
     --color-dark-blue: #000C39; /* Updated to user-specified hex code */
+    --color-kw-red: #D40032; /* Approximate Keller Williams Red */
+    --color-cl-blue: #0033A0; /* Approximate Crye-Leike Blue - using a slightly brighter one for visibility */
     --grid-size: 40px; /* Size of grid cells */
     --grid-line: 0.5px; /* Thickness of grid lines */
     --grid-color-light: rgba(255, 255, 255, 0.07); /* Light color for grid lines - slightly more visible */
@@ -330,6 +337,18 @@
     color: var(--color-pure-white);
     margin: 0 0 0.5rem 0;
     line-height: 1.1;
+    display: flex; /* For aligning text and logo */
+    align-items: center; /* Vertically align items */
+    justify-content: center; /* Center items horizontally */
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+  }
+
+  .headline-logo-svg {
+    height: clamp(3rem, 8vw, 5.5rem); /* Adjusted size slightly */
+    width: auto;
+    margin-left: 0.5rem; /* Space after "Welcome to" */
+    vertical-align: middle; /* Better alignment with text */
+    /* filter property removed as we are using pre-colored SVGs */
   }
 
   .sub-headline {
@@ -390,18 +409,6 @@
     line-height: 1.2;
   }
 
-  .typical-button-styled {
-    background-color: var(--color-pure-white);
-    color: var(--color-deep-matte-black);
-    border-color: var(--color-pure-white);
-  }
-
-  .typical-button-styled:hover {
-    background-color: #f0f0f0; 
-    border-color: #f0f0f0;
-    transform: scale(1.05);
-  }
-
   .atypical-button-styled {
     background-color: var(--color-blood-red);
     color: var(--color-pure-white);
@@ -413,38 +420,6 @@
     color: var(--color-blood-red);
     border-color: var(--color-blood-red);
     transform: scale(1.1);
-  }
-
-  .glitch {
-    animation: glitch-animation 0.5s forwards; 
-    background-color: var(--color-pure-white) !important; 
-    color: var(--color-deep-matte-black) !important;
-    border-color: var(--color-pure-white) !important;
-  }
-
-  @keyframes glitch-animation {
-    0% {
-      transform: translate(2px, 1px) rotate(0deg) scale(0.6); 
-      opacity: 0.8;
-    }
-    20% {
-      transform: translate(-2px, -3px) rotate(-2deg) scale(0.55);
-    }
-    40% {
-      transform: translate(3px, 2px) rotate(2deg) scale(0.6);
-      opacity: 0.5;
-    }
-    60% {
-      transform: translate(-1px, 1px) rotate(-1deg) scale(0.58);
-    }
-    80% {
-      transform: translate(1px, -2px) rotate(1deg) scale(0.56);
-      opacity: 0.3;
-    }
-    100% {
-      transform: translate(0px, 0px) rotate(0deg) scale(0.1); 
-      opacity: 0;
-    }
   }
 
   /* NEW ATYPICAL SCROLL-UP EXPERIENCE STYLES */
@@ -555,13 +530,16 @@
   }
 
   /* Apply alternate background colors */
+  #slide-buyers-edge {
+    background-color: var(--color-deep-matte-black); /* Default dark background */
+  }
   #slide-sellers-success {
     background-color: var(--color-slide-bg-alt);
   }
   #slide-philosophy {
     background-color: var(--color-olive-green); /* Changed to Olive Green */
   }
-  #slide-process { /* Third slide */
+  #slide-process { 
     background-color: var(--color-dark-blue);
   }
   #slide-contact {

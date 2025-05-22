@@ -1,6 +1,5 @@
 <script>
   import { page } from '$app/stores';
-  import Navigation from '$lib/components/Navigation.svelte';
   
   // In a real app, this would come from a database/API
   // For demo purposes, we'll create a static property database
@@ -141,8 +140,6 @@
 <svelte:head>
   <title>{property ? property.title : 'Property'} | SELIVETE</title>
 </svelte:head>
-
-<Navigation />
 
 <div class="property-detail-page">
   {#if !property}

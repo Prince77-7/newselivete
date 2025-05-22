@@ -1,76 +1,69 @@
 <script>
-  import Navigation from '$lib/components/Navigation.svelte';
+  import { page } from '$app/stores';
   
   // Data for approach sections
   const approachSections = [
     {
-      title: "Client-Focused Experience",
-      description: "We reject the conventional approach of rushing clients through properties to maximize sales. Instead, we take the time to understand your unique needs, lifestyle, and aspirations, ensuring every property we show you is a potential match.",
-      icon: "🔍"
+      title: "The Power of Three: A Client-Centric Triumvirate",
+      description: "We are not solo agents; we are a dedicated triumvirate. This unique team structure ensures you receive unparalleled attention, diverse expertise, and a truly bespoke service meticulously tailored to your individual aspirations, whether buying or selling.",
+      icon: "🤝"
     },
     {
-      title: "Transparency in All Dealings",
-      description: "Unlike traditional real estate practices that often hide issues to make a sale, we believe in complete transparency. We'll provide comprehensive information about every property, including potential concerns, ensuring you make fully informed decisions.",
+      title: "Radical Transparency: Your Foundation of Trust",
+      description: "Our commitment to absolute transparency shatters industry norms. We provide exhaustive insights and unvarnished truths about every property and process step, empowering you with the clarity needed for decisive, fully-informed decisions.",
       icon: "💎"
     },
     {
-      title: "Architectural Expertise",
-      description: "Our team includes specialists with backgrounds in architecture and design who can help you see beyond the current state of a property to its full potential. We provide insights on structural integrity, renovation possibilities, and design opportunities.",
-      icon: "🏛️"
+      title: "The KW/CL Blueprint: Innovation Meets Legacy",
+      description: "Our distinct advantage lies in our alchemic blend: the pioneering systems and tech-forward strategies of Keller Williams fused with Crye-Leike's deep market mastery and client-first heritage. This synergy creates your unfair advantage in the market.",
+      icon: "🔗"
     },
     {
-      title: "Technological Innovation",
-      description: "We leverage cutting-edge technology to enhance your property search, from immersive virtual tours that save you time to detailed analytics that help you understand market trends and property values in depth.",
-      icon: "💻"
+      title: "Strategic Acumen & Architectural Insight",
+      description: "Leveraging our collective expertise, which includes keen architectural understanding and design foresight, we unlock hidden potential and identify opportunities others miss. This elevates your search or sale from transactional to transformational.",
+      icon: "🏛️"
     }
   ];
   
   // Team values
   const values = [
     {
-      title: "Integrity",
-      description: "We believe in honesty above all else, even when it means losing a sale."
+      title: "Unyielding Integrity",
+      description: "Honesty is our bedrock. We champion your best interests with unwavering ethical standards, even if it challenges a conventional sale."
     },
     {
-      title: "Innovation",
-      description: "We constantly seek new ways to improve the real estate experience."
+      title: "Synergistic Innovation",
+      description: "Fueled by our collective creativity and the dynamic KW/CL framework, we relentlessly pioneer superior real estate experiences."
     },
     {
-      title: "Excellence",
-      description: "We hold ourselves to the highest standards in everything we do."
+      title: "Collective Excellence",
+      description: "As a unified team, we hold ourselves accountable to the highest echelons of performance, delivering exceptional outcomes consistently."
     },
     {
-      title: "Client Success",
-      description: "Your satisfaction and successful outcome is our primary measure of success."
+      title: "Your Definitive Success",
+      description: "Your triumph is our ultimate metric. We leverage our combined strength and unique methodology to ensure your goals are not just met, but exceeded."
     }
   ];
 </script>
 
 <svelte:head>
-  <title>Our Approach | SELIVETE</title>
+  <title>Our Unconventional Advantage | WASAW</title>
 </svelte:head>
-
-<Navigation />
 
 <div class="about-page">
   <header class="page-header">
-    <h1>OUR <span class="highlight-red">APPROACH</span></h1>
-    <p class="page-subtitle">Revolutionizing real estate through transparency, expertise, and a focus on your unique needs</p>
+    <h1>OUR <span class="highlight-red">UNCONVENTIONAL<br class="mobile-break"> ADVANTAGE</span></h1>
+    <p class="page-subtitle">Discover how our dedicated triumvirate of realtors and our unique KW/CL synergy deliver unparalleled results for buyers and sellers at WASAW.</p>
   </header>
   
   <section class="mission-section">
     <div class="mission-content">
-      <h2>OUR <span class="highlight-red">MISSION</span></h2>
+      <h2>OUR <span class="highlight-red">MISSION:</span> YOUR TRIUMPH, AMPLIFIED.</h2>
       <p>
-        At SELIVETE, we're driven by a singular mission: to transform the real estate experience from a 
-        transactional process into a meaningful journey tailored to your unique vision and lifestyle. 
-        We believe that finding the perfect property is about more than square footage and amenities—it's 
-        about discovering a space that resonates with who you are and who you aspire to be.
+        At WASAW, our mission is to revolutionize your real estate journey. We operate as a <span class="highlight-red">cohesive team of three seasoned professionals</span>, not as individual agents. This collective force is dedicated to transforming the often-impersonal transactional process into a strategic, bespoke experience, meticulously tailored to your unique vision and lifestyle—whether you're buying your dream home or maximizing the sale of your valued property.
       </p>
       <p>
-        We reject the conventional sales-first approach that has dominated real estate for decades. 
-        Instead, we place your needs at the center of everything we do, creating a revolutionary 
-        client experience built on transparency, expertise, and genuine connection.
+        We reject the conventional, sales-driven model. Instead, we champion your ambitions by leveraging our <span class="highlight-red">powerful fusion of Keller Williams' innovative systems and Crye-Leike's market-leading expertise</span>. This client-centric paradigm, built on radical transparency and collective mastery, ensures your real estate goals are not just met, but decisively exceeded.
       </p>
     </div>
     <div class="mission-image">
@@ -79,7 +72,7 @@
   </section>
   
   <section class="approach-section">
-    <h2>THE <span class="highlight-red">ATYPICAL</span> DIFFERENCE</h2>
+    <h2>THE <span class="highlight-red">WASAW</span> DIFFERENCE: HOW WE ELEVATE YOUR EXPERIENCE</h2>
     <div class="approach-grid">
       {#each approachSections as section, i}
         <div class="approach-card" style="animation-delay: {i * 0.1}s">
@@ -93,7 +86,7 @@
   
   <section class="values-section">
     <div class="values-content">
-      <h2>OUR <span class="highlight-red">VALUES</span></h2>
+      <h2>OUR <span class="highlight-red">CORE TENETS:</span> THE FOUNDATION OF OUR PARTNERSHIP</h2>
       <div class="values-grid">
         {#each values as value, i}
           <div class="value-item">
@@ -107,33 +100,25 @@
   
   <section class="story-section">
     <div class="story-content">
-      <h2>OUR <span class="highlight-red">STORY</span></h2>
+      <h2>OUR <span class="highlight-red">GENESIS:</span> FORGED FROM EXPERIENCE, DRIVEN BY VISION</h2>
       <div class="story-text">
         <p>
-          SELIVETE was founded in 2020 by a group of industry veterans who had grown disillusioned 
-          with the traditional real estate model. After decades of collective experience at some of 
-          the world's most prestigious firms, they recognized a fundamental disconnect between what 
-          clients truly need and what the industry was providing.
+          WASAW was born from a shared conviction among three industry veterans who saw a profound opportunity to redefine real estate excellence. With decades of combined experience navigating the complexities of the market, often within the frameworks of Keller Williams and Crye-Leike, we recognized the limitations of traditional, siloed approaches.
         </p>
         <p>
-          The founding team envisioned a new approach—one that would challenge industry norms and 
-          prioritize client relationships over transaction volume. They assembled a diverse team of 
-          experts not just in real estate, but in architecture, design, finance, and technology to 
-          create a holistic service that addresses every aspect of the property journey.
+          We envisioned a new paradigm: a <span class="highlight-red">synergistic team of three</span>, where collective wisdom, diverse strengths, and a shared commitment to client advocacy would form the cornerstone of our practice. Our unconventional model strategically integrates the pioneering spirit and robust systems of <span class="highlight-red">Keller Williams</span> with the established market leadership and unparalleled client service of <span class="highlight-red">Crye-Leike</span>, creating a potent, client-focused force.
         </p>
         <p>
-          Today, SELIVETE has grown into a boutique agency known for its revolutionary approach and 
-          unwavering commitment to client success. We remain dedicated to our founding vision: transforming 
-          real estate into an experience that's as personal and unique as the properties we represent.
+          Today, WASAW stands as a testament to this vision—a boutique force renowned for its innovative methodology and unwavering dedication to achieving superior outcomes. We are not just agents; we are your strategic partners, your advocates, your <span class="highlight-red">triumvirate of trust</span>, committed to transforming your real estate ambitions into resounding successes.
         </p>
       </div>
     </div>
   </section>
   
   <section class="cta-section">
-    <h2>READY TO EXPERIENCE THE <span class="highlight-red">DIFFERENCE?</span></h2>
-    <p>Connect with our team and discover a new approach to real estate.</p>
-    <a href="/contact" class="cta-button">CONTACT US</a>
+    <h2>EXPERIENCE THE POWER OF <span class="highlight-red">THREE.</span></h2>
+    <p>Connect with our dedicated team at WASAW and discover your unconventional path to real estate success.</p>
+    <a href="/contact" class="cta-button">UNLOCK YOUR ADVANTAGE</a>
   </section>
 </div>
 
@@ -156,6 +141,13 @@
     font-weight: 700;
     font-size: clamp(2.5rem, 6vw, 4rem);
     margin: 0 0 1rem 0;
+    word-wrap: break-word;
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
+  
+  .mobile-break {
+    display: none;
   }
   
   .highlight-red {
@@ -392,11 +384,24 @@
     .cta-section {
       padding: 3rem 1.5rem;
     }
+    
+    .mobile-break {
+      display: inline;
+    }
+    
+    .page-header h1 {
+      font-size: clamp(2rem, 8vw, 3rem);
+      line-height: 1.2;
+    }
   }
   
   @media (max-width: 480px) {
     .page-header {
       padding: 3rem 1rem;
+    }
+    
+    .page-header h1 {
+      font-size: clamp(1.8rem, 7vw, 2.5rem);
     }
   }
 </style> 
