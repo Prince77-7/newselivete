@@ -20,7 +20,7 @@
   onMount(() => {
     setTimeout(() => {
       isLoading = false;
-    }, 2000);
+    }, 1800);
 
     if (localStorage.getItem('typicalButtonVanished') === 'true') {
       typicalButtonVanished = true;
@@ -172,7 +172,7 @@
 {#if isLoading}
   <div class="loading-screen full-screen-view">
     <div class="breathing-circle"></div>
-    <p class="loading-text"><span>R</span><span>E</span><span>V</span><span>O</span><span>L</span><span>U</span><span>T</span><span>I</span><span>O</span><span>N</span>IZING...</p>
+    <!-- <p class="loading-text"><span>R</span><span>E</span><span>V</span><span>O</span><span>L</span><span>U</span><span>T</span><span>I</span><span>O</span><span>N</span>IZING...</p> --> <!-- REMOVED TEXT -->
     <!-- Placeholder for WebGL Particle Animation -->
   </div>
 {:else if !showAtypicalExperience}
@@ -255,6 +255,9 @@
   :root {
     --base-button-size: clamp(120px, 15vw, 180px); /* Dynamic button size */
     --button-padding: clamp(10px, 2vw, 20px);    /* Dynamic padding */
+    --color-slide-bg-alt: #1a1a1a; /* Slightly lighter black/grey for alternate slides */
+    --color-olive-green: #173736; /* Updated to user-specified hex code */
+    --color-dark-blue: #000066; /* Added Dark Blue */
   }
 
   /* Apply to body when scroll-up mode is active */
@@ -297,19 +300,19 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    animation: breathe 4s ease-in-out infinite, fadeInCircle 1s ease-out forwards;
-    z-index: -1; 
-    opacity: 0;
+    /* transform: translate(-50%, -50%); */ /* Initial transform handled by keyframes */
+    animation: combinedCircleAnimation 1.8s ease-in-out forwards; /* Changed animation */
+    z-index: 1; /* Ensure it's above anything else in loading screen if needed */
+    opacity: 0; /* Start with 0 opacity, animation will fade it in */
   }
 
-  @keyframes fadeInCircle {
+  /* @keyframes fadeInCircle { -- No longer needed separately
     to {
       opacity: 1;
     }
-  }
+  } */
 
-  @keyframes breathe {
+  /* @keyframes breathe { -- Combined into new animation
     0%, 100% {
       transform: translate(-50%, -50%) scale(0.8);
       opacity: 0.5;
@@ -322,37 +325,35 @@
       box-shadow: 0 0 50px 20px rgba(153, 0, 0, 0.4), 
                   0 0 80px 40px rgba(153, 0, 0, 0.2);
     }
-  }
+  } */
 
-  .loading-text {
-    font-family: var(--font-headline);
-    font-weight: 700; 
-    font-size: clamp(2rem, 5vw, 3.5rem); 
-    color: var(--color-pure-white);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    position: relative; 
-    z-index: 1;
-  }
-  .loading-text span {
-    opacity: 0;
-    animation: fadeInLetter 0.2s forwards;
-  }
-  .loading-text span:nth-child(1) { animation-delay: 0.2s; }
-  .loading-text span:nth-child(2) { animation-delay: 0.3s; }
-  .loading-text span:nth-child(3) { animation-delay: 0.4s; }
-  .loading-text span:nth-child(4) { animation-delay: 0.5s; }
-  .loading-text span:nth-child(5) { animation-delay: 0.6s; }
-  .loading-text span:nth-child(6) { animation-delay: 0.7s; }
-  .loading-text span:nth-child(7) { animation-delay: 0.8s; }
-  .loading-text span:nth-child(8) { animation-delay: 0.9s; }
-  .loading-text span:nth-child(9) { animation-delay: 1.0s; }
-  .loading-text span:nth-child(10) { animation-delay: 1.1s; }
-  .loading-text span:nth-child(11) { animation-delay: 1.2s; }
-
-  @keyframes fadeInLetter {
-    to {
-      opacity: 1;
+  @keyframes combinedCircleAnimation {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+      box-shadow: 0 0 20px 5px rgba(153, 0, 0, 0.1);
+    }
+    25% { /* Fade in and initial small breathe */
+      opacity: 0.7;
+      transform: translate(-50%, -50%) scale(0.8);
+      box-shadow: 0 0 30px 10px rgba(153, 0, 0, 0.2), 
+                  0 0 50px 20px rgba(153, 0, 0, 0.1);
+    }
+    50% { /* Mid breathe */
+      opacity: 0.9;
+      transform: translate(-50%, -50%) scale(1);
+      box-shadow: 0 0 50px 20px rgba(153, 0, 0, 0.4), 
+                  0 0 80px 40px rgba(153, 0, 0, 0.2);
+    }
+    75% { /* Start of zoom and fade */
+      opacity: 0.6;
+      transform: translate(-50%, -50%) scale(0.9);
+      box-shadow: 0 0 40px 15px rgba(153, 0, 0, 0.3);
+    }
+    100% { /* Zoom in fully and fade out */
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(5); /* Significantly larger scale for zoom */
+      box-shadow: 0 0 60px 30px rgba(153, 0, 0, 0.1);
     }
   }
 
@@ -511,34 +512,45 @@
   }
 
   .slide {
-    height: 100vh; /* Each slide is full viewport height */
+    height: 100vh; 
     width: 100%;
-    scroll-snap-align: start; /* Snap to the start of each slide */
+    scroll-snap-align: start;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem clamp(1rem, 5vw, 4rem); /* Responsive padding */
+    padding: 2rem clamp(1rem, 5vw, 4rem);
     box-sizing: border-box;
     text-align: center;
-    /* opacity: 0; */ /* Temporarily removed for debugging */
-    /* transform: translateY(30px); */ /* Temporarily removed for debugging */
-    /* transition: opacity 0.8s ease-out, transform 0.8s ease-out; */ /* Temporarily removed for debugging */
-    /* Ensure slides are visible for now, will re-add transition later */
-    opacity: 1;
-    transform: translateY(0);
+    /* opacity: 0; */ /* Temporarily commented out for debugging */
+    /* transform: translateY(30px); */ /* Temporarily commented out for debugging */
+    /* transition: opacity 0.8s ease-out, transform 0.8s ease-out, background-color 0.5s ease-out; */ /* Temporarily commented out for debugging */
+    background-color: var(--color-deep-matte-black); /* Default background */
+    opacity: 1; /* DEBUG: Make slides visible by default */
+    transform: translateY(0); /* DEBUG: Reset transform */
+  }
+
+  /* Apply alternate background colors */
+  #slide-philosophy {
+    background-color: var(--color-olive-green); /* Changed to Olive Green */
+  }
+  #slide-process { /* Third slide */
+    background-color: var(--color-dark-blue);
+  }
+  #slide-contact {
+    background-color: var(--color-slide-bg-alt);
   }
 
   /* Specific override for initial slide if needed, though general .slide change should cover it */
   .hero-slide-scroll-up {
-     /* opacity: 1 !important; */ /* Ensure the first slide is definitely visible */
-     /* transform: translateY(0) !important; */
+     /* opacity: 1 !important; */ /* Ensure the first slide is definitely visible - REMOVE THIS DEBUG CODE */
+     /* transform: translateY(0) !important; */ /* REMOVE THIS DEBUG CODE */
   }
   
   .slide.is-visible {
     opacity: 1;
     transform: translateY(0);
-    /* Transition will be re-enabled after basic visibility is confirmed */
+    /* Transition will be re-enabled after basic visibility is confirmed - This comment is now obsolete */
   }
 
   .slide-content {
@@ -563,6 +575,7 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     margin-bottom: 1rem;
+    font-weight: 600; /* Increased font-weight for more boldness */
   }
 
   .arrow-up-animated {
@@ -710,5 +723,45 @@
     } 
     */
   }
+
+  /* Decision Gateway Text Animations */
+  @keyframes textFadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .welcome-headline,
+  .sub-headline,
+  .main-question,
+  .button-container {
+    opacity: 0; /* Start hidden */
+    animation-fill-mode: forwards; /* Stay visible after animation */
+  }
+
+  /* Apply staggered animations when decision gateway is shown */
+  /* These will play after isLoading becomes false */
+  .welcome-headline {
+    animation: textFadeInUp 0.6s ease-out 0.2s forwards;
+  }
+
+  .sub-headline {
+    animation: textFadeInUp 0.6s ease-out 0.5s forwards; /* 0.2s (prev end) + 0.3s delay */
+  }
+
+  .main-question {
+    animation: textFadeInUp 0.6s ease-out 0.8s forwards; /* 0.5s + 0.3s delay */
+  }
+
+  .button-container {
+    animation: textFadeInUp 0.6s ease-out 1.1s forwards; /* 0.8s + 0.3s delay */
+    /* min-height set below to prevent layout shift is still relevant */
+  }
+  /* End Decision Gateway Text Animations */
 
 </style> 
