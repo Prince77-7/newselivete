@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  # Production service
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+
+  # Development service with hot-reloading
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./src:/app/src
+      - ./static:/app/static
+      - ./svelte.config.js:/app/svelte.config.js
+      - ./vite.config.js:/app/vite.config.js
+    environment:
+      - NODE_ENV=development
+    command: npm run dev -- --host 
