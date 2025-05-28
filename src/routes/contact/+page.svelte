@@ -1,6 +1,13 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { themeStore } from '$lib/stores/themeStore';
+  import emailjs from '@emailjs/browser';
+  import { onMount } from 'svelte';
+  
+  // EmailJS configuration
+  const EMAILJS_SERVICE_ID = 'service_v3mqdmw';
+  const EMAILJS_TEMPLATE_ID = 'template_laljpsw';
+  const EMAILJS_PUBLIC_KEY = 'wT5SGa2cg2CMDddwx';
   
   // Contact form state
   let name = '';
@@ -10,6 +17,8 @@
   let selectedAgent = '';
   let formSubmitted = false;
   let formError = false;
+  let isSubmitting = false;
+  let errorMessage = '';
   
   // Subscribe to themeStore for isLightMode for local UI elements like the toggle icon
   let isLightModeFromStore: boolean;
@@ -20,6 +29,11 @@
   function togglePageTheme() {
     themeStore.toggle();
   }
+
+  // Initialize EmailJS
+  onMount(() => {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+  });
 
   // Our agents
   const agents = [
@@ -52,29 +66,103 @@
     }
   ];
   
+  // Form validation
+  function validateForm() {
+    if (!name.trim()) {
+      errorMessage = 'Please enter your full name.';
+      return false;
+    }
+    
+    if (!email.trim()) {
+      errorMessage = 'Please enter your email address.';
+      return false;
+    }
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      errorMessage = 'Please enter a valid email address.';
+      return false;
+    }
+    
+    if (!message.trim()) {
+      errorMessage = 'Please enter your message.';
+      return false;
+    }
+    
+    if (message.trim().length < 10) {
+      errorMessage = 'Please provide a more detailed message (at least 10 characters).';
+      return false;
+    }
+    
+    return true;
+  }
+  
   // Form submission handler
-  function handleSubmit() {
-    if (!name || !email || !message) {
+  async function handleSubmit() {
+    // Reset previous errors
+    formError = false;
+    errorMessage = '';
+    
+    // Validate form
+    if (!validateForm()) {
       formError = true;
       return;
     }
     
-    // In a real app, this would send data to a server
-    console.log('Form submitted:', { name, email, phone, message, selectedAgent });
+    // Set loading state
+    isSubmitting = true;
     
-    // Reset form and show success message
-    formSubmitted = true;
-    formError = false;
-    name = '';
-    email = '';
-    phone = '';
-    message = '';
-    selectedAgent = '';
-    
-    // Reset success message after 5 seconds
-    setTimeout(() => {
-      formSubmitted = false;
-    }, 5000);
+    try {
+      // Find selected agent details
+      const selectedAgentDetails = selectedAgent 
+        ? agents.find(agent => agent.id === selectedAgent)
+        : null;
+      
+      // Prepare template parameters
+      const templateParams = {
+        from_name: name.trim(),
+        from_email: email.trim(),
+        phone: phone.trim() || 'Not provided',
+        message: message.trim(),
+        preferred_agent: selectedAgentDetails ? selectedAgentDetails.name : 'No preference',
+        preferred_agent_email: selectedAgentDetails ? selectedAgentDetails.email : 'info@wasaw.com',
+        to_email: selectedAgentDetails ? selectedAgentDetails.email : 'info@wasaw.com',
+        reply_to: email.trim(),
+        subject: `New Contact Form Submission from ${name.trim()}`,
+        timestamp: new Date().toLocaleString()
+      };
+      
+      // Send email using EmailJS (auto-reply will be sent automatically if linked in dashboard)
+      const response = await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams
+      );
+      
+      console.log('Email sent successfully:', response);
+      
+      // Reset form and show success message
+      formSubmitted = true;
+      formError = false;
+      name = '';
+      email = '';
+      phone = '';
+      message = '';
+      selectedAgent = '';
+      
+      // Reset success message after 8 seconds
+      setTimeout(() => {
+        formSubmitted = false;
+      }, 8000);
+      
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      formError = true;
+      errorMessage = 'Failed to send message. Please try again or contact us directly.';
+    } finally {
+      isSubmitting = false;
+    }
   }
 </script>
 
@@ -130,7 +218,7 @@
         <form on:submit|preventDefault={handleSubmit} class="contact-form">
           {#if formError}
             <div class="form-error">
-              <p>Please fill out all required fields.</p>
+              <p>{errorMessage}</p>
             </div>
           {/if}
           
@@ -187,7 +275,14 @@
             ></textarea>
           </div>
           
-          <button type="submit" class="submit-button">SEND MESSAGE</button>
+          <button type="submit" class="submit-button" disabled={isSubmitting}>
+            {#if isSubmitting}
+              <span class="loading-spinner"></span>
+              SENDING...
+            {:else}
+              SEND MESSAGE
+            {/if}
+          </button>
         </form>
       {/if}
     </div>
@@ -426,10 +521,34 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
   }
 
-  .submit-button:hover {
+  .submit-button:hover:not(:disabled) {
     background-color: #7a0000;
+  }
+  
+  .submit-button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  
+  .loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
   
   .form-success {
@@ -587,52 +706,64 @@
   /* Applied using global body.light-mode */
 
   :global(body.light-mode) .contact-page {
-    background-color: var(--light-bg-primary);
-    color: var(--light-text-primary);
+    background-color: var(--background);
+    color: var(--foreground);
   }
 
   :global(body.light-mode) .page-header {
-    background-color: var(--light-bg-secondary);
-    border-bottom: 1px solid var(--light-shadow);
+    background-color: var(--muted);
+    border-bottom: 1px solid var(--border);
   }
 
   :global(body.light-mode) .page-header h1,
   :global(body.light-mode) .page-header .page-subtitle {
-    color: var(--light-text-primary);
+    color: var(--foreground);
   }
 
   :global(body.light-mode) .highlight-red {
-    color: var(--light-accent-red);
+    color: var(--primary);
   }
 
   :global(body.light-mode) .contact-info h2,
   :global(body.light-mode) .contact-form-wrapper h2 {
-    color: var(--light-text-primary);
+    color: var(--foreground);
   }
 
   :global(body.light-mode) .contact-info p,
   :global(body.light-mode) .contact-form label {
-    color: var(--light-text-secondary);
+    color: var(--muted-foreground);
   }
 
   :global(body.light-mode) .contact-info .info-block {
-    background-color: var(--light-bg-secondary);
-    box-shadow: 0 2px 8px var(--light-shadow);
-    border-top: 3px solid var(--light-accent-red);
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-top: 3px solid var(--primary);
+  }
+
+  :global(body.light-mode) .info-block h2 {
+    color: var(--foreground);
+    border-bottom-color: var(--border);
+  }
+
+  :global(body.light-mode) .info-block p {
+    color: var(--muted-foreground);
   }
 
   :global(body.light-mode) .map-placeholder {
-    background-color: var(--light-bg-secondary);
-    border: 1px solid var(--light-shadow);
+    background-color: var(--muted);
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
   }
 
   :global(body.light-mode) .map-placeholder p {
-    color: var(--light-text-secondary);
+    color: var(--muted-foreground);
   }
 
   :global(body.light-mode) .contact-form-wrapper {
-    background-color: var(--light-bg-secondary);
-    box-shadow: 0 4px 15px var(--light-shadow);
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   }
 
   :global(body.light-mode) .contact-form input[type="text"],
@@ -640,59 +771,90 @@
   :global(body.light-mode) .contact-form input[type="tel"],
   :global(body.light-mode) .contact-form select,
   :global(body.light-mode) .contact-form textarea {
-    background-color: var(--light-bg-primary);
-    color: var(--light-text-primary);
-    border: 1px solid #ccc; /* A slightly more visible border for light inputs */
+    background-color: var(--input);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+  }
+
+  :global(body.light-mode) .contact-form input[type="text"]:focus,
+  :global(body.light-mode) .contact-form input[type="email"]:focus,
+  :global(body.light-mode) .contact-form input[type="tel"]:focus,
+  :global(body.light-mode) .contact-form select:focus,
+  :global(body.light-mode) .contact-form textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(184, 0, 45, 0.1);
   }
 
   :global(body.light-mode) .contact-form input[type="text"]::placeholder,
   :global(body.light-mode) .contact-form input[type="email"]::placeholder,
   :global(body.light-mode) .contact-form input[type="tel"]::placeholder,
   :global(body.light-mode) .contact-form textarea::placeholder {
-    color: #999; /* Lighter placeholder text for light inputs */
+    color: var(--muted-foreground);
   }
 
   :global(body.light-mode) .contact-form button[type="submit"] {
-    background-color: var(--light-accent-red);
-    color: var(--light-bg-primary);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
   }
 
-  :global(body.light-mode) .contact-form button[type="submit"]:hover {
-    background-color: #A30027; /* Slightly darker red on hover */
+  :global(body.light-mode) .contact-form button[type="submit"]:hover:not(:disabled) {
+    background-color: #A30027;
+  }
+
+  :global(body.light-mode) .contact-form button[type="submit"]:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
   }
 
   :global(body.light-mode) .form-success {
-    background-color: #d4edda; /* Light green for success */
-    color: #155724; /* Dark green text */
-    border-left: 4px solid #28a745; /* Green border */
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-left: 4px solid #28a745;
   }
 
   :global(body.light-mode) .form-error {
-    background-color: #f8d7da; /* Light red for error */
-    color: #721c24; /* Dark red text */
-    border-left: 4px solid #dc3545; /* Red border */
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-left: 4px solid #dc3545;
   }
 
-  :global(body.light-mode) .agent-showcase {
-    background-color: var(--light-bg-primary);
+  :global(body.light-mode) .agent-section {
+    background-color: var(--background);
+  }
+
+  :global(body.light-mode) .agent-section h2 {
+    color: var(--foreground);
   }
 
   :global(body.light-mode) .agent-card {
-    background-color: var(--light-bg-secondary);
-    box-shadow: 0 4px 15px var(--light-shadow);
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   }
 
-  :global(body.light-mode) .agent-card h3,
-  :global(body.light-mode) .agent-card .agent-title {
-    color: var(--light-text-primary);
+  :global(body.light-mode) .agent-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   }
 
-  :global(body.light-mode) .agent-card .agent-bio,
-  :global(body.light-mode) .agent-card .agent-contact a {
-    color: var(--light-text-secondary);
+  :global(body.light-mode) .agent-details h3 {
+    color: var(--foreground);
   }
 
-  :global(body.light-mode) .agent-card .agent-contact a:hover {
-    color: var(--light-accent-red);
+  :global(body.light-mode) .agent-title {
+    color: var(--primary);
+  }
+
+  :global(body.light-mode) .agent-bio {
+    color: var(--muted-foreground);
+  }
+
+  :global(body.light-mode) .agent-contact-info {
+    border-top-color: var(--border);
+  }
+
+  :global(body.light-mode) .agent-contact-info p {
+    color: var(--muted-foreground);
   }
 </style> 
