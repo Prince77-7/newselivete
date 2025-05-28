@@ -22,9 +22,9 @@
     {
       id: 1,
       images: [
-        'https://picsum.photos/800/600?random=1',
-        'https://picsum.photos/800/600?random=2',
-        'https://picsum.photos/800/600?random=3'
+        '/images/properties/guess-the-price/1-1.jpg',
+        '/images/properties/guess-the-price/1-2.jpg',
+        '/images/properties/guess-the-price/1-3.jpg'
       ],
       title: 'Modern Downtown Loft',
       location: 'Nashville, TN',
@@ -37,9 +37,9 @@
     {
       id: 2,
       images: [
-        'https://picsum.photos/800/600?random=4',
-        'https://picsum.photos/800/600?random=5',
-        'https://picsum.photos/800/600?random=6'
+        '/images/properties/guess-the-price/2-1.jpg',
+        '/images/properties/guess-the-price/2-2.jpg',
+        '/images/properties/guess-the-price/2-3.jpg'
       ],
       title: 'Suburban Family Home',
       location: 'Franklin, TN',
@@ -52,9 +52,9 @@
     {
       id: 3,
       images: [
-        'https://picsum.photos/800/600?random=7',
-        'https://picsum.photos/800/600?random=8',
-        'https://picsum.photos/800/600?random=9'
+        '/images/properties/guess-the-price/3-1.jpg',
+        '/images/properties/guess-the-price/3-2.jpg',
+        '/images/properties/guess-the-price/3-3.jpg'
       ],
       title: 'Historic Bungalow',
       location: 'East Nashville, TN',
@@ -67,9 +67,9 @@
     {
       id: 4,
       images: [
-        'https://picsum.photos/800/600?random=10',
-        'https://picsum.photos/800/600?random=11',
-        'https://picsum.photos/800/600?random=12'
+        '/images/properties/guess-the-price/4-1.jpg',
+        '/images/properties/guess-the-price/4-2.jpg',
+        '/images/properties/guess-the-price/4-3.jpg'
       ],
       title: 'Luxury Estate',
       location: 'Brentwood, TN',
@@ -82,9 +82,9 @@
     {
       id: 5,
       images: [
-        'https://picsum.photos/800/600?random=13',
-        'https://picsum.photos/800/600?random=14',
-        'https://picsum.photos/800/600?random=15'
+        '/images/properties/guess-the-price/5-1.jpg',
+        '/images/properties/guess-the-price/5-2.jpg',
+        '/images/properties/guess-the-price/5-3.jpg'
       ],
       title: 'Starter Home',
       location: 'Antioch, TN',

@@ -29,7 +29,7 @@
       title: "Luxury Property Specialist",
       phone: "(310) 555-8732",
       email: "waiel@wasaw.com",
-      photo: "/images/agent1.jpg",
+      photo: "/images/agents/agent1.jpg",
       bio: "With over 15 years of experience in luxury real estate, Waiel specializes in high-end properties in Beverly Hills and the surrounding areas, leveraging a unique blend of Keller Williams strategies and Crye-Leike market insight."
     },
     {
@@ -38,7 +38,7 @@
       title: "Urban Properties & Investment Expert",
       phone: "(212) 555-1919",
       email: "albara@wasaw.com",
-      photo: "/images/agent2.jpg",
+      photo: "/images/agents/agent2.jpg",
       bio: "Albara has unparalleled knowledge of the urban real estate market and investment opportunities, focusing on premier properties and delivering results through a powerful fusion of KW systems and CL client-centric service."
     },
     {
@@ -47,7 +47,7 @@
       title: "Coastal & Lifestyle Properties Specialist",
       phone: "(310) 555-4276",
       email: "mohamed@wasaw.com",
-      photo: "/images/agent3.jpg",
+      photo: "/images/agents/agent3.jpg",
       bio: "Mohamed has built a reputation for representing the finest coastal and lifestyle properties, with particular expertise in architectural masterpieces and unique estates, utilizing the best of Keller Williams and Crye-Leike methodologies."
     }
   ];

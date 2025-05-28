@@ -27,7 +27,7 @@
       tags: ["Trends", "Market Analysis", "Investment"],
       category: "Market Insights",
       readTime: "5 min read",
-      image: "/images/placeholder-blog-detail-1.jpg",
+      image: "/images/blog/1.jpg",
       content: `
         <p>The real estate market is constantly evolving, shaped by economic shifts, technological advancements, and changing consumer preferences. As we move through 2024, several key trends are emerging that savvy investors and homeowners should be watching closely.</p>
         
@@ -80,7 +80,7 @@
       tags: ["Luxury", "Design", "Staging"],
       category: "Luxury Properties",
       readTime: "7 min read",
-      image: "/images/placeholder-blog-detail-2.jpg",
+      image: "/images/blog/2.jpg",
       content: `
         <p>In the ultra-competitive luxury real estate market, exceptional staging isn't just a nice-to-have—it's essential for commanding top dollar. High-end buyers aren't just purchasing square footage; they're investing in a lifestyle, an identity, and a narrative about who they are and how they live. Effective luxury staging is the art of crafting that narrative in a way that creates an emotional connection with potential buyers.</p>
         

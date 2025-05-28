@@ -81,7 +81,7 @@
       tags: ["Trends", "Market Analysis", "Investment"],
       category: "Market Insights",
       readTime: "5 min read",
-      image: "/images/placeholder-blog-1.jpg"
+      image: "/images/blog/1.jpg"
     },
     {
       id: "2",
@@ -93,7 +93,7 @@
       tags: ["Luxury", "Design", "Staging"],
       category: "Luxury Properties",
       readTime: "7 min read",
-      image: "/images/placeholder-blog-2.jpg"
+      image: "/images/blog/2.jpg"
     },
     {
       id: "3",
@@ -105,7 +105,7 @@
       tags: ["Buying", "Negotiation", "Strategy"],
       category: "Buyer Tips",
       readTime: "6 min read",
-      image: "/images/placeholder-blog-3.jpg"
+      image: "/images/blog/3.jpg"
     },
     {
       id: "4",
@@ -117,7 +117,7 @@
       tags: ["Sustainability", "Luxury", "Investment"],
       category: "Sustainable Living",
       readTime: "8 min read",
-      image: "/images/placeholder-blog-4.jpg"
+      image: "/images/blog/4.jpg"
     },
     {
       id: "5",
@@ -129,7 +129,7 @@
       tags: ["Client Service", "WASAW Method", "Teamwork"],
       category: "WASAW Approach",
       readTime: "6 min read",
-      image: "/images/placeholder-blog-5.jpg"
+      image: "/images/blog/5.jpg"
     },
     {
       id: "6",
@@ -141,7 +141,7 @@
       tags: ["Market Analysis", "Data", "Trends"],
       category: "Market Reports",
       readTime: "10 min read",
-      image: "/images/placeholder-blog-6.jpg"
+      image: "/images/blog/6.jpg"
     }
   ];
   
