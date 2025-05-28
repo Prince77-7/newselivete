@@ -69,55 +69,91 @@
 
   // --- END PODCAST PLAYER LOGIC ---
   
-  // Sample blog data
+  // Sample blog data - newest posts first with highest numbers
   const blogPosts = [
     {
-      id: "1",
-      title: "The Future of Real Estate: Emerging Trends for 2024",
-      excerpt: "Explore the innovative trends reshaping the real estate landscape and how savvy investors can position themselves for success.",
-      date: "April 25, 2024",
+      id: "12",
+      title: "2024 Year-End Market Outlook: What to Expect in Real Estate",
+      excerpt: "Our comprehensive analysis of market trends, interest rate predictions, and investment opportunities heading into 2025.",
+      date: "December 15, 2024",
       author: "Waiel Grey",
       authorImage: "/images/wasaw_white.svg",
-      tags: ["Trends", "Market Analysis", "Investment"],
-      category: "Market Insights",
-      readTime: "5 min read",
-      image: "/images/blog/1.jpg"
+      tags: ["Market Analysis", "Predictions", "Investment"],
+      category: "Market Reports",
+      readTime: "8 min read",
+      image: "/images/blog/12.jpg"
     },
     {
-      id: "2",
-      title: "Luxury Property Staging: The Art of Creating Irresistible Spaces",
-      excerpt: "Discover the psychological principles and design strategies behind staging high-end properties that command premium prices.",
-      date: "April 18, 2024",
-      author: "Albara Al-Shujaa",
-      authorImage: "/images/wasaw_white.svg",
-      tags: ["Luxury", "Design", "Staging"],
-      category: "Luxury Properties",
-      readTime: "7 min read",
-      image: "/images/blog/2.jpg"
-    },
-    {
-      id: "3",
-      title: "Navigating Bidding Wars: Strategies for Success in Competitive Markets",
-      excerpt: "Learn proven techniques to help your offers stand out in multiple-bid scenarios without overextending your budget.",
-      date: "April 12, 2024",
+      id: "11",
+      title: "Smart Home Technology: The New Standard in Luxury Real Estate",
+      excerpt: "How integrated smart home systems are becoming essential features that buyers expect in high-end properties.",
+      date: "December 8, 2024",
       author: "Mohamed Aly",
       authorImage: "/images/wasaw_white.svg",
-      tags: ["Buying", "Negotiation", "Strategy"],
-      category: "Buyer Tips",
+      tags: ["Technology", "Luxury", "Smart Homes"],
+      category: "Luxury Properties",
       readTime: "6 min read",
-      image: "/images/blog/3.jpg"
+      image: "/images/blog/11.jpg"
     },
     {
-      id: "4",
-      title: "Sustainable Luxury: Eco-Friendly Features That Add Value",
-      excerpt: "Discover how environmentally conscious upgrades can enhance property value while reducing carbon footprint and operational costs.",
-      date: "April 5, 2024",
+      id: "10",
+      title: "Winter Selling Strategies: Maximizing Your Property's Appeal",
+      excerpt: "Expert tips for presenting your home at its best during the traditionally slower winter selling season.",
+      date: "November 28, 2024",
+      author: "Albara Al-Shujaa",
+      authorImage: "/images/wasaw_white.svg",
+      tags: ["Selling", "Strategy", "Seasonal"],
+      category: "Seller Tips",
+      readTime: "5 min read",
+      image: "/images/blog/10.jpg"
+    },
+    {
+      id: "9",
+      title: "Investment Property Tax Strategies for 2024",
+      excerpt: "Navigate the latest tax implications and optimization strategies for real estate investors in the current market.",
+      date: "November 20, 2024",
       author: "Waiel Grey",
       authorImage: "/images/wasaw_white.svg",
-      tags: ["Sustainability", "Luxury", "Investment"],
-      category: "Sustainable Living",
-      readTime: "8 min read",
-      image: "/images/blog/4.jpg"
+      tags: ["Investment", "Tax Strategy", "Finance"],
+      category: "Investment",
+      readTime: "9 min read",
+      image: "/images/blog/9.jpg"
+    },
+    {
+      id: "8",
+      title: "The Rise of Multigenerational Living: Design and Market Trends",
+      excerpt: "How changing family dynamics are driving demand for homes that accommodate multiple generations under one roof.",
+      date: "November 12, 2024",
+      author: "Mohamed Aly",
+      authorImage: "/images/wasaw_white.svg",
+      tags: ["Design", "Trends", "Family Living"],
+      category: "Market Insights",
+      readTime: "7 min read",
+      image: "/images/blog/8.jpg"
+    },
+    {
+      id: "7",
+      title: "Luxury Amenities That Actually Add Value",
+      excerpt: "Not all high-end features are created equal. Discover which luxury amenities provide the best return on investment.",
+      date: "October 30, 2024",
+      author: "Albara Al-Shujaa",
+      authorImage: "/images/wasaw_white.svg",
+      tags: ["Luxury", "ROI", "Amenities"],
+      category: "Luxury Properties",
+      readTime: "6 min read",
+      image: "/images/blog/7.jpg"
+    },
+    {
+      id: "6",
+      title: "Market Analysis: Q1 2024 Real Estate Insights",
+      excerpt: "A deep dive into the latest market data, trends, and predictions for high-end properties in key metropolitan areas.",
+      date: "March 20, 2024",
+      author: "Mohamed Aly",
+      authorImage: "/images/wasaw_white.svg",
+      tags: ["Market Analysis", "Data", "Trends"],
+      category: "Market Reports",
+      readTime: "10 min read",
+      image: "/images/blog/6.jpg"
     },
     {
       id: "5",
@@ -132,16 +168,52 @@
       image: "/images/blog/5.jpg"
     },
     {
-      id: "6",
-      title: "Market Analysis: Q1 2024 Real Estate Insights",
-      excerpt: "A deep dive into the latest market data, trends, and predictions for high-end properties in key metropolitan areas.",
-      date: "March 20, 2024",
+      id: "4",
+      title: "Sustainable Luxury: Eco-Friendly Features That Add Value",
+      excerpt: "Discover how environmentally conscious upgrades can enhance property value while reducing carbon footprint and operational costs.",
+      date: "April 5, 2024",
+      author: "Waiel Grey",
+      authorImage: "/images/wasaw_white.svg",
+      tags: ["Sustainability", "Luxury", "Investment"],
+      category: "Sustainable Living",
+      readTime: "8 min read",
+      image: "/images/blog/4.jpg"
+    },
+    {
+      id: "3",
+      title: "Navigating Bidding Wars: Strategies for Success in Competitive Markets",
+      excerpt: "Learn proven techniques to help your offers stand out in multiple-bid scenarios without overextending your budget.",
+      date: "April 12, 2024",
       author: "Mohamed Aly",
       authorImage: "/images/wasaw_white.svg",
-      tags: ["Market Analysis", "Data", "Trends"],
-      category: "Market Reports",
-      readTime: "10 min read",
-      image: "/images/blog/6.jpg"
+      tags: ["Buying", "Negotiation", "Strategy"],
+      category: "Buyer Tips",
+      readTime: "6 min read",
+      image: "/images/blog/3.jpg"
+    },
+    {
+      id: "2",
+      title: "Luxury Property Staging: The Art of Creating Irresistible Spaces",
+      excerpt: "Discover the psychological principles and design strategies behind staging high-end properties that command premium prices.",
+      date: "April 18, 2024",
+      author: "Albara Al-Shujaa",
+      authorImage: "/images/wasaw_white.svg",
+      tags: ["Luxury", "Design", "Staging"],
+      category: "Luxury Properties",
+      readTime: "7 min read",
+      image: "/images/blog/2.jpg"
+    },
+    {
+      id: "1",
+      title: "The Future of Real Estate: Emerging Trends for 2024",
+      excerpt: "Explore the innovative trends reshaping the real estate landscape and how savvy investors can position themselves for success.",
+      date: "April 25, 2024",
+      author: "Waiel Grey",
+      authorImage: "/images/wasaw_white.svg",
+      tags: ["Trends", "Market Analysis", "Investment"],
+      category: "Market Insights",
+      readTime: "5 min read",
+      image: "/images/blog/1.jpg"
     }
   ];
   
@@ -152,8 +224,12 @@
   // Search functionality
   let searchQuery = "";
   
+  // Pagination
+  let currentPage = 1;
+  const postsPerPage = 6;
+  
   // Computed filtered posts
-  $: filteredPosts = blogPosts.map(post => ({
+  $: allFilteredPosts = blogPosts.map(post => ({
       ...post,
       // Dynamically choose author image based on theme
       authorImageResolved: isLightModeFromStore ? '/images/wasaw_red.svg' : post.authorImage
@@ -167,10 +243,39 @@
     return matchesCategory && matchesSearch;
   });
   
+  // Paginated posts
+  $: totalPages = Math.ceil(allFilteredPosts.length / postsPerPage);
+  $: startIndex = (currentPage - 1) * postsPerPage;
+  $: endIndex = startIndex + postsPerPage;
+  $: filteredPosts = allFilteredPosts.slice(startIndex, endIndex);
+  
+  // Reset to page 1 when filters change
+  $: if (selectedCategory || searchQuery) {
+    currentPage = 1;
+  }
+  
+  // Pagination functions
+  function goToPage(page: number) {
+    if (page >= 1 && page <= totalPages) {
+      currentPage = page;
+      // Scroll to top of blog content
+      document.querySelector('.blog-container')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+  
+  function nextPage() {
+    goToPage(currentPage + 1);
+  }
+  
+  function prevPage() {
+    goToPage(currentPage - 1);
+  }
+  
   // Reset filters
   function resetFilters() {
     selectedCategory = "";
     searchQuery = "";
+    currentPage = 1;
   }
 </script>
 
@@ -305,19 +410,44 @@
     {/if}
     
     <div class="pagination">
-      <button class="pagination-button" disabled>
+      <button 
+        class="pagination-button" 
+        on:click={prevPage}
+        disabled={currentPage === 1}
+      >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
         Previous
       </button>
+      
       <div class="pagination-pages">
-        <button class="page-number active">1</button>
-        <button class="page-number">2</button>
-        <button class="page-number">3</button>
+        {#each Array.from({length: totalPages}, (_, i) => i + 1) as pageNum}
+          {#if totalPages <= 7 || pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)}
+            <button 
+              class="page-number"
+              class:active={pageNum === currentPage}
+              on:click={() => goToPage(pageNum)}
+            >
+              {pageNum}
+            </button>
+          {:else if pageNum === currentPage - 2 || pageNum === currentPage + 2}
+            <span class="pagination-ellipsis">...</span>
+          {/if}
+        {/each}
       </div>
-      <button class="pagination-button">
+      
+      <button 
+        class="pagination-button"
+        on:click={nextPage}
+        disabled={currentPage === totalPages}
+      >
         Next
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
       </button>
+    </div>
+    
+    <!-- Pagination Info -->
+    <div class="pagination-info">
+      <p>Showing {startIndex + 1}-{Math.min(endIndex, allFilteredPosts.length)} of {allFilteredPosts.length} articles</p>
     </div>
   </div>
   
@@ -339,179 +469,18 @@
 </div>
 
 <style>
-  /* CSS custom properties for theme system */
-  :root {
-    /* Light mode variables */
-    --light-bg-primary: #fafafa;
-    --light-bg-secondary: #f5f5f5;
-    --light-text-primary: #1a1a1a;
-    --light-text-secondary: #4a4a4a;
-    --light-accent-red: #B8002D;
-    --light-shadow: rgba(0, 0, 0, 0.1);
-    --light-border: rgba(0, 0, 0, 0.1);
-    
-    /* Default dark mode theme properties */
-    --background: var(--color-deep-matte-black, #0a0a0a);
-    --foreground: var(--color-pure-white, #ffffff);
-    --muted: rgba(20, 20, 20, 0.8);
-    --muted-foreground: rgba(255, 255, 255, 0.7);
-    --card: rgba(30, 30, 30, 0.7);
-    --card-foreground: var(--color-pure-white, #ffffff);
-    --border: rgba(255, 255, 255, 0.1);
-    --primary: var(--color-blood-red, #990000);
-    --primary-foreground: var(--color-pure-white, #ffffff);
-  }
-
-  /* Theme Toggle Button for this page - specific styling if needed */
-  .theme-toggle-page {
-    position: fixed;
-    top: calc(var(--nav-height, 60px) + 1rem); /* Position below nav if nav is present */
-    right: 2rem;
-    width: 50px;
-    height: 50px;
-    border: none;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 999; /* Ensure it's below nav (1000) but above page content */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .theme-toggle-page:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
-  }
-
-  .theme-icon-page {
-    font-size: 1.5rem;
-    transition: transform 0.3s ease;
-  }
-
-  .theme-toggle-page:hover .theme-icon-page {
-    transform: rotate(15deg);
-  }
-
-  /* Light mode toggle adjustments for THIS PAGE's toggle */
-  /* Applied via global body.light-mode */
-  :global(body.light-mode) .theme-toggle-page {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-color: rgba(0, 0, 0, 0.2);
-  }
-
-  :global(body.light-mode) .theme-toggle-page:hover {
-    background-color: rgba(0, 0, 0, 0.2);
-  }
-
   /* General Blog Page Styles */
   .blog-page {
-    background-color: var(--background); /* Ensure this uses the themed background */
-    color: var(--foreground); /* Ensure this uses the themed foreground */
+    background-color: var(--background);
+    color: var(--foreground);
     transition: background-color 0.4s ease, color 0.4s ease;
-    padding-bottom: 4rem; /* Ensure space for footer if any */
-  }
-
-  /* Light mode overrides for existing CSS variables */
-  :global(body.light-mode) .blog-page {
-    --background: var(--light-bg-primary);
-    --foreground: var(--light-text-primary);
-    --card: var(--light-bg-secondary);
-    --card-foreground: var(--light-text-primary);
-    --popover: var(--light-bg-primary);
-    --popover-foreground: var(--light-text-primary);
-    --primary: var(--light-accent-red); /* Using theme's accent red */
-    --primary-foreground: var(--light-bg-primary); /* Text on primary buttons */
-    --secondary: #e5e7eb; /* Light gray for secondary elements */
-    --secondary-foreground: #1f2937; /* Dark text on secondary */
-    --muted: #f3f4f6; /* Very light gray for muted backgrounds */
-    --muted-foreground: #6b7280; /* Gray text for muted elements */
-    --accent: #fde68a; /* A light yellow accent - can be adjusted */
-    --accent-foreground: #78350f; /* Dark text on accent */
-    --destructive: #ef4444; /* Standard destructive red */
-    --destructive-foreground: #f8fafc; /* Light text on destructive */
-    --border: var(--light-border); /* Use theme-defined light border */
-    --input: #ffffff; /* Brighter input background for light mode */
-    --ring: var(--light-accent-red); /* Ring color for focus, using theme's accent */
-
-    /* Ensure specific elements inside cards also update */
-    /* For .search-box input, .filter-options select, .reset-button */
-    --search-input-bg: #ffffff;
-    --search-input-text: var(--light-text-primary);
-    --search-input-border: var(--light-border);
-    --search-icon-color: var(--light-text-secondary);
-
-    --select-bg: #ffffff;
-    --select-text: var(--light-text-primary);
-    --select-border: var(--light-border);
-
-    --reset-button-bg: #ffffff;
-    --reset-button-text: var(--light-text-primary);
-    --reset-button-border: var(--light-border);
-    --reset-button-hover-bg: var(--light-bg-secondary);
-
-    /* For .blog-card elements */
-    --blog-card-bg: #ffffff; /* Explicitly set card background */
-    --blog-card-border: var(--light-border);
-    --blog-card-shadow: 0 10px 25px var(--light-shadow);
-    --blog-card-category-bg: var(--light-accent-red);
-    --blog-card-category-text: var(--light-bg-primary);
-    --blog-card-meta-text: var(--light-text-secondary);
-    --blog-card-title-link-text: var(--light-text-primary);
-    --blog-card-title-link-hover-text: var(--light-accent-red);
-    --blog-card-excerpt-text: var(--light-text-secondary);
-    --blog-card-author-name-text: var(--light-text-primary);
-    --blog-card-tag-bg: var(--light-bg-secondary); /* Lighter background for tags */
-    --blog-card-tag-text: var(--light-text-secondary);
-
-    /* For .no-results */
-    --no-results-bg: #ffffff;
-    --no-results-border: var(--light-border);
-    --no-results-icon-color: var(--light-text-secondary);
-    --no-results-h2-text: var(--light-text-primary);
-    --no-results-p-text: var(--light-text-secondary);
-
-    /* For .pagination */
-    --pagination-button-bg: #ffffff;
-    --pagination-button-text: var(--light-text-primary);
-    --pagination-button-border: var(--light-border);
-    --pagination-button-hover-bg: var(--light-bg-secondary);
-    --pagination-active-bg: var(--light-accent-red);
-    --pagination-active-text: var(--light-bg-primary);
-    --pagination-active-border: var(--light-accent-red);
-
-    /* For .newsletter-section and .newsletter-card */
-    --newsletter-section-bg: var(--light-bg-secondary); /* Lighter section background */
-    --newsletter-card-bg: #ffffff; /* White card background */
-    --newsletter-card-shadow: 0 10px 25px var(--light-shadow);
-    --newsletter-h2-text: var(--light-text-primary);
-    --newsletter-p-text: var(--light-text-secondary);
-    --newsletter-input-bg: #ffffff;
-    --newsletter-input-text: var(--light-text-primary);
-    --newsletter-input-border: var(--light-border);
-    --newsletter-privacy-text: var(--light-text-secondary);
-
-    /* Podcast Player Light Mode Variables */
-    --podcast-section-bg: var(--light-bg-primary);
-    --podcast-title-text: var(--light-text-primary);
-    --podcast-player-bg: var(--light-bg-secondary);
-    --podcast-player-border: var(--light-border);
-    --podcast-play-pause-icon-color: var(--light-text-primary);
-    --podcast-play-pause-hover-bg: rgba(0, 0, 0, 0.1);
-    --podcast-time-text: var(--light-text-secondary);
-    --podcast-progress-bar-bg: #e0e0e0;
-    --podcast-progress-bar-filled-bg: var(--light-accent-red);
-    --podcast-skip-button-icon-color: var(--light-text-primary);
-    --podcast-skip-button-hover-bg: rgba(0,0,0,0.08);
-    --podcast-disclaimer-text: var(--light-text-secondary);
+    padding-bottom: 4rem;
+    padding-top: 80px; /* Space for fixed navigation */
   }
 
   .blog-header {
-    background-color: var(--muted); /* Changed from var(--primary) */
-    color: var(--foreground); /* Changed from var(--primary-foreground) */
+    background-color: var(--muted);
+    color: var(--foreground);
     text-align: center;
     padding: 5rem 2rem;
     margin-bottom: 3rem;
@@ -522,11 +491,11 @@
     font-weight: 700;
     font-size: clamp(2.5rem, 6vw, 4rem);
     margin: 0 0 1rem 0;
-    color: var(--foreground); /* Ensure h1 text color is consistent with header color */
+    color: var(--foreground);
   }
   
-  .highlight-red { /* Default highlight, used for "Insights" */
-    color: var(--primary); /* This will make "Insights" red */
+  .highlight-red {
+    color: var(--primary);
   }
   
   .lead {
@@ -564,16 +533,16 @@
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--search-icon-color, var(--muted-foreground));
+    color: var(--muted-foreground);
   }
   
   .search-box input {
     width: 100%;
     padding: 0.75rem 1rem 0.75rem 2.5rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--search-input-border, var(--border));
-    background-color: var(--search-input-bg, var(--card));
-    color: var(--search-input-text, var(--card-foreground));
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--card-foreground);
     font-family: var(--font-body);
     font-size: 0.95rem;
   }
@@ -593,9 +562,9 @@
   .filter-options select {
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--select-border, var(--border));
-    background-color: var(--select-bg, var(--card));
-    color: var(--select-text, var(--card-foreground));
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--card-foreground);
     font-family: var(--font-body);
     font-size: 0.95rem;
     cursor: pointer;
@@ -607,9 +576,9 @@
     gap: 0.5rem;
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--reset-button-border, var(--border));
-    background-color: var(--reset-button-bg, var(--card));
-    color: var(--reset-button-text, var(--card-foreground));
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--card-foreground);
     font-family: var(--font-body);
     font-size: 0.95rem;
     cursor: pointer;
@@ -617,7 +586,7 @@
   }
   
   .reset-button:hover {
-    background-color: var(--reset-button-hover-bg, var(--muted));
+    background-color: var(--muted);
   }
   
   /* Blog Grid */
@@ -631,8 +600,8 @@
   .blog-card {
     border-radius: 0.75rem;
     overflow: hidden;
-    background-color: var(--blog-card-bg, var(--card));
-    border: 1px solid var(--blog-card-border, var(--border));
+    background-color: var(--card);
+    border: 1px solid var(--border);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -640,7 +609,7 @@
   
   .blog-card:hover {
     transform: translateY(-5px);
-    box-shadow: var(--blog-card-shadow, 0 10px 25px rgba(0, 0, 0, 0.1));
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   }
   
   .card-image {
@@ -664,8 +633,8 @@
     position: absolute;
     top: 1rem;
     left: 1rem;
-    background-color: var(--blog-card-category-bg, var(--primary));
-    color: var(--blog-card-category-text, var(--primary-foreground));
+    background-color: var(--primary);
+    color: var(--primary-foreground);
     font-size: 0.8rem;
     font-weight: 500;
     padding: 0.25rem 0.75rem;
@@ -685,7 +654,7 @@
     display: flex;
     align-items: center;
     font-size: 0.85rem;
-    color: var(--blog-card-meta-text, var(--muted-foreground));
+    color: var(--muted-foreground);
     margin-bottom: 0.75rem;
   }
   
@@ -702,19 +671,19 @@
   }
   
   .card-title a {
-    color: var(--blog-card-title-link-text, var(--card-foreground));
+    color: var(--card-foreground);
     text-decoration: none;
     transition: color 0.2s ease;
   }
   
   .card-title a:hover {
-    color: var(--blog-card-title-link-hover-text, var(--primary));
+    color: var(--primary);
   }
   
   .card-excerpt {
     font-size: 0.95rem;
     line-height: 1.6;
-    color: var(--blog-card-excerpt-text, var(--muted-foreground));
+    color: var(--muted-foreground);
     margin: 0 0 1.5rem 0;
     flex: 1;
   }
@@ -742,7 +711,7 @@
   .author-name {
     font-size: 0.9rem;
     font-weight: 500;
-    color: var(--blog-card-author-name-text, var(--card-foreground));
+    color: var(--card-foreground);
   }
   
   .tags {
@@ -754,8 +723,8 @@
   
   .tag {
     font-size: 0.75rem;
-    color: var(--blog-card-tag-text, var(--muted-foreground));
-    background-color: var(--blog-card-tag-bg, var(--muted));
+    color: var(--muted-foreground);
+    background-color: var(--muted);
     padding: 0.2rem 0.5rem;
     border-radius: 0.25rem;
   }
@@ -764,13 +733,13 @@
   .no-results {
     text-align: center;
     padding: 4rem 2rem;
-    background-color: var(--no-results-bg, var(--card));
+    background-color: var(--card);
     border-radius: 0.75rem;
-    border: 1px solid var(--no-results-border, var(--border));
+    border: 1px solid var(--border);
   }
   
   .no-results svg {
-    color: var(--no-results-icon-color, var(--muted-foreground));
+    color: var(--muted-foreground);
     margin-bottom: 1.5rem;
   }
   
@@ -779,12 +748,12 @@
     font-weight: 700;
     font-size: 1.5rem;
     margin: 0 0 0.75rem 0;
-    color: var(--no-results-h2-text, var(--card-foreground));
+    color: var(--card-foreground);
   }
   
   .no-results p {
     font-size: 1rem;
-    color: var(--no-results-p-text, var(--muted-foreground));
+    color: var(--muted-foreground);
     margin: 0 0 1.5rem 0;
   }
   
@@ -802,16 +771,16 @@
     gap: 0.5rem;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--pagination-button-border, var(--border));
-    background-color: var(--pagination-button-bg, var(--card));
-    color: var(--pagination-button-text, var(--card-foreground));
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--card-foreground);
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s ease;
   }
   
   .pagination-button:hover:not(:disabled) {
-    background-color: var(--pagination-button-hover-bg, var(--muted));
+    background-color: var(--muted);
   }
   
   .pagination-button:disabled {
@@ -832,36 +801,57 @@
     align-items: center;
     justify-content: center;
     border-radius: 0.5rem;
-    border: 1px solid var(--pagination-button-border, var(--border));
-    background-color: var(--pagination-button-bg, var(--card));
-    color: var(--pagination-button-text, var(--card-foreground));
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--card-foreground);
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s ease;
   }
   
   .page-number:hover:not(.active) {
-    background-color: var(--pagination-button-hover-bg, var(--muted));
+    background-color: var(--muted);
   }
   
   .page-number.active {
-    background-color: var(--pagination-active-bg, var(--primary));
-    color: var(--pagination-active-text, var(--primary-foreground));
-    border-color: var(--pagination-active-border, var(--primary));
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+  }
+  
+  .pagination-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: var(--card-foreground);
+    font-size: 0.9rem;
+  }
+  
+  .pagination-info {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .pagination-info p {
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+    margin: 0;
   }
   
   /* Newsletter Section */
   .newsletter-section {
-    background-color: var(--newsletter-section-bg, var(--muted));
+    background-color: var(--muted);
     padding: 4rem 2rem;
   }
   
   .newsletter-card {
     max-width: 800px;
     margin: 0 auto;
-    background-color: var(--newsletter-card-bg, var(--card));
+    background-color: var(--card);
     border-radius: 1rem;
-    box-shadow: var(--newsletter-card-shadow, 0 10px 25px rgba(0, 0, 0, 0.1));
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     overflow: hidden;
   }
   
@@ -875,12 +865,12 @@
     font-weight: 700;
     font-size: 2rem;
     margin: 0 0 1rem 0;
-    color: var(--newsletter-h2-text, var(--card-foreground));
+    color: var(--card-foreground);
   }
   
   .newsletter-content p {
     font-size: 1.1rem;
-    color: var(--newsletter-p-text, var(--muted-foreground));
+    color: var(--muted-foreground);
     margin: 0 0 1.5rem 0;
     max-width: 600px;
     margin-left: auto;
@@ -898,9 +888,9 @@
     flex: 1;
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--newsletter-input-border, var(--border));
-    background-color: var(--newsletter-input-bg, var(--background));
-    color: var(--newsletter-input-text, var(--foreground));
+    border: 1px solid var(--border);
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: var(--font-body);
     font-size: 0.95rem;
   }
@@ -925,14 +915,144 @@
   }
   
   .primary-button:hover {
-    background-color: #800000; /* Darker red */
+    background-color: #800000;
     transform: translateY(-2px);
   }
   
   .privacy-note {
     font-size: 0.8rem;
-    color: var(--newsletter-privacy-text, var(--muted-foreground));
+    color: var(--muted-foreground);
     margin: 0;
+  }
+
+  /* Podcast Section Styles */
+  .podcast-section {
+    padding: 3rem 0;
+    background-color: var(--background);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .podcast-title {
+    font-family: var(--font-headline);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .audio-player-custom {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: var(--card);
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .play-pause-button {
+    background: none;
+    border: none;
+    color: var(--foreground);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .play-pause-button:hover {
+    background-color: var(--muted);
+  }
+
+  .play-pause-button svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .audio-controls {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    gap: 0.75rem;
+  }
+
+  .time-display {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+    min-width: 40px;
+  }
+  .current-time {
+    text-align: right;
+  }
+  .duration {
+    text-align: left;
+  }
+
+  .progress-bar-wrapper {
+    flex-grow: 1;
+    height: 8px;
+    background-color: var(--muted);
+    border-radius: 4px;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .progress-bar-filled {
+    height: 100%;
+    background-color: var(--primary);
+    border-radius: 4px;
+    transition: width 0.1s linear;
+  }
+
+  .skip-button {
+    background: none;
+    border: none;
+    color: var(--foreground);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    line-height: 1;
+  }
+  .skip-button svg {
+    width: 20px;
+    height: 20px;
+  }
+  .skip-button .skip-amount {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.65rem;
+  }
+
+  .skip-button:hover {
+    background-color: var(--muted);
+  }
+
+  .podcast-disclaimer {
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+    text-align: center;
+    margin-top: 1.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
   }
   
   /* Responsive Adjustments */
@@ -967,58 +1087,39 @@
     .newsletter-content {
       padding: 2rem 1.5rem;
     }
-    
-    .theme-toggle-page {
-      top: calc(var(--nav-height, 50px) + 0.8rem);
-      right: 1.5rem;
-      width: 45px;
-      height: 45px;
-    }
-    
-    .theme-icon-page {
-      font-size: 1.3rem;
-    }
 
     /* Podcast Player Mobile Styles */
     .audio-player-custom {
-      padding: 0.5rem 0.75rem; /* Reduced padding for mobile single row */
-      gap: 0.5rem; /* Reduced gap between main items */
+      padding: 0.5rem 0.75rem;
+      gap: 0.5rem;
     }
     .audio-player-custom .audio-controls {
-      gap: 0.5rem; /* Reduced gap within audio-controls (times, progress bar) */
+      gap: 0.5rem;
     }
     .play-pause-button {
-      margin: 0; /* Reset margin */
-      padding: 0.4rem; /* Slightly smaller padding for the button itself */
+      margin: 0;
+      padding: 0.4rem;
     }
     .play-pause-button svg {
-      width: 24px; /* Slightly smaller play/pause icon */
+      width: 24px;
       height: 24px;
     }
 
     .skip-button {
-      margin: 0; /* Reset margin */
-      padding: 0.4rem; /* Slightly smaller padding */
+      margin: 0;
+      padding: 0.4rem;
     }
     .skip-button svg {
-      width: 18px; /* Smaller skip icons */
+      width: 18px;
       height: 18px;
     }
     .skip-button .skip-amount {
-      display: none; /* Hide '15s' text on mobile to save space */
+      display: none;
     }
     
     .time-display {
-      font-size: 0.8rem; /* Smaller time font */
-      min-width: 35px; /* Slightly smaller min-width */
-    }
-
-    /* Ensure skip buttons are not too close to screen edges if player is full width */
-    .audio-player-custom > .skip-button.backward {
-       margin-left: 0; 
-    }
-    .audio-player-custom > .skip-button.forward {
-       margin-right: 0;
+      font-size: 0.8rem;
+      min-width: 35px;
     }
   }
   
@@ -1040,154 +1141,5 @@
     .pagination-pages {
       margin: 0 0.5rem;
     }
-    
-    .theme-toggle-page {
-      top: calc(var(--nav-height, 45px) + 0.5rem);
-      right: 1rem;
-      width: 40px;
-      height: 40px;
-    }
-    
-    .theme-icon-page {
-      font-size: 1.1rem;
-    }
   }
-
-  /* START PODCAST SECTION STYLES */
-  .podcast-section {
-    padding: 3rem 0;
-    background-color: var(--podcast-section-bg, var(--background)); /* Default to page bg */
-    border-bottom: 1px solid var(--podcast-player-border, var(--border)); /* Use specific or fallback */
-  }
-
-  .podcast-title {
-    font-family: var(--font-headline);
-    font-weight: 700;
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    text-align: center;
-    margin-bottom: 2rem;
-    color: var(--podcast-title-text, var(--foreground));
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .audio-player-custom {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem; /* Reduced gap for potentially tighter mobile */
-    background-color: var(--podcast-player-bg, var(--card));
-    padding: 0.75rem 1rem; /* Reduced padding */
-    border-radius: 0.75rem;
-    border: 1px solid var(--podcast-player-border, var(--border));
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    max-width: 700px; /* Limit width of player */
-    margin: 0 auto; /* Center the player */
-  }
-
-  .play-pause-button {
-    background: none;
-    border: none;
-    color: var(--podcast-play-pause-icon-color, var(--foreground));
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .play-pause-button:hover {
-    background-color: var(--podcast-play-pause-hover-bg, rgba(255, 255, 255, 0.1));
-  }
-
-  .play-pause-button svg {
-    width: 28px; /* Slightly larger icon */
-    height: 28px;
-  }
-
-  .audio-controls {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-    gap: 0.75rem;
-  }
-
-  .time-display {
-    font-family: var(--font-mono, monospace);
-    font-size: 0.9rem;
-    color: var(--podcast-time-text, var(--muted-foreground));
-    min-width: 40px; /* Ensure space for MM:SS */
-  }
-  .current-time {
-    text-align: right;
-  }
-  .duration {
-    text-align: left;
-  }
-
-  .progress-bar-wrapper {
-    flex-grow: 1;
-    height: 8px;
-    background-color: var(--podcast-progress-bar-bg, var(--muted));
-    border-radius: 4px;
-    cursor: pointer;
-    overflow: hidden; /* Ensure filled bar stays within bounds */
-  }
-
-  .progress-bar-filled {
-    height: 100%;
-    background-color: var(--podcast-progress-bar-filled-bg, var(--primary));
-    border-radius: 4px;
-    transition: width 0.1s linear; /* Smooth progress update */
-  }
-
-  .skip-button {
-    background: none;
-    border: none;
-    color: var(--podcast-skip-button-icon-color, var(--foreground));
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
-    display: flex;
-    flex-direction: column; /* Stack icon and number */
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-mono, monospace);
-    font-size: 0.7rem; /* Small text for 15 */
-    line-height: 1;
-  }
-  .skip-button svg {
-    width: 20px; /* Smaller icon for skip */
-    height: 20px;
-    /* margin-bottom: 2px; Removed as text might be too small or we rely on aria-label */
-  }
-  .skip-button .skip-amount {
-    display: block;
-    margin-top: 2px; /* Add a little space if icon is above */
-    font-size: 0.65rem; /* Even smaller for '15s' */
-  }
-
-  .skip-button:hover {
-    background-color: var(--podcast-skip-button-hover-bg, rgba(255, 255, 255, 0.08));
-    line-height: 1.5;
-  }
-
-  /* Icon specific adjustments if needed, e.g., for replay/forward icons */
-  .skip-button.backward svg {
-    /* transform: scaleX(-1); /* If using a forward icon that needs flipping */
-  }
-
-  .podcast-disclaimer {
-    font-size: 0.8rem;
-    color: var(--podcast-disclaimer-text, var(--muted-foreground));
-    text-align: center;
-    margin-top: 1.5rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.5;
-  }
-  /* END PODCAST SECTION STYLES */
 </style> 

@@ -17,20 +17,38 @@ A modern, interactive real estate website built with SvelteKit featuring an unco
 Navigate to `/guess-the-price` to experience our interactive real estate knowledge game:
 
 - **Two Game Modes**: Switch between "Properties We Sold" and "Properties We Bought"
-- **Image Carousels**: Browse through multiple property photos
-- **3 Attempts**: Users get 3 chances to guess the correct price
-- **Smart Feedback**: Get "Higher" or "Lower" hints after each guess
-- **Success Criteria**: Within 5% of actual price is considered correct
-- **Mobile Optimized**: Fully responsive design that works beautifully on all devices
-- **Theme Support**: Seamlessly integrates with the site's dark/light theme system
+- **Interactive Carousel**: Browse through multiple property photos
+- **Smart Guessing System**: 3 attempts with helpful feedback (higher/lower)
+- **Mobile Responsive**: Perfect experience on all devices
+- **No Database Required**: All data stored in component files
 
-### Game Features:
-- Property details including bedrooms, bathrooms, and square footage
-- Location information for each property
-- Automatic price formatting with commas
-- Visual feedback for correct/incorrect guesses
-- Property counter to track progress
-- Smooth transitions and animations
+## Blog System
+
+The website features a comprehensive blog system with:
+
+- **12 High-Quality Blog Posts**: Covering market analysis, luxury properties, investment strategies, and more
+- **Functional Pagination**: 6 posts per page with smooth navigation
+- **Search & Filter**: Find posts by title, content, tags, or category
+- **Responsive Design**: Beautiful on desktop and mobile
+- **SEO Optimized**: Proper meta tags and structured content
+
+### 🚀 **Adding New Blog Posts (Super Easy for Developers)**
+
+Adding a new blog post takes just 2 minutes:
+
+```bash
+npm run new-blog
+```
+
+This command:
+- ✅ Automatically finds the next blog ID
+- ✅ Generates a complete template with today's date
+- ✅ Shows exactly where to paste the code
+- ✅ Tells you what to name your image file
+
+**That's it!** No complex setup, no database changes, no routing updates needed. The pagination, search, and filtering all work automatically.
+
+**Full documentation**: See `static/images/README.md` for complete developer guide with examples, troubleshooting, and advanced formatting tips.
 
 ## Tech Stack
 

@@ -14,7 +14,7 @@
   
   // Get post ID from URL
   const postId = $page.params.id;
-  
+
   // Sample blog data (in a real app, this would come from an API or database)
   const blogPostsRaw = [
     {
@@ -248,123 +248,18 @@
 </article>
 
 <style>
-  /* Import or define your base variables if not globally available */
-  /* :root { ... } */
-
-  /* Theme Toggle Button for this page - specific styling if needed */
-  .theme-toggle-page {
-    position: fixed;
-    top: calc(var(--nav-height, 60px) + 1rem); /* Position below nav if nav is present */
-    right: 2rem;
-    width: 50px;
-    height: 50px;
-    border: none;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 999; /* Ensure it's below nav (1000) but above page content */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .theme-toggle-page:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
-  }
-
-  .theme-icon-page {
-    font-size: 1.5rem;
-    transition: transform 0.3s ease;
-  }
-
-  .theme-toggle-page:hover .theme-icon-page {
-    transform: rotate(15deg);
-  }
-
-  /* Light mode toggle adjustments for THIS PAGE's toggle */
-  /* Applied via global body.light-mode */
-  :global(body.light-mode) .theme-toggle-page {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-color: rgba(0, 0, 0, 0.2);
-  }
-
-  :global(body.light-mode) .theme-toggle-page:hover {
-    background-color: rgba(0, 0, 0, 0.2);
-  }
-
   .blog-post {
-    padding-top: 3rem; /* Adjust as needed, considering nav bar height */
+    padding-top: 80px; /* Space for fixed navigation */
     padding-bottom: 4rem;
-    background-color: var(--background); /* Ensure this uses the themed background */
-    color: var(--foreground); /* Ensure this uses the themed foreground */
+    background-color: var(--background);
+    color: var(--foreground);
     transition: background-color 0.4s ease, color 0.4s ease;
-  }
-
-  /* Light mode CSS variable overrides for this page */
-  :global(body.light-mode) .blog-post {
-    --background: var(--light-bg-primary);
-    --foreground: var(--light-text-primary);
-    --muted: var(--light-bg-secondary);
-    --muted-foreground: var(--light-text-secondary);
-    --card: #ffffff; /* Cards in related posts, etc. */
-    --card-foreground: var(--light-text-primary);
-    --border: var(--light-border);
-    --primary: var(--light-accent-red);
-    --primary-foreground: #ffffff; /* Text on primary buttons */
-    --ring: var(--light-accent-red);
-
-    /* More specific overrides for elements on this page */
-    --post-header-bg: var(--light-bg-secondary);
-    --post-category-tag-bg: var(--light-accent-red);
-    --post-category-tag-text: #ffffff;
-    --post-date-time-text: var(--light-text-secondary);
-    --post-title-text: var(--light-text-primary);
-    --post-author-name-text: var(--light-text-primary);
-    
-    --post-content-text: var(--light-text-primary);
-    --post-content-h2-text: var(--light-text-primary);
-    --post-content-h3-text: var(--light-text-primary);
-
-    --post-tag-bg: var(--light-bg-secondary);
-    --post-tag-text: var(--light-text-secondary);
-    --post-footer-border: var(--light-border);
-
-    --related-posts-bg: var(--light-bg-secondary);
-    --related-posts-h2-text: var(--light-text-primary);
-    --related-card-bg: #ffffff;
-    --related-card-shadow: 0 10px 25px var(--light-shadow);
-    --related-card-h3-text: var(--light-text-primary);
-    --related-card-p-text: var(--light-text-secondary);
-    --related-card-read-more-text: var(--light-accent-red);
-    --related-card-read-more-hover-text: #A30027; /* Darker red for hover */
-
-    --cta-card-bg: #ffffff;
-    --cta-card-shadow: 0 10px 25px var(--light-shadow);
-    --cta-h2-text: var(--light-text-primary);
-    --cta-p-text: var(--light-text-secondary);
-    --cta-button-bg: var(--light-accent-red);
-    --cta-button-text: #ffffff;
-    --cta-button-hover-bg: #A30027; /* Darker red for hover */
   }
 
   .container {
     max-width: 800px;
     margin: 0 auto;
     padding: 0 2rem;
-  }
-  
-  /* Light mode styles for author avatar */
-  :global(body.light-mode) .author-avatar {
-    border: 2px solid var(--light-accent-red);
-    filter: none; /* Remove invert if it was applied for dark mode */
-  }
-  
-  .author-avatar.light-mode-logo {
-    filter: none; /* Ensure red logo is not inverted if that class is used */
   }
 
   .featured-image {
@@ -383,7 +278,7 @@
 
   .post-header {
     padding: 4rem 0;
-    background-color: var(--post-header-bg, var(--muted));
+    background-color: var(--muted);
     margin-bottom: 2rem;
   }
   
@@ -395,8 +290,8 @@
   }
   
   .category-tag {
-    background-color: var(--post-category-tag-bg, var(--primary));
-    color: var(--post-category-tag-text, var(--primary-foreground));
+    background-color: var(--primary);
+    color: var(--primary-foreground);
     font-size: 0.8rem;
     font-weight: 500;
     padding: 0.25rem 0.75rem;
@@ -407,7 +302,7 @@
   
   .date-time {
     font-size: 0.9rem;
-    color: var(--post-date-time-text, var(--muted-foreground));
+    color: var(--muted-foreground);
   }
   
   .dot {
@@ -420,7 +315,7 @@
     font-size: clamp(2rem, 5vw, 3.2rem);
     line-height: 1.2;
     margin: 0 0 1.5rem 0;
-    color: var(--post-title-text, var(--foreground));
+    color: var(--foreground);
   }
   
   .post-excerpt {
@@ -447,7 +342,7 @@
   .author-name {
     font-weight: 600;
     font-size: 1rem;
-    color: var(--post-author-name-text, var(--foreground));
+    color: var(--foreground);
   }
   
   .post-content {
@@ -455,7 +350,7 @@
     font-family: var(--font-body);
     font-size: 1.1rem;
     line-height: 1.8;
-    color: var(--post-content-text, var(--foreground));
+    color: var(--foreground);
   }
   
   .post-content :global(h2) {
@@ -463,7 +358,7 @@
     font-weight: 700;
     font-size: 1.8rem;
     margin: 2.5rem 0 1rem;
-    color: var(--post-content-h2-text, var(--foreground));
+    color: var(--foreground);
   }
   
   .post-content :global(h3) {
@@ -471,7 +366,7 @@
     font-weight: 600;
     font-size: 1.4rem;
     margin: 2rem 0 0.8rem;
-    color: var(--post-content-h3-text, var(--foreground));
+    color: var(--foreground);
   }
   
   .post-content :global(p) {
@@ -500,8 +395,8 @@
   
   .tag {
     font-size: 0.8rem;
-    color: var(--post-tag-text, var(--muted-foreground));
-    background-color: var(--post-tag-bg, var(--muted));
+    color: var(--muted-foreground);
+    background-color: var(--muted);
     padding: 0.3rem 0.8rem;
     border-radius: 0.25rem;
   }
@@ -511,11 +406,11 @@
     justify-content: space-between;
     align-items: center;
     padding-top: 2rem;
-    border-top: 1px solid var(--post-footer-border, var(--border));
+    border-top: 1px solid var(--border);
   }
   
   .related-posts {
-    background-color: var(--related-posts-bg, var(--muted));
+    background-color: var(--muted);
     padding: 4rem 0;
   }
   
@@ -525,7 +420,7 @@
     font-size: 2rem;
     margin-bottom: 2rem;
     text-align: center;
-    color: var(--related-posts-h2-text, var(--foreground));
+    color: var(--foreground);
   }
   
   .related-grid {
@@ -535,7 +430,7 @@
   }
   
   .related-card {
-    background-color: var(--related-card-bg, var(--card));
+    background-color: var(--card);
     border-radius: 1rem;
     overflow: hidden;
     text-decoration: none;
@@ -547,7 +442,7 @@
   
   .related-card:hover {
     transform: translateY(-5px);
-    box-shadow: var(--related-card-shadow, 0 10px 25px rgba(0, 0, 0, 0.1));
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   }
   
   .related-card-image {
@@ -578,13 +473,13 @@
     font-weight: 600;
     font-size: 1.2rem;
     margin: 0 0 0.8rem 0;
-    color: var(--related-card-h3-text, var(--card-foreground));
+    color: var(--card-foreground);
     line-height: 1.4;
   }
   
   .related-card-content p {
     font-size: 0.9rem;
-    color: var(--related-card-p-text, var(--muted-foreground));
+    color: var(--muted-foreground);
     line-height: 1.6;
     flex: 1;
     display: -webkit-box;
@@ -595,13 +490,13 @@
   
   .read-more {
     font-weight: 600;
-    color: var(--related-card-read-more-text, var(--primary));
+    color: var(--primary);
     text-decoration: none;
     transition: color 0.2s ease;
   }
   
   .read-more:hover {
-    color: var(--related-card-read-more-hover-text, #800000); /* Darker red */
+    color: #800000;
   }
   
   .cta-section {
@@ -609,11 +504,11 @@
   }
   
   .cta-card {
-    background-color: var(--cta-card-bg, var(--card));
+    background-color: var(--card);
     border-radius: 1rem;
     padding: 3rem;
     text-align: center;
-    box-shadow: var(--cta-card-shadow, 0 10px 25px rgba(0, 0, 0, 0.05));
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   }
   
   .cta-card h2 {
@@ -621,12 +516,12 @@
     font-weight: 700;
     font-size: 2rem;
     margin: 0 0 1rem 0;
-    color: var(--cta-h2-text, var(--foreground));
+    color: var(--foreground);
   }
   
   .cta-card p {
     font-size: 1.1rem;
-    color: var(--cta-p-text, var(--muted-foreground));
+    color: var(--muted-foreground);
     margin: 0 0 2rem 0;
     max-width: 600px;
     margin-left: auto;
@@ -635,8 +530,8 @@
   
   .cta-button {
     display: inline-block;
-    background-color: var(--cta-button-bg, var(--primary));
-    color: var(--cta-button-text, var(--primary-foreground));
+    background-color: var(--primary);
+    color: var(--primary-foreground);
     font-family: var(--font-headline);
     font-weight: 500;
     font-size: 1rem;
@@ -647,34 +542,44 @@
   }
   
   .cta-button:hover {
-    background-color: var(--cta-button-hover-bg, #800000); /* Darker red */
+    background-color: #800000;
     transform: translateY(-2px);
   }
-  
-  /* Responsive adjustments for theme toggle on this page */
-  @media (max-width: 768px) {
-    .theme-toggle-page {
-      top: calc(var(--nav-height, 50px) + 0.8rem);
-      right: 1.5rem;
-      width: 45px;
-      height: 45px;
-    }
-    
-    .theme-icon-page {
-      font-size: 1.3rem;
-    }
+
+  .post-not-found {
+    text-align: center;
+    padding: 4rem 2rem;
   }
-  
-  @media (max-width: 480px) {
-    .theme-toggle-page {
-      top: calc(var(--nav-height, 45px) + 0.5rem);
-      right: 1rem;
-      width: 40px;
-      height: 40px;
-    }
-    
-    .theme-icon-page {
-      font-size: 1.1rem;
-    }
+
+  .post-not-found h2 {
+    font-family: var(--font-headline);
+    font-weight: 700;
+    font-size: 2rem;
+    margin: 0 0 1rem 0;
+    color: var(--foreground);
+  }
+
+  .post-not-found p {
+    font-size: 1.1rem;
+    color: var(--muted-foreground);
+    margin: 0 0 2rem 0;
+  }
+
+  .primary-button {
+    display: inline-block;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-family: var(--font-headline);
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 1rem 2.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .primary-button:hover {
+    background-color: #800000;
+    transform: translateY(-2px);
   }
 </style> 
