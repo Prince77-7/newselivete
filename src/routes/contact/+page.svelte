@@ -1,13 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { themeStore } from '$lib/stores/themeStore';
-  import emailjs from '@emailjs/browser';
-  import { onMount } from 'svelte';
-  
-  // EmailJS configuration
-  const EMAILJS_SERVICE_ID = 'service_v3mqdmw';
-  const EMAILJS_TEMPLATE_ID = 'template_laljpsw';
-  const EMAILJS_PUBLIC_KEY = 'wT5SGa2cg2CMDddwx';
   
   // Contact form state
   let name = '';
@@ -29,11 +22,6 @@
   function togglePageTheme() {
     themeStore.toggle();
   }
-
-  // Initialize EmailJS
-  onMount(() => {
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-  });
 
   // Our agents
   const agents = [
@@ -119,28 +107,32 @@
         ? agents.find(agent => agent.id === selectedAgent)
         : null;
       
-      // Prepare template parameters
-      const templateParams = {
+      // Prepare form data for API
+      const formData = {
         from_name: name.trim(),
         from_email: email.trim(),
-        phone: phone.trim() || 'Not provided',
+        phone: phone.trim() || '',
         message: message.trim(),
         preferred_agent: selectedAgentDetails ? selectedAgentDetails.name : 'No preference',
-        preferred_agent_email: selectedAgentDetails ? selectedAgentDetails.email : 'info@wasaw.com',
-        to_email: selectedAgentDetails ? selectedAgentDetails.email : 'info@wasaw.com',
-        reply_to: email.trim(),
-        subject: `New Contact Form Submission from ${name.trim()}`,
-        timestamp: new Date().toLocaleString()
+        selectedAgentDetails: selectedAgentDetails
       };
       
-      // Send email using EmailJS (auto-reply will be sent automatically if linked in dashboard)
-      const response = await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        templateParams
-      );
+      // Send to our API endpoint
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
       
-      console.log('Email sent successfully:', response);
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send message');
+      }
+      
+      console.log('Emails sent successfully:', result);
       
       // Reset form and show success message
       formSubmitted = true;
@@ -157,9 +149,9 @@
       }, 8000);
       
     } catch (error) {
-      console.error('Failed to send email:', error);
+      console.error('Failed to send message:', error);
       formError = true;
-      errorMessage = 'Failed to send message. Please try again or contact us directly.';
+      errorMessage = error instanceof Error ? error.message : 'Failed to send message. Please try again or contact us directly.';
     } finally {
       isSubmitting = false;
     }
