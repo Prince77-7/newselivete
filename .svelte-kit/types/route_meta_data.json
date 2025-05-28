@@ -15,6 +15,9 @@
 	"/contact": [
 		"src/routes/+layout.js"
 	],
+	"/guess-the-price": [
+		"src/routes/+layout.js"
+	],
 	"/properties": [
 		"src/routes/+layout.js"
 	],

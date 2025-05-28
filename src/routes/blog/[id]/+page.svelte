@@ -182,14 +182,7 @@
   <meta name="description" content={post?.excerpt || 'Read our latest blog post.'} />
 </svelte:head>
 
-<!-- Theme Toggle Button for this page, uses store -->
-<button class="theme-toggle-page" on:click={togglePageTheme} aria-label="Toggle theme">
-  {#if isLightModeFromStore}
-    <span class="theme-icon-page">🌙</span>
-  {:else}
-    <span class="theme-icon-page">☀️</span>
-  {/if}
-</button>
+
 
 <article class="blog-post">
   {#if post}

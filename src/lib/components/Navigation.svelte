@@ -1,11 +1,13 @@
 <script lang="ts">
   import { BROWSER } from 'esm-env';
+  import { themeStore } from '$lib/stores/themeStore'; // Import the theme store
   
   // Define navigation links
   const navLinks = [
     { href: '/', text: 'Home' },
     { href: '/about', text: 'About Us' },
     { href: '/blog', text: 'Blog' },
+    { href: '/guess-the-price', text: 'Guess the Price' },
     // Add other primary navigation links here, e.g.:
     // { href: '/listings', text: 'Listings' }, 
     // { href: '/services', text: 'Services' },
@@ -18,6 +20,11 @@
   // Function to toggle menu
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
+  }
+  
+  // Function to toggle theme using the store
+  function toggleTheme() {
+    themeStore.toggle();
   }
   
   // Track the current path - this will be set from +layout.svelte
@@ -63,6 +70,16 @@
             </a>
           </li>
         {/each}
+        <!-- Theme toggle button in nav menu -->
+        <li class="theme-toggle-container">
+          <button class="theme-toggle-nav" on:click={toggleTheme} aria-label="Toggle theme">
+            {#if isLightMode}
+              <span class="theme-icon-nav">🌙</span>
+            {:else}
+              <span class="theme-icon-nav">☀️</span>
+            {/if}
+          </button>
+        </li>
       </ul>
     </div>
   </div>
@@ -129,7 +146,7 @@
   
   .nav-link {
     font-family: var(--font-headline);
-    font-weight: 300; /* Lighter weight for nav links */
+    font-weight: 400; /* Changed from 300 to normal weight for better visibility */
     font-size: 0.95rem; /* Slightly smaller */
     text-decoration: none;
     color: rgba(255, 255, 255, 0.85); /* Slightly less bright white */
@@ -197,7 +214,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    width: 28px;
+    width: 56px; /* Doubled from 28px to 56px */
     height: 22px;
   }
   
@@ -208,6 +225,21 @@
     background-color: var(--color-pure-white);
     border-radius: 3px;
     transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    position: relative;
+  }
+
+  /* Make hamburger lines more interesting with gradient and shadow */
+  .hamburger-icon span::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-pure-white) 0%, rgba(255, 255, 255, 0.8) 50%, var(--color-pure-white) 100%);
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
   }
 
   /* Light mode hamburger icon */
@@ -215,15 +247,78 @@
     background-color: var(--light-text-primary);
   }
 
-  /* Hamburger animation */
+  .main-navigation.light-mode .hamburger-icon span::before {
+    background: linear-gradient(90deg, var(--light-text-primary) 0%, rgba(26, 26, 26, 0.8) 50%, var(--light-text-primary) 100%);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Hamburger animation with more interesting transforms */
   .hamburger-icon.open span:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
+    transform: rotate(45deg) translate(12px, 12px); /* Adjusted for longer lines */
   }
   .hamburger-icon.open span:nth-child(2) {
     opacity: 0;
+    transform: scaleX(0);
   }
   .hamburger-icon.open span:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
+    transform: rotate(-45deg) translate(12px, -12px); /* Adjusted for longer lines */
+  }
+
+  /* Add subtle hover effect for hamburger */
+  .mobile-menu-toggle:hover .hamburger-icon span::before {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+  }
+
+  .main-navigation.light-mode .mobile-menu-toggle:hover .hamburger-icon span::before {
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Theme toggle button styles */
+  .theme-toggle-container {
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+  }
+
+  .theme-toggle-nav {
+    background: none;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+  }
+
+  .theme-toggle-nav:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .theme-icon-nav {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+  }
+
+  .theme-toggle-nav:hover .theme-icon-nav {
+    transform: rotate(15deg);
+  }
+
+  /* Light mode theme toggle */
+  .main-navigation.light-mode .theme-toggle-nav {
+    border-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .main-navigation.light-mode .theme-toggle-nav:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-color: rgba(0, 0, 0, 0.4);
   }
   
   @media (max-width: 768px) {
@@ -271,6 +366,40 @@
     .mobile-menu-toggle {
       display: flex; /* Show hamburger */
       align-items: center;
+    }
+
+    /* Mobile theme toggle adjustments */
+    .theme-toggle-container {
+      margin-left: 0;
+      padding: 1rem 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 0.5rem;
+    }
+
+    .main-navigation.light-mode .theme-toggle-container {
+      border-top-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-toggle-nav {
+      margin: 0 auto; /* Center the button in mobile */
+    }
+
+    /* Hide theme toggle on desktop when mobile menu is closed */
+    .theme-toggle-container {
+      display: none;
+    }
+
+    .nav-links.open .theme-toggle-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
+  /* Desktop theme toggle visibility */
+  @media (min-width: 769px) {
+    .theme-toggle-container {
+      display: flex !important; /* Always show on desktop */
     }
   }
 </style> 

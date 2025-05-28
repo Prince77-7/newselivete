@@ -82,14 +82,7 @@
   <title>Contact | WASAW</title>
 </svelte:head>
 
-<!-- Theme Toggle Button for this page, uses store -->
-<button class="theme-toggle-page" on:click={togglePageTheme} aria-label="Toggle theme">
-  {#if isLightModeFromStore}
-    <span class="theme-icon-page">🌙</span>
-  {:else}
-    <span class="theme-icon-page">☀️</span>
-  {/if}
-</button>
+
 
 <div class="contact-page">
   <header class="page-header">

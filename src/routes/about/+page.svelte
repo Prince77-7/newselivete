@@ -61,14 +61,7 @@
   <title>Our Unconventional Advantage | WASAW</title>
 </svelte:head>
 
-<!-- Theme Toggle Button for this page, uses store -->
-<button class="theme-toggle-page" on:click={togglePageTheme} aria-label="Toggle theme">
-  {#if isLightModeFromStore}
-    <span class="theme-icon-page">🌙</span>
-  {:else}
-    <span class="theme-icon-page">☀️</span>
-  {/if}
-</button>
+
 
 <div class="about-page">
   <header class="page-header">
@@ -157,50 +150,7 @@
     /* --light-powder-blue: #E8F4F8; */ /* Removed as per previous user feedback */
   }
 
-  /* Theme Toggle Button for this page - specific styling if needed */
-  .theme-toggle-page {
-    position: fixed;
-    top: calc(var(--nav-height, 60px) + 1rem); /* Position below nav if nav is present */
-    right: 2rem;
-    width: 50px;
-    height: 50px;
-    border: none;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 999; /* Ensure it's below nav (1000) but above page content */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-  }
 
-  .theme-toggle-page:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
-  }
-
-  .theme-icon-page {
-    font-size: 1.5rem;
-    transition: transform 0.3s ease;
-  }
-
-  .theme-toggle-page:hover .theme-icon-page {
-    transform: rotate(15deg);
-  }
-
-  /* Light mode toggle adjustments for THIS PAGE's toggle */
-  /* Applied via global body.light-mode */
-  :global(body.light-mode) .theme-toggle-page {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-color: rgba(0, 0, 0, 0.2);
-  }
-
-  :global(body.light-mode) .theme-toggle-page:hover {
-    background-color: rgba(0, 0, 0, 0.2);
-  }
 
   .about-page {
     background-color: var(--color-deep-matte-black);
