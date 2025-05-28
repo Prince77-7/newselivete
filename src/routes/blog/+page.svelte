@@ -510,7 +510,7 @@
   .blog-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 2rem 4rem;
+    padding: 2rem 2rem 4rem; /* Added top padding for spacing from podcast section */
   }
   
   /* Search and Filters */
