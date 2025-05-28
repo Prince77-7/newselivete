@@ -9,7 +9,6 @@
   });
 
   // Game state
-  let currentSection: 'sold' | 'bought' = 'sold';
   let currentPropertyIndex = 0;
   let currentImageIndex = 0;
   let guessAttempts = 0;
@@ -19,7 +18,7 @@
   let isCorrect = false;
 
   // Sample property data (in a real app, this would come from an API)
-  const soldProperties = [
+  const properties = [
     {
       id: 1,
       images: [
@@ -64,31 +63,13 @@
       sqft: 1800,
       actualPrice: 425000,
       description: 'Charming historic home with original hardwood floors'
-    }
-  ];
-
-  const boughtProperties = [
+    },
     {
       id: 4,
       images: [
         'https://picsum.photos/800/600?random=10',
         'https://picsum.photos/800/600?random=11',
         'https://picsum.photos/800/600?random=12'
-      ],
-      title: 'Investment Duplex',
-      location: 'Murfreesboro, TN',
-      bedrooms: 6,
-      bathrooms: 4,
-      sqft: 3200,
-      actualPrice: 320000,
-      description: 'Great investment opportunity with rental income potential'
-    },
-    {
-      id: 5,
-      images: [
-        'https://picsum.photos/800/600?random=13',
-        'https://picsum.photos/800/600?random=14',
-        'https://picsum.photos/800/600?random=15'
       ],
       title: 'Luxury Estate',
       location: 'Brentwood, TN',
@@ -99,11 +80,11 @@
       description: 'Magnificent estate with pool and guest house'
     },
     {
-      id: 6,
+      id: 5,
       images: [
-        'https://picsum.photos/800/600?random=16',
-        'https://picsum.photos/800/600?random=17',
-        'https://picsum.photos/800/600?random=18'
+        'https://picsum.photos/800/600?random=13',
+        'https://picsum.photos/800/600?random=14',
+        'https://picsum.photos/800/600?random=15'
       ],
       title: 'Starter Home',
       location: 'Antioch, TN',
@@ -115,13 +96,7 @@
     }
   ];
 
-  $: currentProperties = currentSection === 'sold' ? soldProperties : boughtProperties;
-  $: currentProperty = currentProperties[currentPropertyIndex];
-
-  function switchSection(section: 'sold' | 'bought') {
-    currentSection = section;
-    resetGame();
-  }
+  $: currentProperty = properties[currentPropertyIndex];
 
   function resetGame() {
     currentPropertyIndex = 0;
@@ -179,7 +154,7 @@
   }
 
   function nextProperty() {
-    if (currentPropertyIndex < currentProperties.length - 1) {
+    if (currentPropertyIndex < properties.length - 1) {
       currentPropertyIndex++;
     } else {
       currentPropertyIndex = 0;
@@ -228,33 +203,9 @@
         <span class="title-main">Guess the</span>
         <span class="title-highlight">Price</span>
       </h1>
-      <p class="game-subtitle">Test your real estate knowledge with our successful deals</p>
+      <p class="game-subtitle">Test your real estate knowledge with our successful sales</p>
     </div>
   </header>
-
-  <!-- Section Toggle -->
-  <div class="section-toggle">
-    <div class="container">
-      <div class="toggle-buttons">
-        <button 
-          class="toggle-btn"
-          class:active={currentSection === 'sold'}
-          on:click={() => switchSection('sold')}
-        >
-          <span class="toggle-icon">💰</span>
-          <span>Properties We Sold</span>
-        </button>
-        <button 
-          class="toggle-btn"
-          class:active={currentSection === 'bought'}
-          on:click={() => switchSection('bought')}
-        >
-          <span class="toggle-icon">🏠</span>
-          <span>Properties We Bought</span>
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- Main Game Area -->
   <main class="game-main">
@@ -324,7 +275,7 @@
             {#if gameState === 'guessing' || gameState === 'feedback'}
               <div class="guess-section">
                 <h3 class="guess-title">
-                  What do you think we {currentSection === 'sold' ? 'sold' : 'bought'} this property for?
+                  What do you think we sold this property for?
                 </h3>
                 
                 {#if gameState === 'feedback'}
@@ -363,7 +314,7 @@
                 </div>
                 
                 <div class="actual-price">
-                  <h3>Actual {currentSection === 'sold' ? 'Sale' : 'Purchase'} Price:</h3>
+                  <h3>Actual Sale Price:</h3>
                   <div class="price-display">
                     ${currentProperty.actualPrice.toLocaleString()}
                   </div>
@@ -379,7 +330,7 @@
 
         <!-- Property Counter -->
         <div class="property-counter">
-          <span>Property {currentPropertyIndex + 1} of {currentProperties.length}</span>
+          <span>Property {currentPropertyIndex + 1} of {properties.length}</span>
         </div>
       {/if}
     </div>
@@ -447,70 +398,6 @@
     font-size: clamp(1rem, 3vw, 1.5rem);
     opacity: 0.8;
     margin: 0;
-  }
-
-  /* Section Toggle */
-  .section-toggle {
-    padding: 2rem 0;
-    background-color: rgba(255, 255, 255, 0.02);
-  }
-
-  :global(body.light-mode) .section-toggle {
-    background-color: rgba(0, 0, 0, 0.02);
-  }
-
-  .toggle-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .toggle-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem 2rem;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    color: var(--color-pure-white);
-    font-family: var(--font-body);
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  :global(body.light-mode) .toggle-btn {
-    background-color: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.1);
-    color: var(--light-text-primary);
-  }
-
-  .toggle-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: var(--color-blood-red);
-    transform: translateY(-2px);
-  }
-
-  :global(body.light-mode) .toggle-btn:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-color: var(--light-accent-red);
-  }
-
-  .toggle-btn.active {
-    background-color: var(--color-blood-red);
-    border-color: var(--color-blood-red);
-    color: var(--color-pure-white);
-  }
-
-  :global(body.light-mode) .toggle-btn.active {
-    background-color: var(--light-accent-red);
-    border-color: var(--light-accent-red);
-  }
-
-  .toggle-icon {
-    font-size: 1.2rem;
   }
 
   /* Main Game Area */
@@ -913,13 +800,15 @@
   }
 
   @media (max-width: 480px) {
-    .toggle-buttons {
+    .guess-input-container {
       flex-direction: column;
+      align-items: stretch;
     }
 
-    .toggle-btn {
+    .guess-input {
       width: 100%;
-      justify-content: center;
+      max-width: 300px;
+      margin: 0 auto;
     }
 
     .property-details {
